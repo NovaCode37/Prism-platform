@@ -16,7 +16,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   const text = await r.text();
   if (!r.ok) {
     let detail = text.slice(0, 200);
-    try { detail = JSON.parse(text)?.detail ?? detail; } catch 
+    try { detail = JSON.parse(text)?.detail ?? detail; } catch {}
     throw new Error(`HTTP ${r.status}: ${detail}`);
   }
   try {
