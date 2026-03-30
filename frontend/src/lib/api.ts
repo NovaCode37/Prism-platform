@@ -1,0 +1,80 @@
+import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult } from './types';
+
+const API = process.env.NEXT_PUBLIC_API_URL || '';
+
+async function post<T>(path: string, body: unknown): Promise<T> {
+  let r: Response;
+  try {
+    r = await fetch(`${API}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    throw new Error(`Cannot reach backend at ${API || 'http://localhost:8080'} — is it running?`);
+  }
+  const text = await r.text();
+  if (!r.ok) {
+    let detail = text.slice(0, 200);
+    try { detail = JSON.parse(text)?.detail ?? detail; } catch 
+    throw new Error(`HTTP ${r.status}: ${detail}`);
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`Invalid JSON from server: ${text.slice(0, 120)}`);
+  }
+}
+
+export async function startScan(target: string, scan_type: ScanType, modules: string[]): Promise<{ scan_id: string }> {
+  return post('/api/scan', { target, scan_type, modules });
+}
+
+export async function getScan(id: string): Promise<ScanMeta & { results: ScanResults }> {
+  const r = await fetch(`${API}/api/scan/${id}`);
+  return r.json();
+}
+
+export async function scanUrl(url: string): Promise<UrlScanResult> {
+  return post('/api/url-scan', { url });
+}
+
+export async function lookupCrypto(address: string): Promise<CryptoResult> {
+  return post('/api/crypto', { address });
+}
+
+export async function searchDarkweb(query: string): Promise<DarkWebResult> {
+  return post('/api/darkweb', { query });
+}
+
+export async function decodeQr(file: File): Promise<QrResult> {
+  const fd = new FormData();
+  fd.append('file', file);
+  const r = await fetch(`${API}/api/qr-decode`, { method: 'POST', body: fd });
+  return r.json();
+}
+
+export async function analyzeHeaders(headers: string): Promise<HeaderAnalysisResult> {
+  return post('/api/email-headers', { headers });
+}
+
+export async function extractMetadata(file: File): Promise<MetaResult> {
+  const fd = new FormData();
+  fd.append('file', file);
+  const r = await fetch(`${API}/api/metadata`, { method: 'POST', body: fd });
+  return r.json();
+}
+
+export async function generateAiSummary(scan_id: string): Promise<{ summary: string; model: string; error?: string }> {
+  return post('/api/ai/summary', { scan_id });
+}
+
+export function getWsUrl(scanId: string): string {
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const ws = base.replace(/^http/, 'ws');
+  return `${ws}/ws/${scanId}`;
+}
+
+export function getReportUrl(scanId: string): string {
+  return `${API}/api/scan/${scanId}/report`;
+}

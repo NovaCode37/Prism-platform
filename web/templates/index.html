@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRISM</title>
+<script src="/static/alpine.min.js" defer></script>
+<script src="/static/vis-network.min.js" defer></script>
+<link rel="stylesheet" href="/static/vis-network.min.css"/>
+<link rel="stylesheet" href="/static/leaflet.css"/>
+<script src="/static/leaflet.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060a12;
+  --surface:#0c1220;
+  --surface-2:#111827;
+  --surface-3:#172033;
+  --border:#1c2a3e;
+  --border-2:#253349;
+  --text-1:#e8eef5;
+  --text-2:#8b9cb5;
+  --text-3:#4d6070;
+  --blue:#4f8ef7;
+  --blue-dim:rgba(79,142,247,.12);
+  --blue-border:rgba(79,142,247,.28);
+  --blue-glow:rgba(79,142,247,.18);
+  --green:#34d058;
+  --yellow:#e3a11a;
+  --red:#f66;
+  --purple:#a78bfa;
+  --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+  --ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --radius:8px;
+  --radius-sm:5px;
+  --shadow:0 2px 12px rgba(0,0,0,.45);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.6);
+  --grad:linear-gradient(135deg,#4f8ef7,#7c5cfc);
+}
+html,body{height:100%}
+body{font-family:var(--ui);font-size:14px;line-height:1.55;color:var(--text-1);background:var(--bg)}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,142,247,.07),transparent);
+  pointer-events:none;z-index:0;
+}
+[x-cloak]{display:none!important}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+
+.app{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
+.topbar{
+  height:48px;display:flex;align-items:center;gap:12px;
+  padding:0 22px;
+  background:rgba(12,18,32,.9);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  backdrop-filter:blur(12px);
+}
+.body{display:flex;flex:1;overflow:hidden}
+.sidebar{
+  width:260px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.main{flex:1;overflow-y:auto;padding:26px 30px}
+
+.brand{display:flex;align-items:center;gap:9px}
+.brand-mark{
+  display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;
+  letter-spacing:.01em;color:var(--text-1);
+}
+.brand-mark svg{filter:drop-shadow(0 0 6px rgba(79,142,247,.5))}
+.brand-ver{
+  font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;
+  background:var(--grad);color:#fff;border-radius:20px;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-row{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500}
+
+.sb-section{padding:14px 16px;border-bottom:1px solid var(--border)}
+.sb-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+
+.field{
+  background:rgba(0,0,0,.25);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  color:var(--text-1);
+  font-family:var(--ui);
+  font-size:13px;
+  padding:8px 11px;
+  width:100%;
+  outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.field:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+.field::placeholder{color:var(--text-3)}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--ui);font-size:13px;font-weight:600;
+  padding:9px 14px;border:none;cursor:pointer;
+  border-radius:var(--radius-sm);
+  transition:all .18s;
+  width:100%;
+}
+.btn-run{
+  background:var(--grad);color:#fff;
+  box-shadow:0 2px 14px rgba(79,142,247,.35);
+}
+.btn-run:hover:not([disabled]){
+  box-shadow:0 4px 20px rgba(79,142,247,.5);
+  transform:translateY(-1px);
+}
+.btn-run[disabled]{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{
+  font-size:11px;font-weight:500;font-family:var(--ui);
+  padding:4px 9px;
+  border:1px solid var(--border-2);
+  border-radius:20px;
+  background:transparent;color:var(--text-2);
+  cursor:pointer;
+  transition:all .15s;
+}
+.chip:hover{color:var(--text-1);border-color:var(--text-3);background:var(--surface-2)}
+.chip.on{background:var(--blue-dim);border-color:var(--blue-border);color:var(--blue)}
+
+.prog-item{display:flex;align-items:center;gap:8px;padding:5px 0}
+.prog-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.prog-dot.running{background:var(--yellow);animation:blink 1.4s ease-in-out infinite;box-shadow:0 0 6px var(--yellow)}
+.prog-dot.ok{background:var(--green);box-shadow:0 0 4px rgba(52,208,88,.4)}
+.prog-dot.error{background:var(--red)}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+
+.hist-item{
+  display:block;width:100%;text-align:left;
+  padding:9px 16px;
+  border:none;border-bottom:1px solid var(--border);
+  background:transparent;color:inherit;font-family:var(--ui);
+  cursor:pointer;
+  transition:background .12s;
+}
+.hist-item:hover{background:var(--surface-2)}
+
+.empty{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:55vh;text-align:center;gap:0;
+}
+.empty-icon{
+  width:56px;height:56px;
+  border:1px solid var(--border-2);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px;max-width:460px;width:100%;text-align:left}
+.cap-card{
+  background:var(--surface);border:1px solid var(--border);
+  padding:14px 16px;border-radius:var(--radius);
+  transition:border-color .15s,box-shadow .15s;
+}
+.cap-card:hover{border-color:var(--border-2);box-shadow:var(--shadow)}
+.cap-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blue);margin-bottom:7px}
+.cap-body{font-size:11px;color:var(--text-2);line-height:1.8}
+
+.scan-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.scan-target{font-size:19px;font-weight:700;color:var(--text-1);letter-spacing:-.01em}
+.scan-meta{display:flex;align-items:center;gap:10px;margin-top:4px}
+.scan-badge{
+  font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--blue);background:var(--blue-dim);border:1px solid var(--blue-border);
+  padding:2px 8px;border-radius:20px;font-family:var(--mono);
+}
+.btn-export{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;
+  background:var(--surface-2);border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  color:var(--text-2);text-decoration:none;font-size:12px;font-weight:600;
+  transition:all .15s;font-family:var(--ui);
+}
+.btn-export:hover{border-color:var(--blue);color:var(--text-1);box-shadow:0 0 0 3px var(--blue-dim)}
+
+.score-card{
+  background:linear-gradient(135deg,var(--surface),var(--surface-3));
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:16px;
+  display:flex;gap:24px;align-items:center;
+  box-shadow:var(--shadow);
+}
+.score-num{flex-shrink:0;text-align:center;width:80px;padding-right:24px;border-right:1px solid var(--border-2)}
+.score-val{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.score-max{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);margin-top:3px}
+.score-risk{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-top:7px;padding:2px 8px;border-radius:20px;display:inline-block}
+.score-cats{flex:1;display:flex;flex-direction:column;gap:10px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-name{width:122px;font-size:12px;color:var(--text-1);flex-shrink:0;font-weight:500}
+.pbar{flex:1;height:4px;background:var(--surface-3);border-radius:4px;overflow:hidden}
+.pbar-fill{height:100%;transition:width .8s cubic-bezier(.4,0,.2,1);border-radius:4px}
+.cat-score{font-size:11px;font-weight:600;font-family:var(--mono);width:38px;text-align:right;flex-shrink:0}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto;margin-bottom:16px;padding-bottom:0}
+.tab{
+  display:flex;align-items:center;gap:5px;
+  padding:8px 13px;font-size:11px;font-weight:600;
+  color:var(--text-3);border:none;background:transparent;
+  border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  border-bottom:2px solid transparent;
+  cursor:pointer;white-space:nowrap;font-family:var(--ui);
+  transition:all .15s;letter-spacing:.01em;
+  margin-bottom:-1px;
+}
+.tab:hover{color:var(--text-1);background:var(--surface-2)}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-dim)}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.card-head{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--text-2);background:rgba(0,0,0,.15);
+}
+
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border:1px solid;border-radius:20px}
+.badge.CRITICAL,.badge.HIGH{color:#f66;background:rgba(255,102,102,.1);border-color:rgba(255,102,102,.25)}
+.badge.MEDIUM{color:var(--yellow);background:rgba(227,161,26,.1);border-color:rgba(227,161,26,.25)}
+.badge.LOW{color:var(--green);background:rgba(52,208,88,.1);border-color:rgba(52,208,88,.25)}
+.badge.INFO{color:#79c0ff;background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.2)}
+
+.finding{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);transition:background .1s}
+.finding:hover{background:var(--surface-2)}
+.finding:last-child{border-bottom:none}
+.finding-msg{font-size:12px;color:var(--text-1);font-weight:500}
+.finding-meta{font-size:10px;color:var(--text-3);margin-top:2px;font-family:var(--mono)}
+
+table.dt{width:100%;border-collapse:collapse}
+table.dt th{padding:8px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-2);border-bottom:1px solid var(--border);background:rgba(0,0,0,.1)}
+table.dt td{padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-1)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover td{background:rgba(79,142,247,.04)}
+table.dt td.mono{font-family:var(--mono);font-size:11px;color:var(--text-1)}
+table.dt td.dim{color:var(--text-2);font-size:11px}
+table.dt td.label-col{color:var(--text-3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;width:150px}
+
+.stat-grid{display:flex;gap:10px;margin-bottom:16px}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  padding:14px 18px;text-align:center;border-radius:var(--radius);
+  box-shadow:var(--shadow);flex:1;
+}
+.stat-val{font-size:24px;font-weight:700;line-height:1;letter-spacing:-.01em}
+.stat-lbl{font-size:10px;color:var(--text-3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+
+.port{font-size:10px;font-family:var(--mono);font-weight:600;padding:3px 8px;border:1px solid var(--border-2);color:var(--text-2);background:transparent;border-radius:var(--radius-sm)}
+.port.risky{border-color:rgba(255,102,102,.3);color:var(--red);background:rgba(255,102,102,.06)}
+.port.cve{border-color:rgba(255,102,102,.3);color:var(--red);background:rgba(255,102,102,.06)}
+
+.sub-item{padding:7px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text-1);transition:background .1s}
+.sub-item:hover{background:var(--surface-2)}
+.sub-item:last-child{border-bottom:none}
+
+#graph-container{height:calc(100vh - 290px);min-height:420px;background:var(--bg);border-radius:0 0 var(--radius) var(--radius)}
+#map-container{height:calc(100vh - 290px);min-height:420px;background:var(--bg);border-radius:0 0 var(--radius) var(--radius)}
+.leaflet-container{background:var(--bg)!important}
+.leaflet-popup-content-wrapper{background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);border-radius:var(--radius);box-shadow:var(--shadow-lg)}
+.leaflet-popup-tip{background:var(--surface-2)}
+.leaflet-popup-content{font-family:var(--ui);font-size:12px;margin:10px 14px}
+.leaflet-bar a{background:var(--surface-2);color:var(--text-1);border-color:var(--border-2);border-radius:var(--radius-sm)!important}
+.leaflet-bar a:hover{background:var(--surface-3)}
+.leaflet-control-attribution{display:none!important}
+.map-popup-ip{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px}
+.map-popup-row{font-size:11px;color:var(--text-2);margin:2px 0}
+.map-popup-row span{color:var(--text-1);font-weight:600}
+
+.raw-pre{
+  padding:16px;font-family:var(--mono);font-size:11px;
+  color:var(--text-2);line-height:1.65;
+  overflow-x:auto;max-height:72vh;overflow-y:auto;
+  white-space:pre;background:rgba(0,0,0,.2);
+}
+
+.vline{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite}
+
+.snap-url{font-family:var(--mono);font-size:11px;color:var(--blue);text-decoration:none}
+.snap-url:hover{text-decoration:underline}
+
+.section-space{display:flex;flex-direction:column;gap:12px}
+
+@media print{
+  .sidebar,.topbar,.tabs,.btn-export,.btn-run{display:none!important}
+  .main{padding:0!important}
+  .card{box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid}
+  body::before{display:none}
+}
+</style>
+</head>
+<body x-data="osint()" x-init="init()" x-cloak>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="eye-grad" x1="0" y1="0" x2="52" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4f8ef7"/><stop offset="100%" stop-color="#7c5cfc"/></linearGradient></defs></svg>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" @click="scanId=null;scanStatus='idle';toolMode=null;currentScan={};progressLog=[];activeTab='findings'" style="cursor:pointer">
+      <svg width="26" height="22" viewBox="0 0 52 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg" xlink:href="#eye-grad" x1="0" y1="0" x2="52" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8ef7"/>
+            <stop offset="100%" stop-color="#7c5cfc"/>
+          </linearGradient>
+        </defs>
+        <path d="M2 22C2 22 13 6 26 6C39 6 50 22 50 22C50 22 39 38 26 38C13 38 2 22 2 22Z" stroke="url(#lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="26" cy="22" r="9" stroke="url(#lg)" stroke-width="2"/>
+        <circle cx="26" cy="22" r="4.5" stroke="url(#lg)" stroke-width="1.2" opacity="0.6"/>
+        <circle cx="26" cy="22" r="2.2" fill="url(#lg)"/>
+        <line x1="26" y1="13" x2="26" y2="17" stroke="url(#lg)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="26" y1="27" x2="26" y2="31" stroke="url(#lg)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="17" y1="22" x2="21" y2="22" stroke="url(#lg)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="31" y1="22" x2="35" y2="22" stroke="url(#lg)" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M36 10 A16 16 0 0 1 44 22" stroke="url(#lg)" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+      </svg>
+      PRISM
+    </div>
+    <span class="brand-ver">v2.0</span>
+  </div>
+
+  <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+    <template x-if="scanStatus==='running'">
+      <div class="status-row" style="color:var(--yellow)">
+        <svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <span>Scanning</span>
+      </div>
+    </template>
+    <template x-if="scanStatus==='completed'">
+      <div class="status-row" style="color:var(--green)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Complete</span>
+      </div>
+    </template>
+    <span style="color:var(--border-2)">|</span>
+    <span style="font-size:11px;color:var(--text-3);letter-spacing:.03em">Open Source Intelligence Framework</span>
+  </div>
+</header>
+
+<div class="body">
+
+<aside class="sidebar">
+
+  <div class="sb-section">
+    <div class="sb-label">Target</div>
+    <input class="field" type="text" x-model="target" @keydown.enter="startScan()" placeholder="domain / IP / username / email"/>
+    <div style="margin-top:7px;display:flex;align-items:center;gap:5px">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span style="font-size:11px;color:var(--text-2)">Detected: <span style="color:var(--blue)" x-text="detectedType()"></span></span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sb-label" style="margin-bottom:0">Modules</div>
+      <button @click="toggleAllModules()" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:var(--ui);padding:0" x-text="selectedModules.length===0?'Select all':'Clear'"></button>
+    </div>
+    <div class="chips">
+      <template x-for="mod in availableModules()" :key="mod.id">
+        <button @click="toggleModule(mod.id)" :class="{'on':selectedModules.includes(mod.id)}" class="chip" x-text="mod.label"></button>
+      </template>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text-3)">Leave empty to run all applicable</div>
+  </div>
+
+  <div class="sb-section">
+    <button class="btn btn-run" @click="startScan()" :disabled="!target.trim()||scanStatus==='running'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      <span x-text="scanStatus==='running'?'Running...':'Run Scan'"></span>
+    </button>
+  </div>
+
+  <template x-if="progressLog.length>0">
+    <div class="sb-section">
+      <div class="sb-label">Progress</div>
+      <div style="max-height:170px;overflow-y:auto">
+        <template x-for="(e,i) in progressLog" :key="i">
+          <div class="prog-item">
+            <span class="prog-dot" :class="e.status"></span>
+            <span style="font-size:11px;color:var(--text-2);font-family:var(--mono)" x-text="e.module"></span>
+            <template x-if="e.status==='error'">
+              <span style="font-size:10px;color:var(--red);margin-left:auto">err</span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <template x-if="pastScans.length>0">
+    <div style="flex:1;overflow-y:auto;border-top:1px solid var(--border)">
+      <div style="padding:10px 14px 6px"><div class="sb-label" style="margin-bottom:0">Recent Scans</div></div>
+      <template x-for="s in pastScans.slice(0,8)" :key="s.scan_id">
+        <button class="hist-item" @click="loadScan(s.scan_id)">
+          <div style="font-size:12px;font-weight:500;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="s.target"></div>
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <span style="font-size:10px;font-family:var(--mono);color:var(--text-3)" x-text="s.scan_type"></span>
+            <span style="font-size:10px" :style="s.status==='completed'?'color:var(--green)':'color:var(--red)'" x-text="s.status"></span>
+          </div>
+        </button>
+      </template>
+    </div>
+  </template>
+
+</aside>
+
+<main class="main">
+
+  <template x-if="!scanId && scanStatus==='idle' && !toolMode">
+    <div class="empty">
+      <div class="empty-icon">
+<svg width="44" height="38" viewBox="0 0 52 44" fill="none"><path d="M2 22C2 22 13 6 26 6C39 6 50 22 50 22C50 22 39 38 26 38C13 38 2 22 2 22Z" stroke="url(#eye-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="22" r="9" stroke="url(#eye-grad)" stroke-width="2"/><circle cx="26" cy="22" r="4.5" stroke="url(#eye-grad)" stroke-width="1.2" opacity="0.6"/><circle cx="26" cy="22" r="2.2" fill="url(#eye-grad)"/><line x1="26" y1="13" x2="26" y2="17" stroke="url(#eye-grad)" stroke-width="1.8" stroke-linecap="round"/><line x1="26" y1="27" x2="26" y2="31" stroke="url(#eye-grad)" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="22" x2="21" y2="22" stroke="url(#eye-grad)" stroke-width="1.8" stroke-linecap="round"/><line x1="31" y1="22" x2="35" y2="22" stroke="url(#eye-grad)" stroke-width="1.8" stroke-linecap="round"/><path d="M36 10 A16 16 0 0 1 44 22" stroke="url(#eye-grad)" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--text-1);margin-bottom:6px">No active scan</div>
+      <div style="font-size:12px;color:var(--text-2);max-width:360px;line-height:1.7">Enter a target in the sidebar and click <strong style="color:var(--text-1)">Run Scan</strong> to start reconnaissance.</div>
+      <div class="cap-grid">
+        <div class="cap-card">
+          <div class="cap-title">Domain / IP</div>
+          <div class="cap-body">WHOIS &middot; DNS &middot; GeoIP<br>Subdomains &middot; Shodan<br>VirusTotal &middot; Wayback</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-title">Email</div>
+          <div class="cap-body">SMTP verification<br>Breach lookup<br>EmailRep intelligence</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-title">Username</div>
+          <div class="cap-body">50+ platforms (Blackbird)<br>3000+ deep (Maigret)</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-title">All scans include</div>
+          <div class="cap-body">OPSEC score 0&ndash;100<br>Entity graph export<br>HTML report download</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center">
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='metadata'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          File Metadata &amp; GEOINT
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='ai'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          AI Analysis
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='headers'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email Headers
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='urlscan'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+          URL Scanner
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='crypto'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9h1.5a1.5 1.5 0 0 1 0 3H9m0 0h1.5a1.5 1.5 0 0 1 0 3H9m3-9v-1m0 10v1m3-7.5V9"/></svg>
+          Crypto Address
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='darkweb'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+          Dark Web
+        </button>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-1);padding:0 18px;height:36px;font-size:12px" @click="toolMode='qr'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><path d="M20 17v.01M17 20v.01M20 20v.01"/></svg>
+          QR Decode
+        </button>
+      </div>
+    </div>
+  </template>
+
+  <template x-if="toolMode && !scanId">
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+        <button @click="toolMode=null" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);background:none;border:none;cursor:pointer;font-family:var(--ui)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <span style="font-size:14px;font-weight:700;color:var(--text-1)" x-text="{metadata:'File Metadata & GEOINT',headers:'Email Header Analyzer',urlscan:'URL Scanner',crypto:'Crypto Address Lookup',darkweb:'Dark Web Search',qr:'QR Code Decoder'}[toolMode]||'AI Analysis'"></span>
+      </div>
+      <div x-show="toolMode==='metadata'">
+        <div class="card" style="margin-bottom:10px">
+          <div class="card-head">File Metadata Extractor &nbsp;&middot;&nbsp; Images (JPG/PNG), PDF, DOCX</div>
+          <div style="padding:16px">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <input type="file" id="meta-file-input2" accept=".jpg,.jpeg,.png,.tiff,.heic,.webp,.pdf,.docx"
+                style="font-size:12px;color:var(--text-2);background:var(--bg);border:1px solid var(--border-2);padding:6px 10px;flex:1;min-width:200px;font-family:var(--ui)"
+                @change="metaFile=$event.target.files[0]"/>
+              <button class="btn btn-run" style="width:auto;padding:0 18px" :disabled="!metaFile||metaLoading" @click="uploadMeta()">
+                <template x-if="metaLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/></svg></template>
+                <span x-text="metaLoading?'Extracting...':'Extract'"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <template x-if="metaResult">
+          <div class="section-space">
+            <div class="card" style="margin-bottom:10px">
+              <div class="card-head">Extracted Metadata</div>
+              <table class="dt">
+                <tr x-show="metaResult.original_filename"><td class="label-col">File</td><td x-text="metaResult.original_filename"></td></tr>
+                <tr x-show="metaResult.format"><td class="label-col">Format</td><td x-text="metaResult.format"></td></tr>
+                <tr x-show="metaResult.dimensions"><td class="label-col">Dimensions</td><td x-text="metaResult.dimensions?metaResult.dimensions.width+'×'+metaResult.dimensions.height:''"></td></tr>
+                <tr x-show="metaResult.size_bytes"><td class="label-col">File Size</td><td x-text="metaResult.size_bytes?Math.round(metaResult.size_bytes/1024)+'KB':''"></td></tr>
+                <tr x-show="metaResult.author"><td class="label-col">Author</td><td style="color:var(--yellow);font-weight:600" x-text="metaResult.author"></td></tr>
+                <tr x-show="metaResult.last_modified_by"><td class="label-col">Last Modified By</td><td style="color:var(--yellow);font-weight:600" x-text="metaResult.last_modified_by"></td></tr>
+                <tr x-show="metaResult.software"><td class="label-col">Software</td><td x-text="metaResult.software"></td></tr>
+                <tr x-show="metaResult.created"><td class="label-col">Created</td><td class="mono" x-text="metaResult.created||metaResult.timestamps?.DateTimeOriginal||metaResult.timestamps?.DateTime"></td></tr>
+                <tr x-show="metaResult.pages"><td class="label-col">Pages</td><td x-text="metaResult.pages"></td></tr>
+                <tr x-show="metaResult.camera&&metaResult.camera.make"><td class="label-col">Camera</td><td x-text="(metaResult.camera?.make||'')+' '+(metaResult.camera?.model||'')"></td></tr>
+                <template x-if="metaResult.gps">
+                  <tr style="background:rgba(47,129,247,.06)">
+                    <td class="label-col" style="color:var(--blue)">GPS Coordinates</td>
+                    <td><span class="mono" style="color:var(--blue);font-weight:700" x-text="metaResult.gps.lat+', '+metaResult.gps.lng"></span>
+                    <a :href="'https://www.google.com/maps?q='+metaResult.gps.lat+','+metaResult.gps.lng" target="_blank" style="margin-left:10px;font-size:11px;color:var(--blue)">Open in Maps</a></td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <template x-if="metaResult.gps">
+              <div class="card" style="margin-bottom:10px">
+                <div class="card-head">GEOINT &nbsp;&middot;&nbsp; GPS extracted from EXIF</div>
+                <div id="meta-map-container" style="height:calc(100vh - 340px);min-height:360px;background:var(--bg)"></div>
+              </div>
+            </template>
+            <template x-if="metaResult.format && ['JPEG','PNG','TIFF','WEBP'].includes(metaResult.format)">
+              <div class="card">
+                <div class="card-head">Reverse Image Search &nbsp;&middot;&nbsp; <span style="color:var(--text-3);font-weight:400">Drag &amp; drop your file into one of these services</span></div>
+                <div style="padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <a href="https://yandex.ru/images/search?rpt=imageview" target="_blank"
+                     style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-3);border:1px solid var(--border-2);color:var(--text-1);text-decoration:none;font-size:12px">
+                    <span style="font-weight:600">Yandex Images</span><span style="color:var(--text-3);font-size:11px">Best for RU/CIS</span>
+                  </a>
+                  <a href="https://lens.google.com/" target="_blank"
+                     style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-3);border:1px solid var(--border-2);color:var(--text-1);text-decoration:none;font-size:12px">
+                    <span style="font-weight:600">Google Lens</span><span style="color:var(--text-3);font-size:11px">Global coverage</span>
+                  </a>
+                  <a href="https://tineye.com/" target="_blank"
+                     style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-3);border:1px solid var(--border-2);color:var(--text-1);text-decoration:none;font-size:12px">
+                    <span style="font-weight:600">TinEye</span><span style="color:var(--text-3);font-size:11px">Exact match search</span>
+                  </a>
+                  <a href="https://pimeyes.com/" target="_blank"
+                     style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-3);border:1px solid var(--border-2);color:var(--text-1);text-decoration:none;font-size:12px">
+                    <span style="font-weight:600">PimEyes</span><span style="color:var(--text-3);font-size:11px">Face recognition</span>
+                  </a>
+                </div>
+                <div style="padding:6px 12px 10px;font-size:11px;color:var(--text-3)">Open any service above &rarr; click the camera icon &rarr; upload your file</div>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+      <div x-show="toolMode==='ai'">
+        <div class="card" style="margin-bottom:10px">
+          <div class="card-head">AI OSINT Analysis &nbsp;&middot;&nbsp; Powered by Groq (Llama 3)</div>
+          <div style="padding:16px;color:var(--text-3);font-size:12px">Complete a scan first, then return here to generate AI analysis of the results.</div>
+        </div>
+      </div>
+
+      <div x-show="toolMode==='urlscan'">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-head">URL Scanner &nbsp;&middot;&nbsp; Powered by VirusTotal</div>
+          <div style="padding:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input x-model="urlInput" type="text" placeholder="https://example.com"
+              style="flex:1;min-width:220px;background:rgba(0,0,0,.3);border:1px solid var(--border-2);border-radius:var(--radius-sm);color:var(--text-1);font-family:var(--mono);font-size:12px;padding:8px 12px;outline:none"
+              @keydown.enter="scanUrl()"
+              @focus="$el.style.borderColor='var(--blue)'" @blur="$el.style.borderColor='var(--border-2)'"/>
+            <button class="btn btn-run" style="width:auto;padding:0 20px" :disabled="!urlInput.trim()||urlLoading" @click="scanUrl()">
+              <template x-if="urlLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></template>
+              <span x-text="urlLoading?'Scanning…':'Scan URL'"></span>
+            </button>
+          </div>
+        </div>
+        <template x-if="urlResult">
+          <div class="card">
+            <template x-if="urlResult.error">
+              <div style="padding:12px;color:var(--red);font-size:12px" x-text="urlResult.error"></div>
+            </template>
+            <template x-if="!urlResult.error">
+              <div>
+                <div style="padding:14px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                  <div style="text-align:center">
+                    <div :style="(urlResult.malicious>0)?'color:var(--red);font-size:28px;font-weight:800':(urlResult.suspicious>0)?'color:var(--yellow);font-size:28px;font-weight:800':'color:var(--green);font-size:28px;font-weight:800'" x-text="urlResult.malicious>0?urlResult.malicious+' Malicious':urlResult.suspicious>0?urlResult.suspicious+' Suspicious':'Clean'"></div>
+                    <div style="font-size:11px;color:var(--text-3)">VirusTotal verdict</div>
+                  </div>
+                  <div style="display:flex;gap:16px;flex-wrap:wrap">
+                    <div><span style="color:var(--red);font-weight:700" x-text="urlResult.malicious"></span> <span style="font-size:11px;color:var(--text-3)">malicious</span></div>
+                    <div><span style="color:var(--yellow);font-weight:700" x-text="urlResult.suspicious"></span> <span style="font-size:11px;color:var(--text-3)">suspicious</span></div>
+                    <div><span style="color:var(--green);font-weight:700" x-text="urlResult.harmless"></span> <span style="font-size:11px;color:var(--text-3)">harmless</span></div>
+                    <div><span style="color:var(--text-3);font-weight:700" x-text="urlResult.undetected"></span> <span style="font-size:11px;color:var(--text-3)">undetected</span></div>
+                  </div>
+                  <template x-if="urlResult.permalink">
+                    <a :href="urlResult.permalink" target="_blank" class="btn-export" style="margin-left:auto">View on VT</a>
+                  </template>
+                </div>
+                <template x-if="urlResult.categories && Object.keys(urlResult.categories).length">
+                  <div style="padding:0 16px 14px">
+                    <div style="font-size:11px;color:var(--text-3);margin-bottom:6px">CATEGORIES</div>
+                    <template x-for="[vendor,cat] in Object.entries(urlResult.categories)" :key="vendor">
+                      <span class="tag" x-text="cat"></span>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="toolMode==='crypto'">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-head">Crypto Address Lookup &nbsp;&middot;&nbsp; Bitcoin &amp; Ethereum</div>
+          <div style="padding:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input x-model="cryptoInput" type="text" placeholder="1A1zP1…  /  0x742d…  /  bc1q…"
+              style="flex:1;min-width:260px;background:rgba(0,0,0,.3);border:1px solid var(--border-2);border-radius:var(--radius-sm);color:var(--text-1);font-family:var(--mono);font-size:12px;padding:8px 12px;outline:none"
+              @keydown.enter="lookupCrypto()"
+              @focus="$el.style.borderColor='var(--blue)'" @blur="$el.style.borderColor='var(--border-2)'"/>
+            <button class="btn btn-run" style="width:auto;padding:0 20px" :disabled="!cryptoInput.trim()||cryptoLoading" @click="lookupCrypto()">
+              <template x-if="cryptoLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></template>
+              <span x-text="cryptoLoading?'Looking up…':'Lookup'"></span>
+            </button>
+          </div>
+        </div>
+        <template x-if="cryptoResult">
+          <div class="card">
+            <template x-if="cryptoResult.error && !cryptoResult.balance">
+              <div style="padding:12px;color:var(--red);font-size:12px" x-text="cryptoResult.error"></div>
+            </template>
+            <template x-if="cryptoResult.balance">
+              <table class="dt">
+                <tr><td class="label-col">Type</td><td style="font-weight:700;color:var(--blue)" x-text="cryptoResult.type"></td></tr>
+                <tr><td class="label-col">Address</td><td class="mono" style="font-size:11px;word-break:break-all" x-text="cryptoResult.address"></td></tr>
+                <tr><td class="label-col">Balance</td><td style="font-weight:700;color:var(--green)" x-text="cryptoResult.balance"></td></tr>
+                <tr x-show="cryptoResult.balance_usd"><td class="label-col">≈ USD</td><td style="color:var(--text-2)" x-text="cryptoResult.balance_usd"></td></tr>
+                <tr x-show="cryptoResult.total_received"><td class="label-col">Total Received</td><td x-text="cryptoResult.total_received"></td></tr>
+                <tr x-show="cryptoResult.total_sent"><td class="label-col">Total Sent</td><td x-text="cryptoResult.total_sent"></td></tr>
+                <tr x-show="cryptoResult.tx_count!=null"><td class="label-col">Transactions</td><td x-text="cryptoResult.tx_count"></td></tr>
+                <tr x-show="cryptoResult.explorer_url"><td class="label-col">Explorer</td><td><a :href="cryptoResult.explorer_url" target="_blank" style="color:var(--blue);font-size:11px" x-text="cryptoResult.explorer_url"></a></td></tr>
+              </table>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="toolMode==='darkweb'">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-head">Dark Web Search &nbsp;&middot;&nbsp; Ahmia.fi Tor index</div>
+          <div style="padding:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input x-model="darkwebInput" type="text" placeholder="domain.com, email, keyword…"
+              style="flex:1;min-width:220px;background:rgba(0,0,0,.3);border:1px solid var(--border-2);border-radius:var(--radius-sm);color:var(--text-1);font-family:var(--ui);font-size:12px;padding:8px 12px;outline:none"
+              @keydown.enter="searchDarkweb()"
+              @focus="$el.style.borderColor='var(--blue)'" @blur="$el.style.borderColor='var(--border-2)'"/>
+            <button class="btn btn-run" style="width:auto;padding:0 20px" :disabled="!darkwebInput.trim()||darkwebLoading" @click="searchDarkweb()">
+              <template x-if="darkwebLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></template>
+              <span x-text="darkwebLoading?'Searching…':'Search'"></span>
+            </button>
+          </div>
+        </div>
+        <template x-if="darkwebResult">
+          <div>
+            <template x-if="darkwebResult.error && !darkwebResult.results?.length">
+              <div class="card" style="padding:12px;color:var(--red);font-size:12px" x-text="darkwebResult.error"></div>
+            </template>
+            <template x-if="darkwebResult.results?.length">
+              <div class="card">
+                <div class="card-head" x-text="'Results — '+darkwebResult.results.length+' found via '+darkwebResult.source"></div>
+                <template x-for="(item,i) in darkwebResult.results" :key="i">
+                  <div style="padding:10px 0;border-bottom:1px solid var(--border-1)" :style="i===darkwebResult.results.length-1?'border-bottom:none':''">
+                    <div style="display:flex;align-items:flex-start;gap:10px">
+                      <span class="badge INFO" style="margin-top:2px;flex-shrink:0" x-text="i+1"></span>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-weight:600;font-size:12px;color:var(--text-1);margin-bottom:2px" x-text="item.title||'(no title)'"></div>
+                        <div x-show="item.onion" class="mono" style="font-size:10px;color:var(--blue);margin-bottom:4px;word-break:break-all" x-text="item.onion"></div>
+                        <div x-show="item.description" style="font-size:11px;color:var(--text-3);line-height:1.5" x-text="item.description"></div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="toolMode==='qr'">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-head">QR Code Decoder &nbsp;&middot;&nbsp; Upload an image with a QR code</div>
+          <div style="padding:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="file" id="qr-file-input" accept="image/*"
+              style="font-size:12px;color:var(--text-2);background:var(--bg);border:1px solid var(--border-2);padding:6px 10px;flex:1;min-width:200px;font-family:var(--ui)"
+              @change="qrFile=$event.target.files[0]"/>
+            <button class="btn btn-run" style="width:auto;padding:0 20px" :disabled="!qrFile||qrLoading" @click="decodeQr()">
+              <template x-if="qrLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></template>
+              <span x-text="qrLoading?'Decoding…':'Decode QR'"></span>
+            </button>
+          </div>
+        </div>
+        <template x-if="qrResult">
+          <div class="card">
+            <template x-if="qrResult.error">
+              <div style="padding:12px;color:var(--red);font-size:12px" x-text="qrResult.error"></div>
+            </template>
+            <template x-if="qrResult.decoded">
+              <table class="dt">
+                <tr><td class="label-col">Type</td><td><span class="badge INFO" x-text="qrResult.type||'Text'"></span></td></tr>
+                <tr><td class="label-col">Content</td>
+                  <td>
+                    <template x-if="qrResult.is_url">
+                      <a :href="qrResult.decoded" target="_blank" class="mono" style="color:var(--blue);font-size:12px;word-break:break-all" x-text="qrResult.decoded"></a>
+                    </template>
+                    <template x-if="!qrResult.is_url">
+                      <span class="mono" style="font-size:12px;word-break:break-all" x-text="qrResult.decoded"></span>
+                    </template>
+                  </td>
+                </tr>
+                <template x-if="qrResult.is_url">
+                  <tr><td class="label-col">Scan URL</td>
+                    <td><button class="btn-export" @click="urlInput=qrResult.decoded;toolMode='urlscan'">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                      Check with URL Scanner
+                    </button></td>
+                  </tr>
+                </template>
+              </table>
+            </template>
+          </div>
+        </template>
+      </div>
+      <div x-show="toolMode==='headers'">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-head">Email Header Analyzer &nbsp;&middot;&nbsp; Paste full email headers below</div>
+          <div style="padding:14px">
+            <textarea x-model="headerText" rows="10"
+              style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border-2);border-radius:var(--radius-sm);color:var(--text-1);font-family:var(--mono);font-size:11px;padding:10px;outline:none;resize:vertical;line-height:1.6"
+              placeholder="Paste raw email headers here (from Gmail: 3-dot menu → Show original)..."
+              @focus="$el.style.borderColor='var(--blue)'"
+              @blur="$el.style.borderColor='var(--border-2)'"></textarea>
+            <button class="btn btn-run" style="width:auto;padding:0 20px;margin-top:10px"
+              :disabled="!headerText.trim()||headerLoading" @click="analyzeHeaders()">
+              <template x-if="headerLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/></svg></template>
+              <span x-text="headerLoading?'Analyzing...':'Analyze Headers'"></span>
+            </button>
+          </div>
+        </div>
+        <template x-if="headerResult">
+          <div class="section-space">
+            <template x-if="headerResult.spoofing_flags && headerResult.spoofing_flags.length">
+              <div class="card">
+                <div class="card-head" style="color:var(--red)">Spoofing / Anomaly Flags</div>
+                <template x-for="f in headerResult.spoofing_flags" :key="f.type">
+                  <div class="finding">
+                    <div><span class="badge HIGH" x-text="f.type"></span></div>
+                    <div><div class="finding-msg" x-text="f.detail"></div></div>
+                  </div>
+                </template>
+              </div>
+            </template>
+            <div class="card">
+              <div class="card-head">Email Metadata</div>
+              <table class="dt">
+                <tr x-show="headerResult.from"><td class="label-col">From</td><td style="font-weight:600" x-text="headerResult.from"></td></tr>
+                <tr x-show="headerResult.to"><td class="label-col">To</td><td x-text="headerResult.to"></td></tr>
+                <tr x-show="headerResult.reply_to"><td class="label-col">Reply-To</td><td style="color:var(--yellow)" x-text="headerResult.reply_to"></td></tr>
+                <tr x-show="headerResult.subject"><td class="label-col">Subject</td><td x-text="headerResult.subject"></td></tr>
+                <tr x-show="headerResult.date"><td class="label-col">Date</td><td class="mono" x-text="headerResult.date"></td></tr>
+                <tr x-show="headerResult.x_mailer"><td class="label-col">Mailer</td><td x-text="headerResult.x_mailer"></td></tr>
+                <tr>
+                  <td class="label-col">SPF</td>
+                  <td><span :style="headerResult.spf==='pass'?'color:var(--green)':headerResult.spf?'color:var(--red)':'color:var(--text-3)'" :class="'badge '+(headerResult.spf==='pass'?'LOW':headerResult.spf?'HIGH':'INFO')" x-text="headerResult.spf||'not found'"></span></td>
+                </tr>
+                <tr>
+                  <td class="label-col">DKIM</td>
+                  <td><span :style="headerResult.dkim==='pass'?'color:var(--green)':headerResult.dkim?'color:var(--red)':'color:var(--text-3)'" :class="'badge '+(headerResult.dkim==='pass'?'LOW':headerResult.dkim?'HIGH':'INFO')" x-text="headerResult.dkim||'not found'"></span></td>
+                </tr>
+                <tr>
+                  <td class="label-col">DMARC</td>
+                  <td><span :style="headerResult.dmarc==='pass'?'color:var(--green)':headerResult.dmarc?'color:var(--red)':'color:var(--text-3)'" :class="'badge '+(headerResult.dmarc==='pass'?'LOW':headerResult.dmarc?'HIGH':'INFO')" x-text="headerResult.dmarc||'not found'"></span></td>
+                </tr>
+              </table>
+            </div>
+            <template x-if="headerResult.origin_ip">
+              <div class="card">
+                <div class="card-head">Origin IP &nbsp;&middot;&nbsp; First external sender</div>
+                <table class="dt">
+                  <tr><td class="label-col">IP Address</td><td class="mono" style="color:var(--blue);font-weight:700" x-text="headerResult.origin_ip"></td></tr>
+                  <tr x-show="headerResult.origin_rdns"><td class="label-col">Reverse DNS</td><td class="mono" x-text="headerResult.origin_rdns"></td></tr>
+                  <tr x-show="headerResult.origin_geo?.country"><td class="label-col">Location</td><td x-text="(headerResult.origin_geo?.city||'')+(headerResult.origin_geo?.region?', '+headerResult.origin_geo.region:'')+(headerResult.origin_geo?.country?', '+headerResult.origin_geo.country:'')"></td></tr>
+                  <tr x-show="headerResult.origin_geo?.org"><td class="label-col">Organization</td><td x-text="headerResult.origin_geo?.org"></td></tr>
+                </table>
+              </div>
+            </template>
+            <template x-if="headerResult.hops && headerResult.hops.length">
+              <div class="card">
+                <div class="card-head">Routing Path &nbsp;&middot;&nbsp; <span x-text="headerResult.hops.length+' hop(s)'"></span></div>
+                <table class="dt">
+                  <thead><tr><th>#</th><th>From</th><th>By</th><th>IP</th><th>Country</th></tr></thead>
+                  <tbody>
+                    <template x-for="(h,i) in headerResult.hops" :key="i">
+                      <tr>
+                        <td class="mono" style="color:var(--text-3);width:30px" x-text="i+1"></td>
+                        <td class="mono" style="font-size:10px" x-text="h.from_host||'—'"></td>
+                        <td class="mono" style="font-size:10px" x-text="h.by_host||'—'"></td>
+                        <td class="mono" style="color:var(--blue)" x-text="h.ip||'—'"></td>
+                        <td style="font-size:11px" x-text="h.geo?.country||''"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <template x-if="scanId && scanStatus!=='idle'">
+    <div>
+
+      <div class="scan-header">
+        <div>
+          <div class="scan-target" x-text="currentScan.target"></div>
+          <div class="scan-meta">
+            <span class="scan-badge" x-text="currentScan.scan_type?.toUpperCase()"></span>
+            <template x-if="currentScan.started_at">
+              <span style="font-size:11px;color:var(--text-3)" x-text="currentScan.started_at?.slice(0,19).replace('T',' ')"></span>
+            </template>
+          </div>
+        </div>
+        <template x-if="scanStatus==='completed'">
+          <div style="display:flex;gap:8px">
+            <a :href="'/api/scan/'+scanId+'/report'" target="_blank" class="btn-export">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              HTML Report
+            </a>
+            <button @click="window.print()" class="btn-export">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print PDF
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <template x-if="opsec">
+        <div class="score-card">
+          <div class="score-num">
+            <div class="score-val" :style="'color:'+opsecColor" x-text="opsec.score"></div>
+            <div class="score-max">/ 100</div>
+            <div class="score-risk" :style="'color:'+opsecColor" x-text="opsec.risk_level+' RISK'"></div>
+          </div>
+          <div class="score-cats">
+            <template x-for="[k,cat] in Object.entries(opsec.categories)" :key="k">
+              <div class="cat-row">
+                <span class="cat-name" x-text="catLabel(k)"></span>
+                <div class="pbar"><div class="pbar-fill" :style="'width:'+cat.percent+'%;background:'+barColor(cat.percent)"></div></div>
+                <span class="cat-score" :style="'color:'+barColor(cat.percent)" x-text="cat.score+'/'+cat.max"></span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <div class="tabs">
+        <template x-for="tab in visibleTabs()" :key="tab.id">
+          <button class="tab" :class="{on:activeTab===tab.id}" @click="activeTab=tab.id">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" x-html="tabIcon(tab.id)"></svg>
+            <span x-text="tab.label"></span>
+          </button>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='findings'">
+        <template x-if="opsec && opsec.all_findings && opsec.all_findings.length>0">
+          <div class="card">
+            <template x-for="f in opsec.all_findings" :key="f.message">
+              <div class="finding">
+                <span class="badge" :class="f.severity" x-text="f.severity"></span>
+                <div>
+                  <div class="finding-msg" x-text="f.message"></div>
+                  <div class="finding-meta" x-text="catLabel(f.category)+' &middot; -'+f.deduction+' pts'"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!opsec || !opsec.all_findings || opsec.all_findings.length===0">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">No security findings recorded.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='whois'">
+        <template x-if="res('whois') && !res('whois').error">
+          <div class="card">
+            <table class="dt">
+              <template x-for="[k,v] in whoisRows()" :key="k">
+                <tr><td class="label-col" x-text="k"></td><td class="mono" x-text="v"></td></tr>
+              </template>
+            </table>
+          </div>
+        </template>
+        <template x-if="!res('whois') || res('whois').error">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px" x-text="res('whois')?.error||'Not available for this scan type'"></div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='dns'">
+        <template x-if="res('dns') && res('dns').records">
+          <div class="section-space">
+            <template x-for="[rtype,records] in Object.entries(res('dns').records)" :key="rtype">
+              <template x-if="records && records.length>0">
+                <div class="card">
+                  <div class="card-head" x-text="rtype"></div>
+                  <template x-for="(r,i) in records" :key="i">
+                    <div style="padding:6px 12px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text-2)" x-text="typeof r==='object'?JSON.stringify(r):r"></div>
+                  </template>
+                </div>
+              </template>
+            </template>
+          </div>
+        </template>
+        <template x-if="!res('dns') || !res('dns').records">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Not available for this scan type.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='subdomains'">
+        <template x-if="res('cert_transparency') && res('cert_transparency').subdomains">
+          <div>
+            <div style="margin-bottom:12px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--blue);font-weight:700" x-text="res('cert_transparency').subdomains.length"></span> subdomains found across
+              <span style="color:var(--text-1);font-weight:600" x-text="res('cert_transparency').total_certs"></span> CT log entries
+            </div>
+            <div class="card">
+              <template x-for="sub in res('cert_transparency').subdomains" :key="sub">
+                <div class="sub-item" x-text="sub"></div>
+              </template>
+            </div>
+          </div>
+        </template>
+        <template x-if="!res('cert_transparency') || !res('cert_transparency').subdomains">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Run a domain scan to discover subdomains via CT logs.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='accounts'">
+        <template x-if="res('blackbird')">
+          <div>
+            <div class="stat-grid">
+              <div class="stat">
+                <div class="stat-val" style="color:var(--green)" x-text="res('blackbird').filter(r=>r.status==='found').length"></div>
+                <div class="stat-lbl">Found</div>
+              </div>
+              <div class="stat">
+                <div class="stat-val" style="color:var(--text-2)" x-text="res('blackbird').length"></div>
+                <div class="stat-lbl">Checked</div>
+              </div>
+            </div>
+            <div class="card">
+              <table class="dt">
+                <thead><tr><th>Platform</th><th>URL</th><th>Status</th><th style="text-align:right">Time</th></tr></thead>
+                <tbody>
+                  <template x-for="r in res('blackbird').sort((a,b)=>(a.status==='found'?0:1)-(b.status==='found'?0:1))" :key="r.site">
+                    <tr x-show="showAllAccounts || r.status==='found'">
+                      <td style="font-weight:600;font-size:12px" x-text="r.site"></td>
+                      <td>
+                        <a x-show="r.status==='found'" :href="r.url" target="_blank" style="font-family:var(--mono);font-size:11px;color:var(--blue);text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" x-text="r.url"></a>
+                        <span x-show="r.status!=='found'" style="color:var(--text-3)">—</span>
+                      </td>
+                      <td><span style="font-family:var(--mono);font-size:10px;font-weight:700" :style="r.status==='found'?'color:var(--green)':r.status==='error'||r.status==='timeout'?'color:var(--red)':'color:var(--text-3)'" x-text="r.status"></span></td>
+                      <td style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--text-3)" x-text="r.response_time?r.response_time.toFixed(2)+'s':'—'"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+              <div style="padding:8px 12px;border-top:1px solid var(--border)">
+                <button @click="showAllAccounts=!showAllAccounts" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:var(--ui)" x-text="showAllAccounts?'Show found only':'Show all results'"></button>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template x-if="!res('blackbird')">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Run a username scan to search across 50+ platforms.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='phone'">
+        <template x-if="res('hlr') && !res('hlr').error">
+          <div class="section-space">
+            <div class="card" style="margin-bottom:10px">
+              <div class="card-head">Phone Intelligence</div>
+              <table class="dt">
+                <tr><td class="label-col">Number</td><td class="mono" style="font-size:13px;font-weight:700" x-text="res('hlr').formatted||res('hlr').phone"></td></tr>
+                <tr><td class="label-col">Status</td><td><span :style="res('hlr').valid?'color:var(--green);font-weight:700':'color:var(--red);font-weight:700'" x-text="res('hlr').valid?'VALID':'INVALID'"></span></td></tr>
+                <tr x-show="res('hlr').line_type"><td class="label-col">Line Type</td><td x-text="res('hlr').line_type"></td></tr>
+                <tr x-show="res('hlr').carrier"><td class="label-col">Carrier</td><td x-text="res('hlr').carrier"></td></tr>
+                <tr x-show="res('hlr').country||res('hlr').country_name"><td class="label-col">Country</td><td x-text="res('hlr').country_name||res('hlr').country"></td></tr>
+                <tr x-show="res('hlr').location||res('hlr').region"><td class="label-col">Region</td><td x-text="res('hlr').location||res('hlr').region"></td></tr>
+                <tr x-show="res('hlr').timezones&&res('hlr').timezones.length"><td class="label-col">Timezone</td><td x-text="(res('hlr').timezones||[]).join(', ')"></td></tr>
+                <tr x-show="res('hlr').country_code"><td class="label-col">Country Code</td><td class="mono" x-text="'+'+res('hlr').formatted?.match(/\+?(\d{1,3})/)?.[1]||res('hlr').country_code"></td></tr>
+              </table>
+            </div>
+            <template x-if="res('phone_owner') && !res('phone_owner').error">
+              <div class="card">
+                <div class="card-head">Owner &amp; Registration Lookup</div>
+                <template x-if="res('phone_owner').names && res('phone_owner').names.length > 0">
+                  <table class="dt">
+                    <tr><td class="label-col">Names Found</td>
+                      <td>
+                        <template x-for="name in res('phone_owner').names" :key="name">
+                          <div style="font-weight:600;color:var(--text-1)" x-text="name"></div>
+                        </template>
+                      </td>
+                    </tr>
+                  </table>
+                </template>
+                <template x-if="!res('phone_owner').names || res('phone_owner').names.length === 0">
+                  <div style="padding:12px;color:var(--text-3);font-size:12px">
+                    No owner name found in public databases. Subscriber identity is protected under telecom law.
+                    Try external lookups:
+                    <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
+                      <a :href="'https://getcontact.com/search/?search='+encodeURIComponent(res('hlr').formatted||res('hlr').phone)" target="_blank" style="color:var(--blue);font-size:11px">GetContact</a>
+                      <a :href="'https://truecaller.com/search/ru/'+encodeURIComponent(res('hlr').formatted||res('hlr').phone)" target="_blank" style="color:var(--blue);font-size:11px">Truecaller</a>
+                      <a :href="'https://kto-zvonil.ru/nomer/'+(res('hlr').formatted||'').replace(/\D/g,'')+'/'" target="_blank" style="color:var(--blue);font-size:11px">Кто звонил</a>
+                      <a :href="'https://zvonili.com/phone/'+(res('hlr').formatted||'').replace(/[+\s]/g,'')+'/'" target="_blank" style="color:var(--blue);font-size:11px">Звонили</a>
+                    </div>
+                  </div>
+                </template>
+                <template x-if="res('phone_owner').comments && res('phone_owner').comments.length > 0">
+                  <div style="border-top:1px solid var(--border)">
+                    <div style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2)">User Comments</div>
+                    <template x-for="(c, i) in res('phone_owner').comments" :key="i">
+                      <div style="padding:8px 12px;border-top:1px solid var(--border);font-size:12px;color:var(--text-2)" x-text="c"></div>
+                    </template>
+                  </div>
+                </template>
+                <template x-if="res('phone_owner').sources && res('phone_owner').sources.length > 0">
+                  <div style="padding:8px 12px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3)">
+                    Sources: <span x-text="res('phone_owner').sources.join(', ')"></span>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!res('hlr') || res('hlr').error">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Run a phone scan to see intelligence data.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='threats'">
+        <div class="section-space">
+
+          <template x-if="res('virustotal') && !res('virustotal').error">
+            <div class="card">
+              <div class="card-head" style="display:flex;align-items:center;gap:7px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                VirusTotal
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)">
+                <div style="padding:14px;text-align:center;border-right:1px solid var(--border)">
+                  <div style="font-size:26px;font-weight:800;color:var(--red)" x-text="res('virustotal').malicious"></div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Malicious</div>
+                </div>
+                <div style="padding:14px;text-align:center;border-right:1px solid var(--border)">
+                  <div style="font-size:26px;font-weight:800;color:var(--yellow)" x-text="res('virustotal').suspicious"></div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Suspicious</div>
+                </div>
+                <div style="padding:14px;text-align:center;border-right:1px solid var(--border)">
+                  <div style="font-size:26px;font-weight:800;color:var(--green)" x-text="res('virustotal').harmless"></div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Harmless</div>
+                </div>
+                <div style="padding:14px;text-align:center">
+                  <div style="font-size:26px;font-weight:800;color:var(--text-2)" x-text="res('virustotal').undetected"></div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Undetected</div>
+                </div>
+              </div>
+              <template x-if="res('virustotal').as_owner">
+                <div style="padding:8px 12px;font-size:11px;color:var(--text-2);font-family:var(--mono)">ASN: <span style="color:var(--text-1)" x-text="res('virustotal').as_owner"></span></div>
+              </template>
+            </div>
+          </template>
+
+          <template x-if="res('abuseipdb') && !res('abuseipdb').error">
+            <div class="card">
+              <div class="card-head" style="display:flex;align-items:center;gap:7px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                AbuseIPDB
+              </div>
+              <div style="padding:14px;display:flex;align-items:center;gap:20px">
+                <div style="text-align:center;flex-shrink:0">
+                  <div style="font-size:36px;font-weight:800;line-height:1" :style="'color:'+barColor(100-res('abuseipdb').abuse_score)" x-text="res('abuseipdb').abuse_score+'%'"></div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Abuse Score</div>
+                </div>
+                <div class="vline"></div>
+                <table class="dt" style="flex:1">
+                  <tr><td class="label-col">Total Reports</td><td x-text="res('abuseipdb').total_reports"></td></tr>
+                  <tr><td class="label-col">ISP</td><td x-text="res('abuseipdb').isp||'N/A'"></td></tr>
+                  <tr><td class="label-col">Usage Type</td><td x-text="res('abuseipdb').usage_type||'N/A'"></td></tr>
+                  <template x-if="res('abuseipdb').is_tor">
+                    <tr><td class="label-col">Flag</td><td style="color:var(--red);font-weight:700">TOR Exit Node</td></tr>
+                  </template>
+                </table>
+              </div>
+            </div>
+          </template>
+
+          <template x-if="res('shodan') && !res('shodan').error">
+            <div class="card">
+              <div class="card-head" style="display:flex;align-items:center;gap:7px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Shodan
+              </div>
+              <div style="padding:14px;display:flex;flex-direction:column;gap:14px">
+                <template x-if="res('shodan').open_ports && res('shodan').open_ports.length>0">
+                  <div>
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-2);margin-bottom:8px">Open Ports</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px">
+                      <template x-for="p in res('shodan').open_ports" :key="p">
+                        <span class="port" :class="[21,22,23,3389,5900,445,3306,5432,27017,6379].includes(p)?'risky':''" x-text="p"></span>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+                <template x-if="res('shodan').vulns && res('shodan').vulns.length>0">
+                  <div>
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--red);margin-bottom:8px">CVEs Detected</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px">
+                      <template x-for="v in res('shodan').vulns" :key="v">
+                        <span class="port cve" x-text="v"></span>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <template x-if="!res('virustotal') && !res('abuseipdb') && !res('shodan')">
+            <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">No threat intelligence data. Run a domain or IP scan.</div>
+          </template>
+        </div>
+      </div>
+
+      <div x-show="activeTab==='wayback'">
+        <template x-if="res('wayback') && !res('wayback').error">
+          <div class="section-space">
+            <div class="stat-grid">
+              <div class="stat"><div class="stat-val" style="color:var(--blue)" x-text="res('wayback').total_snapshots"></div><div class="stat-lbl">Snapshots</div></div>
+              <div class="stat"><div class="stat-val" style="font-size:13px;font-family:var(--mono)" x-text="res('wayback').first_snapshot||'—'"></div><div class="stat-lbl">First Archived</div></div>
+              <div class="stat"><div class="stat-val" style="font-size:13px;font-family:var(--mono)" x-text="res('wayback').last_snapshot||'—'"></div><div class="stat-lbl">Last Archived</div></div>
+            </div>
+            <template x-if="res('wayback').interesting && res('wayback').interesting.length>0">
+              <div class="card" style="border-color:rgba(248,81,73,.2)">
+                <div class="card-head" style="color:var(--red);border-bottom-color:rgba(248,81,73,.15)">Sensitive URLs in Archive</div>
+                <template x-for="url in res('wayback').interesting" :key="url">
+                  <div style="padding:6px 12px;border-bottom:1px solid var(--border)"><a :href="url" target="_blank" class="snap-url" x-text="url"></a></div>
+                </template>
+              </div>
+            </template>
+            <template x-if="res('wayback').snapshots && res('wayback').snapshots.length>0">
+              <div class="card">
+                <div class="card-head">Recent Snapshots</div>
+                <table class="dt">
+                  <thead><tr><th>Date</th><th>URL</th><th style="text-align:right">Size</th></tr></thead>
+                  <tbody>
+                    <template x-for="s in res('wayback').snapshots.slice(0,10)" :key="s.timestamp">
+                      <tr>
+                        <td class="mono" style="width:110px" x-text="s.date"></td>
+                        <td><a :href="s.wayback_url" target="_blank" class="snap-url" x-text="s.wayback_url"></a></td>
+                        <td class="mono" style="text-align:right" x-text="s.size>0?Math.round(s.size/1024)+'KB':''"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!res('wayback') || res('wayback').error">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px" x-text="res('wayback')?.error||'Not available for this scan type'"></div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='dorks'">
+        <div class="card">
+          <div class="card-head">Google Dork Queries &nbsp;&middot;&nbsp; Click to open search</div>
+          <div style="padding:12px">
+            <template x-for="d in generateDorks()" :key="d.label">
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-3);width:110px;flex-shrink:0" x-text="d.label"></span>
+                <a :href="'https://www.google.com/search?q='+encodeURIComponent(d.query)" target="_blank" style="font-family:var(--mono);font-size:11px;color:var(--blue);text-decoration:none;flex:1;word-break:break-all" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" x-text="d.query"></a>
+                <a :href="'https://yandex.ru/search/?text='+encodeURIComponent(d.query)" target="_blank" style="font-size:10px;color:var(--text-3);text-decoration:none;white-space:nowrap">Яндекс</a>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div x-show="activeTab==='ai'">
+        <div class="card" style="margin-bottom:10px">
+          <div class="card-head">AI OSINT Analysis &nbsp;&middot;&nbsp; Powered by Groq (Llama 3)</div>
+          <div style="padding:16px">
+            <template x-if="!scanId||scanStatus!=='completed'">
+              <div style="color:var(--text-3);font-size:12px">Complete a scan first to generate AI analysis.</div>
+            </template>
+            <template x-if="scanId&&scanStatus==='completed'">
+              <div>
+                <button class="btn btn-run" style="width:auto;padding:0 20px;margin-bottom:12px"
+                  :disabled="aiLoading" @click="generateAiSummary()">
+                  <template x-if="aiLoading"><svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/></svg></template>
+                  <span x-text="aiLoading?'Analyzing...':'Generate AI Analysis'"></span>
+                </button>
+                <div x-show="aiError" style="color:var(--red);font-size:12px;margin-bottom:10px">
+                  <span x-text="aiError"></span>
+                  <template x-if="aiError&&aiError.includes('GROQ_API_KEY')">
+                    <span> — Get free key at <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a> and add to .env</span>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <template x-if="aiSummary">
+          <div class="card">
+            <div class="card-head" style="display:flex;align-items:center;justify-content:space-between">
+              <span>Analysis Result &nbsp;&middot;&nbsp; <span style="color:var(--text-3);font-weight:400" x-text="aiModel"></span></span>
+              <button @click="navigator.clipboard.writeText(aiSummary)" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:var(--ui)">Copy</button>
+            </div>
+            <div style="padding:16px;font-size:13px;color:var(--text-1);line-height:1.8;white-space:pre-wrap;font-family:var(--ui)" x-text="aiSummary"></div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='telegram'">
+        <template x-if="res('telegram') && !res('telegram').error">
+          <div class="section-space">
+            <div class="card" style="margin-bottom:10px">
+              <div class="card-head" style="display:flex;align-items:center;gap:8px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Telegram Profile
+              </div>
+              <table class="dt">
+                <tr><td class="label-col">Status</td>
+                  <td><span :style="res('telegram').found?'color:var(--green);font-weight:700':'color:var(--red);font-weight:700'"
+                      x-text="res('telegram').found?'FOUND':'NOT FOUND'"></span></td></tr>
+                <tr x-show="res('telegram').name"><td class="label-col">Name</td>
+                  <td style="font-weight:600;color:var(--text-1)" x-text="res('telegram').name"></td></tr>
+                <tr x-show="res('telegram').username"><td class="label-col">Username</td>
+                  <td><span class="mono" style="color:var(--blue)" x-text="'@'+res('telegram').username"></span>
+                    <a :href="'https://t.me/'+res('telegram').username" target="_blank"
+                       style="margin-left:8px;font-size:11px;color:var(--blue)">Open</a></td></tr>
+                <tr x-show="res('telegram').id"><td class="label-col">ID</td>
+                  <td class="mono" x-text="res('telegram').id"></td></tr>
+                <tr x-show="res('telegram').entity_type"><td class="label-col">Type</td>
+                  <td x-text="res('telegram').entity_type"></td></tr>
+                <tr x-show="res('telegram').subscribers"><td class="label-col">Subscribers</td>
+                  <td style="font-weight:600" x-text="res('telegram').subscribers"></td></tr>
+                <tr x-show="res('telegram').verified"><td class="label-col">Verified</td>
+                  <td style="color:var(--blue);font-weight:700">YES</td></tr>
+                <tr x-show="res('telegram').is_private"><td class="label-col">Privacy</td>
+                  <td style="color:var(--yellow)">Private account</td></tr>
+                <tr x-show="res('telegram').bio"><td class="label-col">Bio</td>
+                  <td style="color:var(--text-2)" x-text="res('telegram').bio"></td></tr>
+              </table>
+            </div>
+            <template x-if="res('telegram').found && res('telegram').url">
+              <div class="card">
+                <div class="card-head">External Lookups</div>
+                <div style="padding:12px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px">
+                  <a :href="res('telegram').url" target="_blank" style="color:var(--blue)">t.me profile</a>
+                  <a :href="'https://fragment.com/username/'+(res('telegram').username||'')" target="_blank" style="color:var(--blue)">Fragment.com</a>
+                  <a :href="'https://tgstat.ru/channel/@'+(res('telegram').username||'')" target="_blank" style="color:var(--blue)">TGStat</a>
+                  <a :href="'https://telemetr.me/@'+(res('telegram').username||'')" target="_blank" style="color:var(--blue)">Telemetr.me</a>
+                </div>
+              </div>
+            </template>
+            <template x-if="res('telegram').error">
+              <div class="card">
+                <div style="padding:12px;color:var(--yellow);font-size:12px" x-text="res('telegram').error"></div>
+                <template x-if="res('telegram').hint">
+                  <div style="padding:0 12px 12px;font-size:11px;color:var(--text-3)" x-text="res('telegram').hint"></div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!res('telegram') || (!res('telegram').found && !res('telegram').error)">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Enter a Telegram username (@user), t.me/link, or numeric ID as target.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='map'">
+        <template x-if="res('geoip') && !res('geoip').error">
+          <div>
+            <div class="card" style="margin-bottom:10px">
+              <table class="dt">
+                <tr><td class="label-col">IP</td><td class="mono" x-text="res('geoip').ip"></td></tr>
+                <tr x-show="res('geoip').city"><td class="label-col">City</td><td x-text="(res('geoip').city||'')+(res('geoip').region?', '+res('geoip').region:'')"></td></tr>
+                <tr><td class="label-col">Country</td><td x-text="res('geoip').country_name||res('geoip').country"></td></tr>
+                <tr x-show="res('geoip').org"><td class="label-col">Organization</td><td x-text="res('geoip').org"></td></tr>
+                <tr x-show="res('geoip').timezone"><td class="label-col">Timezone</td><td x-text="res('geoip').timezone"></td></tr>
+                <tr x-show="res('geoip').loc"><td class="label-col">Coordinates</td><td class="mono" x-text="res('geoip').loc"></td></tr>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-head">Host Location &nbsp;&middot;&nbsp; OpenStreetMap via CARTO Dark</div>
+              <div id="map-container"></div>
+            </div>
+          </div>
+        </template>
+        <template x-if="res('hlr') && !res('hlr').error && !res('geoip')">
+          <div>
+            <div class="card" style="margin-bottom:10px">
+              <table class="dt">
+                <tr><td class="label-col">Number</td><td class="mono" x-text="res('hlr').formatted||res('hlr').phone"></td></tr>
+                <tr><td class="label-col">Status</td>
+                  <td>
+                    <span x-show="res('hlr').valid" style="color:var(--green);font-weight:700">VALID</span>
+                    <span x-show="!res('hlr').valid" style="color:var(--red);font-weight:700">INVALID</span>
+                  </td>
+                </tr>
+                <tr x-show="res('hlr').line_type"><td class="label-col">Line Type</td><td x-text="res('hlr').line_type"></td></tr>
+                <tr x-show="res('hlr').carrier"><td class="label-col">Carrier</td><td x-text="res('hlr').carrier"></td></tr>
+                <tr x-show="res('hlr').country||res('hlr').country_name"><td class="label-col">Country</td><td x-text="res('hlr').country_name||res('hlr').country"></td></tr>
+                <tr x-show="res('hlr').location||res('hlr').region"><td class="label-col">Region</td><td x-text="res('hlr').location||res('hlr').region"></td></tr>
+                <tr x-show="res('hlr').timezones&&res('hlr').timezones.length"><td class="label-col">Timezone</td><td x-text="(res('hlr').timezones||[]).join(', ')"></td></tr>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-head">Registration Country &nbsp;&middot;&nbsp; Country-level precision &nbsp;&middot;&nbsp; OpenStreetMap via CARTO Dark</div>
+              <div id="map-container"></div>
+            </div>
+          </div>
+        </template>
+        <template x-if="(!res('geoip') || res('geoip').error) && (!res('hlr') || res('hlr').error)">
+          <div style="text-align:center;padding:60px;color:var(--text-3);font-size:12px">Location data not available for this scan type.</div>
+        </template>
+      </div>
+
+      <div x-show="activeTab==='graph'">
+        <div class="card">
+          <div class="card-head">Entity Relationship Graph &nbsp;&middot;&nbsp; Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Click node for info</div>
+          <div id="graph-container"></div>
+        </div>
+      </div>
+
+      <div x-show="activeTab==='raw'">
+        <div class="card">
+          <div class="card-head" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Raw JSON</span>
+            <button @click="copyRaw()" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:var(--ui)">Copy</button>
+          </div>
+          <pre class="raw-pre" x-text="rawJson"></pre>
+        </div>
+      </div>
+
+    </div>
+  </template>
+
+</main>
+</div>
+</div>
+
+<script>
+function osint() {
+  return {
+    target: '',
+    selectedModules: [],
+    scanId: null,
+    scanStatus: 'idle',
+    currentScan: {},
+    progressLog: [],
+    pastScans: [],
+    activeTab: 'findings',
+    showAllAccounts: false,
+    opsec: null,
+    rawJson: '',
+    toolMode: null,
+    graphNetwork: null,
+    leafletMap: null,
+    metaLeafletMap: null,
+    graphData: null,
+    mapData: null,
+    metaFile: null,
+    metaResult: null,
+    metaLoading: false,
+    headerText: '',
+    headerResult: null,
+    headerLoading: false,
+    urlInput: '',
+    urlResult: null,
+    urlLoading: false,
+    cryptoInput: '',
+    cryptoResult: null,
+    cryptoLoading: false,
+    darkwebInput: '',
+    darkwebResult: null,
+    darkwebLoading: false,
+    qrFile: null,
+    qrResult: null,
+    qrLoading: false,
+    aiSummary: '',
+    aiLoading: false,
+    aiError: '',
+    aiModel: '',
+
+    ALL_MODULES: [
+      {id:'whois',label:'WHOIS',types:['domain']},
+      {id:'dns',label:'DNS',types:['domain']},
+      {id:'geoip',label:'GeoIP',types:['domain','ip']},
+      {id:'cert_transparency',label:'Cert CT',types:['domain']},
+      {id:'website',label:'Website',types:['domain']},
+      {id:'wayback',label:'Wayback',types:['domain']},
+      {id:'emailrep',label:'EmailRep',types:['email']},
+      {id:'shodan',label:'Shodan',types:['domain','ip']},
+      {id:'virustotal',label:'VirusTotal',types:['domain','ip']},
+      {id:'abuseipdb',label:'AbuseIPDB',types:['ip']},
+      {id:'smtp',label:'SMTP',types:['email']},
+      {id:'leaks',label:'Leaks',types:['email']},
+      {id:'blackbird',label:'Blackbird',types:['username']},
+      {id:'maigret',label:'Maigret',types:['username']},
+      {id:'hlr',label:'HLR',types:['phone']},
+    ],
+
+    CAT_LABELS: {
+      data_exposure: 'Data Exposure',
+      identity_opsec: 'Identity OPSEC',
+      infrastructure: 'Infrastructure',
+      web_security: 'Web Security',
+    },
+
+    TABS: [
+      {id:'findings', label:'Findings'},
+      {id:'whois',    label:'WHOIS',      keys:['whois']},
+      {id:'dns',      label:'DNS',        keys:['dns']},
+      {id:'subdomains',label:'Subdomains',keys:['cert_transparency']},
+      {id:'accounts', label:'Accounts',   keys:['blackbird']},
+      {id:'threats',  label:'Threats',    keys:['virustotal','abuseipdb','shodan']},
+      {id:'wayback',  label:'Wayback',    keys:['wayback']},
+      {id:'dorks',    label:'Dorks',      keys:['dns','whois']},
+      {id:'phone',    label:'Phone',      keys:['hlr']},
+      {id:'telegram',  label:'Telegram',   keys:['telegram']},
+      {id:'map',     label:'Map',        keys:['geoip','hlr']},
+      {id:'graph',    label:'Graph',      keys:[]},
+      {id:'raw',      label:'JSON',       keys:[]},
+      {id:'ai',       label:'AI',         keys:[]},
+    ],
+
+    TAB_ICONS: {
+      findings:   '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+      whois:      '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+      dns:        '<path d="M4 6h16M4 12h16M4 18h16"/>',
+      subdomains: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+      accounts:   '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      threats:    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      wayback:    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      dorks:      '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+      metadata:   '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+      ai:         '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/>',
+      phone:      '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.86-1.86a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+      telegram:   '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+      map:        '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="12" y1="2" x2="12" y2="22"/>',
+      graph:      '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+      raw:        '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    },
+
+    init() {
+      this.fetchPastScans();
+      this.$watch('activeTab', val => {
+        if (val === 'graph' && this.graphData) this.$nextTick(() => this.renderGraph(this.graphData));
+        if (val === 'map'   && this.mapData)   this.$nextTick(() => this.renderMap(this.mapData));
+      });
+    },
+
+    tabIcon(id) { return this.TAB_ICONS[id] || ''; },
+
+    detectedType() {
+      const t = this.target.trim();
+      if (!t) return '—';
+      if (t.includes('@')) return 'email';
+      const d = t.replace(/[+\-\s]/g, '');
+      if (/^\d+$/.test(d)) return 'phone';
+      if (t.includes('.')) {
+        const s = t.split('.');
+        if (s.length === 4 && s.every(x => /^\d+$/.test(x))) return 'ip';
+        return 'domain';
+      }
+      return 'username';
+    },
+
+    availableModules() {
+      const t = this.detectedType();
+      return this.ALL_MODULES.filter(m => m.types.includes(t) || t === '—');
+    },
+
+    toggleModule(id) {
+      const i = this.selectedModules.indexOf(id);
+      if (i >= 0) this.selectedModules.splice(i, 1);
+      else this.selectedModules.push(id);
+    },
+
+    toggleAllModules() {
+      this.selectedModules = this.selectedModules.length === 0
+        ? this.availableModules().map(m => m.id)
+        : [];
+    },
+
+    async startScan() {
+      if (!this.target.trim() || this.scanStatus === 'running') return;
+      this.scanStatus = 'running';
+      this.progressLog = [];
+      this.opsec = null;
+      this.rawJson = '';
+      this.activeTab = 'findings';
+      this.showAllAccounts = false;
+      if (this.graphNetwork) { this.graphNetwork.destroy(); this.graphNetwork = null; }
+
+      const r = await fetch('/api/scan', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({target: this.target.trim(), scan_type: 'auto', modules: this.selectedModules})
+      });
+      const data = await r.json();
+      if (data.error) { this.scanStatus = 'error'; return; }
+      this.scanId = data.scan_id;
+      this.currentScan = {target: this.target.trim(), scan_type: data.scan_type, started_at: new Date().toISOString()};
+      this.connectWS(data.scan_id);
+    },
+
+    connectWS(scanId) {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      const ws = new WebSocket(`${proto}://${location.host}/ws/${scanId}`);
+      ws.onmessage = evt => {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'module_start') {
+          this.progressLog.push({module: msg.module, status: 'running'});
+        } else if (msg.type === 'module_done') {
+          const e = this.progressLog.find(x => x.module === msg.module && x.status === 'running');
+          if (e) e.status = msg.status;
+        } else if (msg.type === 'scan_complete') {
+          this.onScanComplete(scanId);
+        } else if (msg.type === 'scan_error') {
+          this.scanStatus = 'error';
+        }
+      };
+    },
+
+    async onScanComplete(scanId) {
+      const r = await fetch(`/api/scan/${scanId}`);
+      const data = await r.json();
+      this.currentScan = data;
+      this.scanStatus = 'completed';
+      this.opsec = data.results?.opsec_score || null;
+      this.rawJson = JSON.stringify(data.results, null, 2);
+      this.fetchPastScans();
+      this.loadGraph(scanId);
+    },
+
+    async loadScan(scanId) {
+      this.scanId = scanId;
+      this.scanStatus = 'completed';
+      const r = await fetch(`/api/scan/${scanId}`);
+      const data = await r.json();
+      this.currentScan = data;
+      this.opsec = data.results?.opsec_score || null;
+      this.rawJson = JSON.stringify(data.results, null, 2);
+      this.activeTab = 'findings';
+      this.loadGraph(scanId);
+    },
+
+    async loadGraph(scanId) {
+      await this.$nextTick();
+      const [graphR, mapR] = await Promise.all([
+        fetch(`/api/scan/${scanId}/graph`),
+        fetch(`/api/scan/${scanId}/map`),
+      ]);
+      this.graphData = await graphR.json();
+      this.mapData   = await mapR.json();
+      if (this.activeTab === 'graph') this.renderGraph(this.graphData);
+      if (this.activeTab === 'map')   this.renderMap(this.mapData);
+    },
+
+    renderGraph(graph) {
+      const container = document.getElementById('graph-container');
+      if (!container || !graph.nodes || !graph.nodes.length) return;
+      const nodes = new vis.DataSet(graph.nodes.map(n => ({
+        id: n.id, label: n.label, title: n.title,
+        color: {background: n.color + '14', border: n.color, highlight: {background: n.color + '28', border: n.color}},
+        font: {color: '#8b949e', size: 11, face: "'Cascadia Code',monospace"},
+        shape: n.shape, size: n.type === 'target' ? 22 : 13,
+      })));
+      const edges = new vis.DataSet(graph.edges.map((e, i) => ({
+        id: i, from: e.from, to: e.to, label: e.label,
+        color: {color: e.color, opacity: .6},
+        dashes: e.dashes,
+        font: {color: '#3d4450', size: 10, align: 'middle'},
+        arrows: {to: {enabled: true, scaleFactor: .4}},
+      })));
+      if (this.graphNetwork) this.graphNetwork.destroy();
+      this.graphNetwork = new vis.Network(container, {nodes, edges}, {
+        physics: {
+          enabled: true,
+          stabilization: {iterations: 80},
+          barnesHut: {gravitationalConstant: -5000, springLength: 130},
+        },
+        interaction: {hover: true, tooltipDelay: 200},
+      });
+    },
+
+    renderMap(data) {
+      const container = document.getElementById('map-container');
+      if (!container) return;
+      if (this.leafletMap) { this.leafletMap.remove(); this.leafletMap = null; }
+
+      const markers = data.markers || [];
+      const center = data.center || null;
+
+      const defaultZoom = data.zoom || (center ? 9 : 2);
+      const map = L.map('map-container', {
+        center: center ? [center.lat, center.lng] : [20, 0],
+        zoom: defaultZoom,
+      });
+      this.leafletMap = map;
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://carto.com/" style="color:var(--blue)">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+      }).addTo(map);
+
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:12px;height:12px;background:#2f81f7;border:2px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(47,129,247,.7)"></div>`,
+        iconSize: [12, 12],
+        iconAnchor: [6, 6],
+        popupAnchor: [0, -8],
+      });
+
+      markers.forEach(m => {
+        const rows = [
+          m.city ? `<div class="map-popup-row">${m.city}${m.region ? ', ' + m.region : ''} &mdash; <span>${m.country || ''}</span></div>` : (m.country ? `<div class="map-popup-row">Country &nbsp;<span>${m.country}</span></div>` : ''),
+          m.type==='phone' && m.valid!==undefined ? `<div class="map-popup-row">Status &nbsp;<span style="color:${m.valid?'var(--green)':'var(--red)'}">${m.valid?'VALID':'INVALID'}</span></div>` : '',
+          m.type==='phone' && m.line_type ? `<div class="map-popup-row">Type &nbsp;<span>${m.line_type}</span></div>` : '',
+          m.org  ? `<div class="map-popup-row">${m.type==='phone'?'Carrier':'Org'} &nbsp;<span>${m.org}</span></div>` : '',
+          m.timezone ? `<div class="map-popup-row">TZ &nbsp;<span>${m.timezone}</span></div>` : '',
+        ].join('');
+        L.marker([m.lat, m.lng], {icon})
+          .addTo(map)
+          .bindPopup(`<div class="map-popup-ip">${m.ip || m.label}</div>${rows}`);
+      });
+
+      if (markers.length > 1) {
+        map.fitBounds(markers.map(m => [m.lat, m.lng]), {padding: [40, 40]});
+      }
+    },
+
+    generateDorks() {
+      const t = this.currentScan?.target || '';
+      if (!t) return [];
+      const domain = t.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      return [
+        {label:'Site index',      query:`site:${domain}`},
+        {label:'Login pages',     query:`site:${domain} inurl:login OR inurl:admin OR inurl:signin`},
+        {label:'Config files',    query:`site:${domain} ext:xml OR ext:conf OR ext:json OR ext:yml`},
+        {label:'Exposed files',   query:`site:${domain} ext:pdf OR ext:doc OR ext:xls OR ext:csv`},
+        {label:'Backup files',    query:`site:${domain} ext:bak OR ext:sql OR ext:tar OR ext:zip`},
+        {label:'DB errors',       query:`site:${domain} "sql syntax" OR "mysql_fetch" OR "ORA-" OR "ODBC"`},
+        {label:'Exposed dirs',    query:`site:${domain} intitle:"index of"`},
+        {label:'Git exposed',     query:`site:${domain} inurl:.git`},
+        {label:'phpMyAdmin',      query:`site:${domain} inurl:phpmyadmin`},
+        {label:'Credentials',     query:`"${domain}" "password" OR "username" OR "credentials" filetype:txt OR filetype:log`},
+        {label:'Pastebin leaks',  query:`site:pastebin.com "${domain}"`},
+        {label:'GitHub leaks',    query:`site:github.com "${domain}" password OR secret OR api_key`},
+        {label:'Subdomains',      query:`site:*.${domain} -site:${domain}`},
+        {label:'Camera/IoT',      query:`site:${domain} inurl:view/view.shtml OR inurl:axis-cgi`},
+        {label:'Wayback info',    query:`site:web.archive.org "${domain}"`},
+        {label:'Email harvest',   query:`"@${domain}" email filetype:txt OR filetype:csv`},
+        {label:'LinkedIn people', query:`site:linkedin.com/in "${domain}"`},
+        {label:'CVE mentions',    query:`"${domain}" CVE OR vulnerability OR exploit`},
+      ];
+    },
+
+    async uploadMeta() {
+      if (!this.metaFile) return;
+      this.metaLoading = true;
+      this.metaResult = null;
+      try {
+        const fd = new FormData();
+        fd.append('file', this.metaFile);
+        const r = await fetch('/api/metadata', {method: 'POST', body: fd});
+        this.metaResult = await r.json();
+        if (this.metaResult.gps) {
+          this.$nextTick(() => this.renderMetaMap(this.metaResult.gps));
+        }
+      } catch(e) {
+        this.metaResult = {error: e.message};
+      } finally {
+        this.metaLoading = false;
+      }
+    },
+
+    renderMetaMap(gps) {
+      const container = document.getElementById('meta-map-container');
+      if (!container || !gps) return;
+      if (this.metaLeafletMap) { this.metaLeafletMap.remove(); this.metaLeafletMap = null; }
+      const map = L.map('meta-map-container', {center: [gps.lat, gps.lng], zoom: 15});
+      this.metaLeafletMap = map;
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd', maxZoom: 19,
+      }).addTo(map);
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;background:#d29922;border:2px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(210,153,34,.8)"></div>`,
+        iconSize: [14,14], iconAnchor: [7,7], popupAnchor: [0,-8],
+      });
+      L.marker([gps.lat, gps.lng], {icon}).addTo(map)
+        .bindPopup(`<div class="map-popup-ip">${gps.lat}, ${gps.lng}</div>${gps.altitude ? `<div class="map-popup-row">Altitude <span>${Math.round(gps.altitude)}m</span></div>` : ''}${gps.gps_time ? `<div class="map-popup-row">GPS Time <span>${gps.gps_time}</span></div>` : ''}`)
+        .openPopup();
+    },
+
+    async scanUrl() {
+      this.urlLoading = true;
+      this.urlResult = null;
+      try {
+        const r = await fetch('/api/url-scan', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({url: this.urlInput}),
+        });
+        this.urlResult = await r.json();
+      } catch(e) {
+        this.urlResult = {error: e.message};
+      } finally {
+        this.urlLoading = false;
+      }
+    },
+
+    async lookupCrypto() {
+      this.cryptoLoading = true;
+      this.cryptoResult = null;
+      try {
+        const r = await fetch('/api/crypto', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({address: this.cryptoInput}),
+        });
+        this.cryptoResult = await r.json();
+      } catch(e) {
+        this.cryptoResult = {error: e.message};
+      } finally {
+        this.cryptoLoading = false;
+      }
+    },
+
+    async searchDarkweb() {
+      this.darkwebLoading = true;
+      this.darkwebResult = null;
+      try {
+        const r = await fetch('/api/darkweb', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({query: this.darkwebInput}),
+        });
+        this.darkwebResult = await r.json();
+      } catch(e) {
+        this.darkwebResult = {error: e.message};
+      } finally {
+        this.darkwebLoading = false;
+      }
+    },
+
+    async decodeQr() {
+      this.qrLoading = true;
+      this.qrResult = null;
+      try {
+        const fd = new FormData();
+        fd.append('file', this.qrFile);
+        const r = await fetch('/api/qr-decode', {method: 'POST', body: fd});
+        this.qrResult = await r.json();
+      } catch(e) {
+        this.qrResult = {error: e.message};
+      } finally {
+        this.qrLoading = false;
+      }
+    },
+
+    async analyzeHeaders() {
+      this.headerLoading = true;
+      this.headerResult = null;
+      try {
+        const r = await fetch('/api/email-headers', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({headers: this.headerText}),
+        });
+        this.headerResult = await r.json();
+      } catch(e) {
+        this.headerResult = {error: e.message};
+      } finally {
+        this.headerLoading = false;
+      }
+    },
+
+    async generateAiSummary() {
+      this.aiLoading = true;
+      this.aiError = '';
+      this.aiSummary = '';
+      try {
+        const r = await fetch('/api/ai/summary', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({scan_id: this.scanId}),
+        });
+        const data = await r.json();
+        if (data.error) { this.aiError = data.error; }
+        else { this.aiSummary = data.summary; this.aiModel = data.model; }
+      } catch(e) {
+        this.aiError = e.message;
+      } finally {
+        this.aiLoading = false;
+      }
+    },
+
+    async fetchPastScans() {
+      const r = await fetch('/api/scans');
+      this.pastScans = await r.json();
+    },
+
+    res(key) { return this.currentScan?.results?.[key] || null; },
+
+    visibleTabs() {
+      const r = this.currentScan?.results || {};
+      return this.TABS.filter(t => !t.keys || t.keys.length === 0 || t.keys.some(k => r[k]));
+    },
+
+    whoisRows() {
+      const w = this.res('whois');
+      if (!w) return [];
+      return [
+        ['Registrar',    w.registrar],
+        ['Organization', w.org],
+        ['Country',      w.country],
+        ['Created',      w.creation_date?.slice?.(0, 10)],
+        ['Expires',      w.expiration_date?.slice?.(0, 10)],
+        ['Updated',      w.updated_date?.slice?.(0, 10)],
+        ['Emails',       (w.emails || []).join(', ')],
+        ['Name Servers', (w.name_servers || []).slice(0, 4).join(', ')],
+      ].filter(([, v]) => v);
+    },
+
+    get opsecColor() {
+      if (!this.opsec) return 'var(--text-3)';
+      return this.barColor(this.opsec.score);
+    },
+
+    barColor(pct) {
+      if (pct >= 71) return 'var(--green)';
+      if (pct >= 51) return 'var(--yellow)';
+      return 'var(--red)';
+    },
+
+    catLabel(key) { return this.CAT_LABELS[key] || key; },
+
+    copyRaw() { navigator.clipboard.writeText(this.rawJson).then(() => alert('Copied')); },
+  };
+}
+</script>
+</body>
+</html>
