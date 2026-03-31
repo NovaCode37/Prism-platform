@@ -1,13 +1,18 @@
 import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult } from './types';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
+
+function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  return API_KEY ? { 'X-API-Key': API_KEY, ...extra } : extra;
+}
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   let r: Response;
   try {
     r = await fetch(`${API}${path}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body),
     });
   } catch (e) {
@@ -31,7 +36,7 @@ export async function startScan(target: string, scan_type: ScanType, modules: st
 }
 
 export async function getScan(id: string): Promise<ScanMeta & { results: ScanResults }> {
-  const r = await fetch(`${API}/api/scan/${id}`);
+  const r = await fetch(`${API}/api/scan/${id}`, { headers: authHeaders() });
   return r.json();
 }
 
@@ -50,7 +55,7 @@ export async function searchDarkweb(query: string): Promise<DarkWebResult> {
 export async function decodeQr(file: File): Promise<QrResult> {
   const fd = new FormData();
   fd.append('file', file);
-  const r = await fetch(`${API}/api/qr-decode`, { method: 'POST', body: fd });
+  const r = await fetch(`${API}/api/qr-decode`, { method: 'POST', headers: authHeaders(), body: fd });
   return r.json();
 }
 
@@ -61,7 +66,7 @@ export async function analyzeHeaders(headers: string): Promise<HeaderAnalysisRes
 export async function extractMetadata(file: File): Promise<MetaResult> {
   const fd = new FormData();
   fd.append('file', file);
-  const r = await fetch(`${API}/api/metadata`, { method: 'POST', body: fd });
+  const r = await fetch(`${API}/api/metadata`, { method: 'POST', headers: authHeaders(), body: fd });
   return r.json();
 }
 

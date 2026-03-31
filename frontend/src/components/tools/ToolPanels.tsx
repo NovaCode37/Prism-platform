@@ -34,7 +34,7 @@ function Row({ label, value }: { label: string; value?: string | number | null }
   if (!value && value !== 0) return null;
   return (
     <div className="flex gap-3 text-[12px] py-1 border-b border-border-1 last:border-0">
-      <span className="text-text-3 w-36 shrink-0">{label}</span>
+      <span className="text-text-3 w-36 shrink-0 truncate" title={label}>{label}</span>
       <span className="text-text-1 font-mono break-all">{String(value)}</span>
     </div>
   );
@@ -215,7 +215,24 @@ function MetadataPanel() {
                 <Row label="Filename" value={result.filename} />
                 <Row label="Type" value={result.file_type} />
                 <Row label="Size" value={result.file_size ? `${(result.file_size / 1024).toFixed(1)} KB` : undefined} />
+                <Row label="Dimensions" value={result.dimensions ? `${result.dimensions.width} × ${result.dimensions.height} px` : undefined} />
+                <Row label="Author / Copyright" value={result.author} />
+                <Row label="Software" value={result.software} />
               </Card>
+              {result.timestamps && Object.keys(result.timestamps).length > 0 && (
+                <Card title="Timestamps">
+                  {Object.entries(result.timestamps).map(([k, v]) => (
+                    <Row key={k} label={k} value={v} />
+                  ))}
+                </Card>
+              )}
+              {result.camera && Object.keys(result.camera).length > 0 && (
+                <Card title="Camera">
+                  {Object.entries(result.camera).map(([k, v]) => (
+                    <Row key={k} label={k} value={v} />
+                  ))}
+                </Card>
+              )}
               {result.gps && (
                 <Card title="GPS Location">
                   <Row label="Latitude" value={result.gps.lat} />
@@ -229,8 +246,8 @@ function MetadataPanel() {
                 </Card>
               )}
               {result.exif && Object.keys(result.exif).length > 0 && (
-                <Card title="EXIF Data">
-                  {Object.entries(result.exif).slice(0, 20).map(([k, v]) => (
+                <Card title="EXIF / XMP Data">
+                  {Object.entries(result.exif).slice(0, 30).map(([k, v]) => (
                     <Row key={k} label={k} value={String(v)} />
                   ))}
                 </Card>

@@ -210,6 +210,11 @@ export interface MetaResult {
   filename?: string;
   file_type?: string;
   file_size?: number;
+  dimensions?: { width: number; height: number } | null;
+  author?: string | null;
+  software?: string | null;
+  timestamps?: Record<string, string>;
+  camera?: Record<string, string>;
   basic?: Record<string, unknown>;
   exif?: Record<string, unknown>;
   gps?: { lat: number; lng: number; altitude?: number; gps_time?: string } | null;

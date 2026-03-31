@@ -1,13 +1,154 @@
 import os
 import re
 import struct
+import xml.etree.ElementTree as ET
 from typing import Dict, Any, Optional
 from datetime import datetime
 
 
+def _extract_xmp(file_path: str) -> Optional[str]:
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+        marker = b"http://ns.adobe.com/xap/1.0/"
+        idx = data.find(marker)
+        if idx == -1:
+            return None
+        start = data.find(b"<", idx)
+        if start == -1:
+            return None
+        end = data.find(b"</x:xmpmeta>", start)
+        if end != -1:
+            end += len(b"</x:xmpmeta>")
+        else:
+            end = data.find(b"<?xpacket end", start)
+            if end != -1:
+                end = data.find(b">", end) + 1
+        return data[start:end].decode("utf-8", errors="ignore") if end > start else None
+    except Exception:
+        return None
+
+
+def _xmp_frac(s: str) -> Optional[float]:
+    s = s.strip()
+    try:
+        if "/" in s:
+            n, d = s.split("/", 1)
+            return float(n) / float(d) if float(d) else None
+        return float(s)
+    except Exception:
+        return None
+
+
+def _parse_xmp_coord(raw: str) -> Optional[float]:
+    raw = raw.strip()
+    ref = None
+    if raw and raw[-1] in "NSEWnsew":
+        ref = raw[-1].upper()
+        raw = raw[:-1].strip()
+    parts = re.split(r"[,\s]+", raw)
+    try:
+        vals = [_xmp_frac(p) for p in parts if p]
+        vals = [v for v in vals if v is not None]
+        d = vals[0] if len(vals) > 0 else 0.0
+        m = vals[1] if len(vals) > 1 else 0.0
+        s = vals[2] if len(vals) > 2 else 0.0
+        dec = d + m / 60 + s / 3600
+        if ref in ("S", "W"):
+            dec = -dec
+        return round(dec, 6)
+    except Exception:
+        return None
+
+
+def _parse_xmp_metadata(xmp_str: str) -> Dict[str, Any]:
+    result: Dict[str, Any] = {"raw_exif": {}, "gps": None, "author": None, "software": None, "timestamps": {}}
+    try:
+        root = ET.fromstring(xmp_str)
+
+        NS = {
+            "rdf":       "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "exif":      "http://ns.adobe.com/exif/1.0/",
+            "tiff":      "http://ns.adobe.com/tiff/1.0/",
+            "xmp":       "http://ns.adobe.com/xap/1.0/",
+            "dc":        "http://purl.org/dc/elements/1.1/",
+            "photoshop": "http://ns.adobe.com/photoshop/1.0/",
+            "Iptc4xmpCore": "http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/",
+        }
+        BRACE = {f"{{{v}}}": k for k, v in NS.items()}
+        RDF_NS = NS["rdf"]
+
+        def resolve(tag: str) -> Optional[str]:
+            for brace, prefix in BRACE.items():
+                if tag.startswith(brace):
+                    return f"{prefix}:{tag[len(brace):]}"
+            return None
+
+        clean: Dict[str, str] = {}
+
+        for desc in root.iter(f"{{{RDF_NS}}}Description"):
+            for attr, val in desc.attrib.items():
+                if attr == f"{{{RDF_NS}}}about" or not val:
+                    continue
+                r = resolve(attr)
+                if r and not r.startswith("rdf:"):
+                    clean[r] = val
+
+            for child in desc:
+                r = resolve(child.tag)
+                if not r or r.startswith("rdf:"):
+                    continue
+                if child.text and child.text.strip():
+                    clean[r] = child.text.strip()
+                else:
+                    for li in child.iter(f"{{{RDF_NS}}}li"):
+                        if li.text and li.text.strip():
+                            clean[r] = li.text.strip()
+                            break
+
+        result["raw_exif"] = clean
+
+        lat_raw = clean.get("exif:GPSLatitude")
+        lon_raw = clean.get("exif:GPSLongitude")
+        if lat_raw and lon_raw:
+            lat = _parse_xmp_coord(lat_raw)
+            lng = _parse_xmp_coord(lon_raw)
+            if lat is not None and lng is not None:
+                result["gps"] = {"lat": lat, "lng": lng}
+
+        result["author"] = (
+            clean.get("dc:rights")
+            or clean.get("exif:Copyright")
+            or clean.get("dc:creator")
+            or clean.get("photoshop:Credit")
+        )
+        result["software"] = clean.get("xmp:CreatorTool") or clean.get("tiff:Software")
+
+        for field in ("exif:DateTimeOriginal", "xmp:CreateDate", "xmp:ModifyDate"):
+            if clean.get(field):
+                result["timestamps"][field.split(":")[-1]] = clean[field]
+
+    except Exception:
+        pass
+    return result
+
+
+def _to_float(val) -> Optional[float]:
+    try:
+        if hasattr(val, 'numerator'):
+            return val.numerator / val.denominator if val.denominator else None
+        return float(val)
+    except Exception:
+        return None
+
+
 def _dms_to_decimal(dms_tuple, ref: str) -> Optional[float]:
     try:
-        d, m, s = float(dms_tuple[0]), float(dms_tuple[1]), float(dms_tuple[2])
+        d = _to_float(dms_tuple[0])
+        m = _to_float(dms_tuple[1])
+        s = _to_float(dms_tuple[2])
+        if None in (d, m, s):
+            return None
         decimal = d + m / 60 + s / 3600
         if ref in ("S", "W"):
             decimal = -decimal
@@ -16,21 +157,35 @@ def _dms_to_decimal(dms_tuple, ref: str) -> Optional[float]:
         return None
 
 
-def _parse_exif_gps(gps_info: Dict) -> Optional[Dict]:
+def _parse_exif_gps(gps_ifd: Dict) -> Optional[Dict]:
     try:
-        lat = _dms_to_decimal(gps_info[2], gps_info[1])
-        lng = _dms_to_decimal(gps_info[4], gps_info[3])
-        if lat is not None and lng is not None:
-            result = {"lat": lat, "lng": lng}
-            if 6 in gps_info:
-                result["altitude"] = float(gps_info[6])
-            if 7 in gps_info:
-                h, m, s = gps_info[7]
-                result["gps_time"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d} UTC"
-            return result
+        from PIL.ExifTags import GPSTAGS
+        named = {GPSTAGS.get(k, k): v for k, v in gps_ifd.items()}
+
+        lat_ref = named.get("GPSLatitudeRef") or gps_ifd.get(1)
+        lat_dms = named.get("GPSLatitude") or gps_ifd.get(2)
+        lon_ref = named.get("GPSLongitudeRef") or gps_ifd.get(3)
+        lon_dms = named.get("GPSLongitude") or gps_ifd.get(4)
+
+        if not (lat_dms and lon_dms and lat_ref and lon_ref):
+            return None
+
+        lat = _dms_to_decimal(lat_dms, str(lat_ref))
+        lng = _dms_to_decimal(lon_dms, str(lon_ref))
+        if lat is None or lng is None:
+            return None
+
+        result: Dict = {"lat": lat, "lng": lng}
+
+        alt_val = named.get("GPSAltitude") or gps_ifd.get(6)
+        if alt_val is not None:
+            alt = _to_float(alt_val)
+            if alt is not None:
+                result["altitude"] = round(alt, 1)
+
+        return result
     except Exception:
-        pass
-    return None
+        return None
 
 
 def extract_image_metadata(file_path: str) -> Dict[str, Any]:
@@ -58,52 +213,63 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
             result["format"] = img.format
             result["dimensions"] = {"width": img.width, "height": img.height}
 
-            exif_data = img._getexif() if hasattr(img, "_getexif") else None
-            if not exif_data:
-                return result
+            exif = img.getexif()
 
-            decoded = {}
-            gps_raw = {}
-            for tag_id, value in exif_data.items():
-                tag = TAGS.get(tag_id, str(tag_id))
-                if tag == "GPSInfo":
-                    for gps_tag_id, gps_val in value.items():
-                        gps_tag = GPSTAGS.get(gps_tag_id, str(gps_tag_id))
-                        gps_raw[gps_tag] = gps_val
-                    result["gps"] = _parse_exif_gps(value)
-                else:
+            if exif:
+                decoded = {}
+                for tag_id, value in exif.items():
+                    tag = TAGS.get(tag_id, str(tag_id))
                     try:
                         decoded[tag] = str(value) if not isinstance(value, (int, float, str)) else value
                     except Exception:
                         pass
 
-            result["raw_exif"] = decoded
+                gps_ifd = exif.get_ifd(0x8825)
+                if gps_ifd:
+                    result["gps"] = _parse_exif_gps(gps_ifd)
 
-            cam = {}
-            if decoded.get("Make"):
-                cam["make"] = str(decoded["Make"]).strip()
-            if decoded.get("Model"):
-                cam["model"] = str(decoded["Model"]).strip()
-            if decoded.get("LensModel"):
-                cam["lens"] = str(decoded["LensModel"]).strip()
-            if decoded.get("FocalLength"):
-                cam["focal_length"] = str(decoded["FocalLength"])
-            if decoded.get("ExposureTime"):
-                cam["exposure"] = str(decoded["ExposureTime"])
-            if decoded.get("FNumber"):
-                cam["aperture"] = f"f/{decoded['FNumber']}"
-            if decoded.get("ISOSpeedRatings"):
-                cam["iso"] = str(decoded["ISOSpeedRatings"])
-            result["camera"] = cam
+                result["raw_exif"] = decoded
 
-            ts = {}
-            for field in ("DateTimeOriginal", "DateTimeDigitized", "DateTime"):
-                if decoded.get(field):
-                    ts[field] = str(decoded[field])
-            result["timestamps"] = ts
+                cam = {}
+                if decoded.get("Make"):
+                    cam["make"] = str(decoded["Make"]).strip()
+                if decoded.get("Model"):
+                    cam["model"] = str(decoded["Model"]).strip()
+                if decoded.get("LensModel"):
+                    cam["lens"] = str(decoded["LensModel"]).strip()
+                if decoded.get("FocalLength"):
+                    cam["focal_length"] = str(decoded["FocalLength"])
+                if decoded.get("ExposureTime"):
+                    cam["exposure"] = str(decoded["ExposureTime"])
+                if decoded.get("FNumber"):
+                    cam["aperture"] = f"f/{decoded['FNumber']}"
+                if decoded.get("ISOSpeedRatings"):
+                    cam["iso"] = str(decoded["ISOSpeedRatings"])
+                result["camera"] = cam
 
-            result["software"] = decoded.get("Software")
-            result["author"] = decoded.get("Artist") or decoded.get("Copyright")
+                ts = {}
+                for field in ("DateTimeOriginal", "DateTimeDigitized", "DateTime"):
+                    if decoded.get(field):
+                        ts[field] = str(decoded[field])
+                result["timestamps"] = ts
+
+                result["software"] = decoded.get("Software")
+                result["author"] = decoded.get("Artist") or decoded.get("Copyright")
+
+            if not result["gps"] or not result["raw_exif"]:
+                xmp_str = _extract_xmp(file_path)
+                if xmp_str:
+                    xmp = _parse_xmp_metadata(xmp_str)
+                    if not result["gps"]:
+                        result["gps"] = xmp.get("gps")
+                    if not result["raw_exif"]:
+                        result["raw_exif"] = xmp.get("raw_exif", {})
+                    if not result["author"]:
+                        result["author"] = xmp.get("author")
+                    if not result["software"]:
+                        result["software"] = xmp.get("software")
+                    if not result["timestamps"]:
+                        result["timestamps"] = xmp.get("timestamps", {})
 
     except ImportError:
         result["error"] = "Pillow not installed: pip install Pillow"

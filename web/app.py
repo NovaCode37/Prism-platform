@@ -7,11 +7,14 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 import requests as _requests
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, Request
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import config  
@@ -22,7 +25,11 @@ from modules.report_generator import generate_html_report
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
+from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter
+
 app = FastAPI(title="OSINT Toolkit", version="2.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, lambda req, exc: JSONResponse({"error": "Rate limit exceeded. Slow down."}, status_code=429))
 
 _STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if os.path.isdir(_STATIC_DIR):
@@ -31,10 +38,12 @@ if os.path.isdir(_STATIC_DIR):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=get_allowed_origins(),
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key", "Authorization"],
+    allow_credentials=False,
 )
+app.add_middleware(SlowAPIMiddleware)
 
 _scans: Dict[str, Dict] = {}
 _queues: Dict[str, asyncio.Queue] = {}
@@ -228,11 +237,10 @@ async def index():
     with open(path, encoding="utf-8") as f:
         return f.read()
 
-@app.post("/api/scan")
-async def start_scan(req: ScanRequest):
-    target = req.target.strip()
-    if not target:
-        return JSONResponse({"error": "Target is required"}, status_code=400)
+@app.post("/api/scan", dependencies=[Depends(require_api_key)])
+@limiter.limit("10/minute")
+async def start_scan(request: Request, req: ScanRequest):
+    target = validate_target(req.target)
 
     scan_type = req.scan_type if req.scan_type != "auto" else _detect_type(target)
     scan_id = str(uuid.uuid4())
@@ -251,8 +259,9 @@ async def start_scan(req: ScanRequest):
 
     return {"scan_id": scan_id, "scan_type": scan_type}
 
-@app.get("/api/scan/{scan_id}")
-async def get_scan(scan_id: str):
+@app.get("/api/scan/{scan_id}", dependencies=[Depends(require_api_key)])
+@limiter.limit("30/minute")
+async def get_scan(request: Request, scan_id: str):
     scan = _scans.get(scan_id)
     if not scan:
         return JSONResponse({"error": "Scan not found"}, status_code=404)
@@ -279,8 +288,9 @@ def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
     return None
 
 
-@app.get("/api/scan/{scan_id}/graph")
-async def get_graph(scan_id: str):
+@app.get("/api/scan/{scan_id}/graph", dependencies=[Depends(require_api_key)])
+@limiter.limit("30/minute")
+async def get_graph(request: Request, scan_id: str):
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -321,8 +331,9 @@ _COUNTRY_COORDS: Dict[str, tuple] = {
     "UG": ( 0.3476, 32.5825), "RW": (-1.9403, 29.8739),
 }
 
-@app.get("/api/scan/{scan_id}/map")
-async def get_map_data(scan_id: str):
+@app.get("/api/scan/{scan_id}/map", dependencies=[Depends(require_api_key)])
+@limiter.limit("30/minute")
+async def get_map_data(request: Request, scan_id: str):
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -403,8 +414,9 @@ async def get_map_data(scan_id: str):
     return {"markers": markers, "center": center, "zoom": zoom}
 
 
-@app.get("/api/scan/{scan_id}/report")
-async def download_report(scan_id: str):
+@app.get("/api/scan/{scan_id}/report", dependencies=[Depends(require_api_key)])
+@limiter.limit("10/minute")
+async def download_report(request: Request, scan_id: str):
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -422,8 +434,9 @@ async def download_report(scan_id: str):
         filename=os.path.basename(report_path),
     )
 
-@app.post("/api/url-scan")
-async def scan_url(req: dict):
+@app.post("/api/url-scan", dependencies=[Depends(require_api_key)])
+@limiter.limit("20/minute")
+async def scan_url(request: Request, req: dict):
     url = req.get("url", "").strip()
     if not url:
         return JSONResponse({"error": "No URL provided"}, status_code=400)
@@ -435,8 +448,9 @@ async def scan_url(req: dict):
     return result
 
 
-@app.post("/api/crypto")
-async def crypto_lookup(req: dict):
+@app.post("/api/crypto", dependencies=[Depends(require_api_key)])
+@limiter.limit("20/minute")
+async def crypto_lookup(request: Request, req: dict):
     address = req.get("address", "").strip()
     if not address:
         return JSONResponse({"error": "No address provided"}, status_code=400)
@@ -446,8 +460,9 @@ async def crypto_lookup(req: dict):
     return result
 
 
-@app.post("/api/darkweb")
-async def darkweb_search(req: dict):
+@app.post("/api/darkweb", dependencies=[Depends(require_api_key)])
+@limiter.limit("10/minute")
+async def darkweb_search(request: Request, req: dict):
     query = req.get("query", "").strip()
     if not query:
         return JSONResponse({"error": "No query provided"}, status_code=400)
@@ -457,8 +472,9 @@ async def darkweb_search(req: dict):
     return result
 
 
-@app.post("/api/qr-decode")
-async def decode_qr(file: UploadFile = File(...)):
+@app.post("/api/qr-decode", dependencies=[Depends(require_api_key), Depends(check_upload_size)])
+@limiter.limit("20/minute")
+async def decode_qr(request: Request, file: UploadFile = File(...)):
     data = await file.read()
     from modules.qr_decoder import QRDecoder
     loop = asyncio.get_event_loop()
@@ -466,8 +482,9 @@ async def decode_qr(file: UploadFile = File(...)):
     return result
 
 
-@app.post("/api/email-headers")
-async def analyze_email_headers(req: dict):
+@app.post("/api/email-headers", dependencies=[Depends(require_api_key)])
+@limiter.limit("20/minute")
+async def analyze_email_headers(request: Request, req: dict):
     raw = req.get("headers", "").strip()
     if not raw:
         return JSONResponse({"error": "No headers provided"}, status_code=400)
@@ -477,8 +494,9 @@ async def analyze_email_headers(req: dict):
     return result
 
 
-@app.post("/api/metadata")
-async def extract_metadata_endpoint(file: UploadFile = File(...)):
+@app.post("/api/metadata", dependencies=[Depends(require_api_key), Depends(check_upload_size)])
+@limiter.limit("20/minute")
+async def extract_metadata_endpoint(request: Request, file: UploadFile = File(...)):
     import tempfile, shutil
     suffix = os.path.splitext(file.filename)[1].lower()
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
@@ -488,7 +506,10 @@ async def extract_metadata_endpoint(file: UploadFile = File(...)):
         from modules.metadata_extractor import extract_metadata
         loop = asyncio.get_event_loop()
         result = await loop.run_in_executor(None, extract_metadata, tmp_path)
-        result["original_filename"] = file.filename
+        result["filename"] = file.filename
+        result["file_type"] = result.pop("format", None)
+        result["file_size"] = result.pop("size_bytes", None)
+        result["exif"] = result.pop("raw_exif", {})
         return result
     finally:
         try:
@@ -497,8 +518,9 @@ async def extract_metadata_endpoint(file: UploadFile = File(...)):
             pass
 
 
-@app.post("/api/ai/summary")
-async def ai_summary(req: dict):
+@app.post("/api/ai/summary", dependencies=[Depends(require_api_key)])
+@limiter.limit("5/minute")
+async def ai_summary(request: Request, req: dict):
     if not GROQ_API_KEY:
         return JSONResponse({"error": "GROQ_API_KEY not set in .env"}, status_code=400)
     scan_id = req.get("scan_id")
@@ -542,8 +564,9 @@ async def ai_summary(req: dict):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-@app.post("/api/ai/chat")
-async def ai_chat(req: dict):
+@app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
+@limiter.limit("10/minute")
+async def ai_chat(request: Request, req: dict):
     if not GROQ_API_KEY:
         return JSONResponse({"error": "GROQ_API_KEY not set in .env"}, status_code=400)
     scan_id = req.get("scan_id")
@@ -591,8 +614,9 @@ async def ai_chat(req: dict):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-@app.get("/api/scans")
-async def list_scans():
+@app.get("/api/scans", dependencies=[Depends(require_api_key)])
+@limiter.limit("30/minute")
+async def list_scans(request: Request):
     return [
         {
             "scan_id": s["scan_id"],
