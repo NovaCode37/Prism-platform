@@ -2,16 +2,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
-import { getReportUrl } from '@/lib/api';
+import { getReportUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
 
 function MapView({ scanId }: { scanId: string }) {
   const [data, setData] = useState<{ markers: { lat: number; lng: number; label: string; city?: string; country?: string; org?: string; ip?: string }[]; center: { lat: number; lng: number } | null } | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch(`/api/scan/${scanId}/map`)
-      .then(r => r.json())
-      .then(d => { if (d.error) setError(d.error); else setData(d); })
+    getMapData(scanId)
+      .then((d: any) => { if (d.error) setError(d.error); else setData(d); })
       .catch(e => setError(e.message));
   }, [scanId]);
 
@@ -50,8 +49,7 @@ function GraphView({ scanId }: { scanId: string }) {
     let cancelled = false;
     const init = async () => {
       try {
-        const res = await fetch(`/api/scan/${scanId}/graph`);
-        const graphData = await res.json();
+        const graphData: any = await getGraphData(scanId);
         if (!graphData.nodes?.length) { setStatus('empty'); return; }
 
         const loadVis = () => new Promise<void>((resolve, reject) => {
@@ -169,12 +167,7 @@ export function ScanResults({ scan }: Props) {
     setChatHistory(prev => [...prev, { role: 'user', text: msg }]);
     setChatLoading(true);
     try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scan_id: scan.id, message: msg }),
-      });
-      const d = await res.json();
+      const d = await sendAiChat(scan.id, msg);
       setChatHistory(prev => [...prev, { role: 'ai', text: d.reply || d.error || 'No response' }]);
     } catch (e) {
       setChatHistory(prev => [...prev, { role: 'ai', text: e instanceof Error ? e.message : 'Error' }]);
@@ -185,12 +178,7 @@ export function ScanResults({ scan }: Props) {
   const runAi = async () => {
     setAiLoading(true); setAiError(''); setAiSummary('');
     try {
-      const res = await fetch('/api/ai/summary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scan_id: scan.id }),
-      });
-      const d = await res.json();
+      const d = await generateAiSummary(scan.id);
       if (d.error) setAiError(d.error);
       else { setAiSummary(d.summary); setAiModel(d.model || ''); }
     } catch (e: unknown) {

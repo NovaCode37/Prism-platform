@@ -74,6 +74,20 @@ export async function generateAiSummary(scan_id: string): Promise<{ summary: str
   return post('/api/ai/summary', { scan_id });
 }
 
+export async function sendAiChat(scan_id: string, message: string): Promise<{ reply: string; error?: string }> {
+  return post('/api/ai/chat', { scan_id, message });
+}
+
+export async function getMapData(scanId: string): Promise<unknown> {
+  const r = await fetch(`${API}/api/scan/${scanId}/map`, { headers: authHeaders() });
+  return r.json();
+}
+
+export async function getGraphData(scanId: string): Promise<unknown> {
+  const r = await fetch(`${API}/api/scan/${scanId}/graph`, { headers: authHeaders() });
+  return r.json();
+}
+
 export function getWsUrl(scanId: string): string {
   const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
   const ws = base.replace(/^http/, 'ws');
