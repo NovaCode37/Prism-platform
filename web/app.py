@@ -185,6 +185,8 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     "country_code": hlr.get("country_code"),
                     "carrier": hlr.get("carrier"),
                     "line_type": hlr.get("line_type"),
+                    "region": hlr.get("region"),
+                    "timezones": hlr.get("timezones"),
                     "reverse": {
                         "name": ", ".join(owner.get("names", [])) or None,
                         "address": owner.get("city"),

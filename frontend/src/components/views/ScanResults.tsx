@@ -394,6 +394,23 @@ export function ScanResults({ scan }: Props) {
                 {r.wayback.total_snapshots} snapshots · First: {r.wayback.first_snapshot} · Last: {r.wayback.last_snapshot}
               </div>
             )}
+            {r.wayback.snapshots?.length && (
+              <div className="mb-4">
+                <div className="text-[11px] font-semibold text-blue mb-2">Recent Snapshots</div>
+                <div className="space-y-1">
+                  {r.wayback.snapshots.slice(0, 10).map(s => (
+                    <div key={s.timestamp} className="flex items-center gap-2 text-[10px]">
+                      <span className="text-text-3 font-mono">{s.date}</span>
+                      <a href={s.wayback_url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate flex-1">
+                        {s.wayback_url}
+                      </a>
+                      <span className="text-text-3">{s.mime}</span>
+                      {s.size > 0 && <span className="text-text-3">{Math.round(s.size/1024)}KB</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {r.wayback.interesting?.length && (
               <div>
                 <div className="text-[11px] font-semibold text-red mb-2">Sensitive URLs in Archive</div>
@@ -429,8 +446,14 @@ export function ScanResults({ scan }: Props) {
               </div>
               <DtRow label="Country" value={r.phone.country_name} />
               <DtRow label="Country Code" value={r.phone.country_code} />
+              <DtRow label="Region" value={r.phone.region} />
               <DtRow label="Carrier" value={r.phone.carrier} />
               <DtRow label="Line Type" value={r.phone.line_type} />
+              {r.phone.timezones?.length && (
+                <div className="dt-row"><span className="dt-label">Timezones</span>
+                  <div>{r.phone.timezones.map(tz => <span key={tz} className="tag">{tz}</span>)}</div>
+                </div>
+              )}
               {r.phone.reverse && (
                 <>
                   <DtRow label="Owner Name" value={r.phone.reverse.name} />

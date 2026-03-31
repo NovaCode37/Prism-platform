@@ -104,7 +104,7 @@ export interface WaybackData {
   first_snapshot?: string;
   last_snapshot?: string;
   interesting?: string[];
-  snapshots?: unknown[];
+  snapshots?: { timestamp: string; date: string; wayback_url: string; status: string; mime: string; size: number }[];
   error?: string;
 }
 
@@ -114,6 +114,8 @@ export interface PhoneData {
   country_code?: string;
   carrier?: string;
   line_type?: string;
+  region?: string;
+  timezones?: string[];
   reverse?: { name?: string; address?: string; source?: string };
   error?: string;
 }

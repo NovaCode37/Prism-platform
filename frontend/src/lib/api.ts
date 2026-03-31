@@ -95,5 +95,7 @@ export function getWsUrl(scanId: string): string {
 }
 
 export function getReportUrl(scanId: string): string {
-  return `${API}/api/scan/${scanId}/report`;
+  return API_KEY
+    ? `${API}/api/scan/${scanId}/report?api_key=${API_KEY}`
+    : `${API}/api/scan/${scanId}/report`;
 }
