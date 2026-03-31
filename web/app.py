@@ -172,11 +172,25 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
             if want("hlr"):
                 from modules.hlr_lookup import HLRLookup
                 hlr_obj = HLRLookup()
-                results["hlr"] = await _run_module(scan_id, "hlr", hlr_obj.validate_phone, target)
-                results["phone_owner"] = await _run_module(
+                hlr = await _run_module(scan_id, "hlr", hlr_obj.validate_phone, target)
+                results["hlr"] = hlr
+                owner = await _run_module(
                     scan_id, "phone_owner", hlr_obj.reverse_lookup,
-                    results["hlr"].get("formatted") or target
+                    hlr.get("formatted") or target
                 )
+                results["phone_owner"] = owner
+                results["phone"] = {
+                    "valid": hlr.get("valid"),
+                    "country_name": hlr.get("country_name") or hlr.get("country"),
+                    "country_code": hlr.get("country_code"),
+                    "carrier": hlr.get("carrier"),
+                    "line_type": hlr.get("line_type"),
+                    "reverse": {
+                        "name": ", ".join(owner.get("names", [])) or None,
+                        "address": owner.get("city"),
+                        "source": ", ".join(owner.get("sources", [])) or None,
+                    } if owner else None,
+                }
 
         elif scan_type == "telegram":
             from modules.telegram_lookup import TelegramLookup
