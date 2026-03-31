@@ -6,7 +6,7 @@ import { IdleView } from './views/IdleView';
 import { ScanProgress } from './views/ScanProgress';
 import { ScanResults } from './views/ScanResults';
 import { ToolPanels } from './tools/ToolPanels';
-import { startScan, getWsUrl } from '@/lib/api';
+import { startScan, getWsUrl, getScan } from '@/lib/api';
 import type { ScanType, ScanStatus, ToolMode, ScanResults as ScanResultsType, ScanMeta } from '@/lib/types';
 
 type View = 'idle' | 'tool' | 'scanning' | 'results';
@@ -39,14 +39,13 @@ export function App() {
 
   const fetchAndShowResults = useCallback(async (id: string) => {
     try {
-      const r = await fetch(`/api/scan/${id}`);
-      const data = await r.json();
+      const raw = await getScan(id) as any;
       const normalized = {
-        ...data,
-        id: data.scan_id ?? data.id ?? id,
-        results: data.results ? {
-          ...data.results,
-          opsec: data.results.opsec ?? data.results.opsec_score ?? undefined,
+        ...raw,
+        id: raw.scan_id ?? raw.id ?? id,
+        results: raw.results ? {
+          ...raw.results,
+          opsec: raw.results.opsec ?? raw.results.opsec_score ?? undefined,
         } : {},
       };
       setScanStatus('completed');
