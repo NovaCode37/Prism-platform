@@ -77,7 +77,7 @@ export async function generateAiSummary(scan_id: string): Promise<{ summary: str
 export function getWsUrl(scanId: string): string {
   const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
   const ws = base.replace(/^http/, 'ws');
-  return `${ws}/ws/${scanId}`;
+  return API_KEY ? `${ws}/ws/${scanId}?api_key=${API_KEY}` : `${ws}/ws/${scanId}`;
 }
 
 export function getReportUrl(scanId: string): string {

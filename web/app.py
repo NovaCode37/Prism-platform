@@ -12,7 +12,6 @@ from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -33,7 +32,6 @@ app.add_exception_handler(RateLimitExceeded, lambda req, exc: JSONResponse({"err
 
 _STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if os.path.isdir(_STATIC_DIR):
-    from fastapi.staticfiles import StaticFiles
     app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
 app.add_middleware(
@@ -630,6 +628,12 @@ async def list_scans(request: Request):
 
 @app.websocket("/ws/{scan_id}")
 async def websocket_endpoint(websocket: WebSocket, scan_id: str):
+    from web.security import API_KEY
+    if API_KEY:
+        token = websocket.query_params.get("api_key", "")
+        if token != API_KEY:
+            await websocket.close(code=1008)
+            return
     await websocket.accept()
     q = _queues.get(scan_id)
     if not q:
