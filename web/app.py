@@ -45,6 +45,19 @@ app.add_middleware(SlowAPIMiddleware)
 
 _scans: Dict[str, Dict] = {}
 _queues: Dict[str, asyncio.Queue] = {}
+MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS", "200"))
+
+def _evict_old_scans() -> None:
+    if len(_scans) <= MAX_STORED_SCANS:
+        return
+    completed = sorted(
+        ((k, v) for k, v in _scans.items() if v.get("status") in ("completed", "error")),
+        key=lambda x: x[1].get("started_at", ""),
+    )
+    to_remove = len(_scans) - MAX_STORED_SCANS
+    for k, _ in completed[:to_remove]:
+        _scans.pop(k, None)
+        _queues.pop(k, None)
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
@@ -259,6 +272,7 @@ async def start_scan(request: Request, req: ScanRequest):
     scan_type = req.scan_type if req.scan_type != "auto" else _detect_type(target)
     scan_id = str(uuid.uuid4())
 
+    _evict_old_scans()
     _scans[scan_id] = {
         "scan_id": scan_id,
         "target": target,
