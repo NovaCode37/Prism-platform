@@ -470,8 +470,8 @@ async def download_report(request: Request, scan_id: str):
 @limiter.limit("20/minute")
 async def scan_url(request: Request, req: dict):
     url = req.get("url", "").strip()
-    if not url:
-        return JSONResponse({"error": "No URL provided"}, status_code=400)
+    if not url or len(url) > 2048:
+        return JSONResponse({"error": "No URL provided or URL too long"}, status_code=400)
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
     validate_url_not_private(url)
@@ -485,8 +485,8 @@ async def scan_url(request: Request, req: dict):
 @limiter.limit("20/minute")
 async def crypto_lookup(request: Request, req: dict):
     address = req.get("address", "").strip()
-    if not address:
-        return JSONResponse({"error": "No address provided"}, status_code=400)
+    if not address or len(address) > 256:
+        return JSONResponse({"error": "No address provided or address too long"}, status_code=400)
     from modules.crypto_lookup import CryptoLookup
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, CryptoLookup().lookup, address)
@@ -497,8 +497,8 @@ async def crypto_lookup(request: Request, req: dict):
 @limiter.limit("10/minute")
 async def darkweb_search(request: Request, req: dict):
     query = req.get("query", "").strip()
-    if not query:
-        return JSONResponse({"error": "No query provided"}, status_code=400)
+    if not query or len(query) > 512:
+        return JSONResponse({"error": "No query provided or query too long"}, status_code=400)
     from modules.darkweb_search import DarkWebSearch
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, DarkWebSearch().search, query)
@@ -519,8 +519,8 @@ async def decode_qr(request: Request, file: UploadFile = File(...)):
 @limiter.limit("20/minute")
 async def analyze_email_headers(request: Request, req: dict):
     raw = req.get("headers", "").strip()
-    if not raw:
-        return JSONResponse({"error": "No headers provided"}, status_code=400)
+    if not raw or len(raw) > 50000:
+        return JSONResponse({"error": "No headers provided or input too large"}, status_code=400)
     from modules.email_header_analyzer import analyze_headers
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, analyze_headers, raw)
