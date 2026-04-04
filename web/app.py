@@ -508,7 +508,10 @@ async def darkweb_search(request: Request, req: dict):
 @app.post("/api/qr-decode", dependencies=[Depends(require_api_key), Depends(check_upload_size)])
 @limiter.limit("20/minute")
 async def decode_qr(request: Request, file: UploadFile = File(...)):
-    data = await file.read()
+    from web.security import MAX_UPLOAD_BYTES
+    data = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
+        return JSONResponse({"error": "File too large"}, status_code=413)
     from modules.qr_decoder import QRDecoder
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, QRDecoder().decode, data, file.filename)
@@ -693,7 +696,10 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
         pass
     finally:
         _queues.pop(scan_id, None)
-        await websocket.close()
+        try:
+            await websocket.close()
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     import uvicorn
