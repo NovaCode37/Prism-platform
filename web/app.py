@@ -26,7 +26,14 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id, validate_url_not_private
 
-app = FastAPI(title="OSINT Toolkit", version="2.0")
+_disable_docs = os.getenv("DISABLE_DOCS", "").lower() in ("1", "true", "yes")
+app = FastAPI(
+    title="OSINT Toolkit",
+    version="2.0",
+    docs_url=None if _disable_docs else "/docs",
+    redoc_url=None if _disable_docs else "/redoc",
+    openapi_url=None if _disable_docs else "/openapi.json",
+)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, lambda req, exc: JSONResponse({"error": "Rate limit exceeded. Slow down."}, status_code=429))
 
