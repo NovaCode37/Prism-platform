@@ -675,10 +675,11 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
     except Exception:
         await websocket.close(code=1008)
         return
+    import hmac as _hmac
     from web.security import API_KEY
     if API_KEY:
         token = websocket.query_params.get("api_key", "")
-        if token != API_KEY:
+        if not token or not _hmac.compare_digest(token, API_KEY):
             await websocket.close(code=1008)
             return
     await websocket.accept()
