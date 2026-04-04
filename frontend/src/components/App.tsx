@@ -111,8 +111,7 @@ export function App() {
     for (let i = 0; i < 60; i++) {
       await new Promise(r => setTimeout(r, 3000));
       try {
-        const r = await fetch(`/api/scan/${id}`);
-        const data = await r.json();
+        const data = await getScan(id) as any;
         if (data.status === 'completed') {
           const normalized = {
             ...data,
