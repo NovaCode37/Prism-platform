@@ -51,6 +51,15 @@ async def check_upload_size(request: Request) -> None:
         )
 
 
+def validate_scan_id(scan_id: str) -> str:
+    import uuid
+    try:
+        uuid.UUID(scan_id)
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="Invalid scan ID format.")
+    return scan_id
+
+
 def get_allowed_origins() -> list:
     raw = os.getenv("ALLOWED_ORIGINS", "")
     if not raw or raw.strip() == "*":

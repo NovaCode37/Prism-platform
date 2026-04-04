@@ -24,7 +24,7 @@ from modules.report_generator import generate_html_report
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter
+from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id
 
 app = FastAPI(title="OSINT Toolkit", version="2.0")
 app.state.limiter = limiter
@@ -276,6 +276,7 @@ async def start_scan(request: Request, req: ScanRequest):
 @app.get("/api/scan/{scan_id}", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
 async def get_scan(request: Request, scan_id: str):
+    validate_scan_id(scan_id)
     scan = _scans.get(scan_id)
     if not scan:
         return JSONResponse({"error": "Scan not found"}, status_code=404)
@@ -305,6 +306,7 @@ def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
 @app.get("/api/scan/{scan_id}/graph", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
 async def get_graph(request: Request, scan_id: str):
+    validate_scan_id(scan_id)
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -348,6 +350,7 @@ _COUNTRY_COORDS: Dict[str, tuple] = {
 @app.get("/api/scan/{scan_id}/map", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
 async def get_map_data(request: Request, scan_id: str):
+    validate_scan_id(scan_id)
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -431,6 +434,7 @@ async def get_map_data(request: Request, scan_id: str):
 @app.get("/api/scan/{scan_id}/report", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def download_report(request: Request, scan_id: str):
+    validate_scan_id(scan_id)
     scan = _scans.get(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
@@ -644,6 +648,11 @@ async def list_scans(request: Request):
 
 @app.websocket("/ws/{scan_id}")
 async def websocket_endpoint(websocket: WebSocket, scan_id: str):
+    try:
+        validate_scan_id(scan_id)
+    except Exception:
+        await websocket.close(code=1008)
+        return
     from web.security import API_KEY
     if API_KEY:
         token = websocket.query_params.get("api_key", "")
