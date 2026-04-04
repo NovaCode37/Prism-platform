@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from datetime import datetime
 from typing import Dict, Any, Optional
@@ -536,7 +537,7 @@ def generate_html_report(
     if output_path is None:
         results_dir = os.path.join(os.path.dirname(__file__), "..", "results")
         os.makedirs(results_dir, exist_ok=True)
-        safe_target = target.replace("/", "_").replace(":", "_").replace("@", "_at_")
+        safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = os.path.join(results_dir, f"report_{safe_target}_{ts}.html")
 
