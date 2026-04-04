@@ -253,8 +253,9 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
         await _push(scan_id, {"type": "scan_complete", "scan_id": scan_id})
 
     except Exception as exc:
-        _scans[scan_id].update({"status": "error", "error": str(exc)})
-        await _push(scan_id, {"type": "scan_error", "error": str(exc)})
+        safe_err = str(exc).split("\n")[0][:200]
+        _scans[scan_id].update({"status": "error", "error": safe_err})
+        await _push(scan_id, {"type": "scan_error", "error": safe_err})
     finally:
         await _push(scan_id, {"type": "_done"})
 
