@@ -516,7 +516,7 @@ def generate_html_report(
     opsec: Optional[Dict[str, Any]] = None,
     output_path: Optional[str] = None,
 ) -> str:
-    env = Environment(loader=BaseLoader())
+    env = Environment(loader=BaseLoader(), autoescape=True)
     env.filters["tojson"] = lambda v: json.dumps(v)
     template = env.from_string(REPORT_TEMPLATE)
 
