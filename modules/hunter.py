@@ -1,16 +1,80 @@
+import dns.resolver
 import requests
+import socket
 from typing import Dict, Any, List
 import sys
 sys.path.append('..')
-from config import EMAILREP_API_KEY, Colors
+from config import Colors
+
+FREE_PROVIDERS = {
+    "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
+    "icloud.com", "mail.com", "protonmail.com", "proton.me", "zoho.com",
+    "yandex.ru", "yandex.com", "mail.ru", "bk.ru", "inbox.ru", "list.ru",
+    "gmx.com", "gmx.net", "tutanota.com", "tuta.io", "fastmail.com",
+}
 
 
 class EmailRepLookup:
 
-    BASE_URL = "https://emailrep.io"
-
     def __init__(self):
-        self.api_key = EMAILREP_API_KEY
+        pass
+
+    def _check_mx(self, domain: str) -> List[str]:
+        try:
+            answers = dns.resolver.resolve(domain, "MX")
+            return sorted(
+                [(r.preference, str(r.exchange).rstrip(".")) for r in answers],
+                key=lambda x: x[0],
+            )
+        except Exception:
+            return []
+
+    def _check_spf(self, domain: str) -> bool:
+        try:
+            answers = dns.resolver.resolve(domain, "TXT")
+            for r in answers:
+                if "v=spf1" in str(r).lower():
+                    return True
+        except Exception:
+            pass
+        return False
+
+    def _check_dmarc(self, domain: str) -> bool:
+        try:
+            answers = dns.resolver.resolve(f"_dmarc.{domain}", "TXT")
+            for r in answers:
+                if "v=dmarc1" in str(r).lower():
+                    return True
+        except Exception:
+            pass
+        return False
+
+    def _check_disposable(self, domain: str) -> bool:
+        try:
+            r = requests.get(
+                f"https://open.kickbox.com/v1/disposable/{domain}",
+                timeout=8,
+            )
+            if r.status_code == 200:
+                return r.json().get("disposable", False)
+        except Exception:
+            pass
+        return False
+
+    def _check_smtp_exists(self, email: str, domain: str, mx_host: str) -> bool:
+        try:
+            with socket.create_connection((mx_host, 25), timeout=8) as sock:
+                sock.recv(1024)
+                sock.sendall(b"EHLO prism.local\r\n")
+                sock.recv(1024)
+                sock.sendall(f"MAIL FROM:<test@prism.local>\r\n".encode())
+                sock.recv(1024)
+                sock.sendall(f"RCPT TO:<{email}>\r\n".encode())
+                resp = sock.recv(1024).decode(errors="ignore")
+                sock.sendall(b"QUIT\r\n")
+                return resp.startswith("250")
+        except Exception:
+            return False
 
     def lookup(self, email: str) -> Dict[str, Any]:
         result = {
@@ -36,50 +100,42 @@ class EmailRepLookup:
             "error": None,
         }
 
-        headers = {"User-Agent": "OSINT-Toolkit/2.0"}
-        if self.api_key:
-            headers["Key"] = self.api_key
-
         try:
-            response = requests.get(
-                f"{self.BASE_URL}/{email}",
-                headers=headers,
-                timeout=15,
-            )
+            domain = email.split("@")[-1].lower()
 
-            if response.status_code == 400:
-                result["error"] = "Invalid email address"
-                return result
-            if response.status_code == 429:
-                result["error"] = "Rate limit reached. Add EMAILREP_API_KEY to .env for higher limits."
-                return result
-            if response.status_code != 200:
-                result["error"] = f"API returned status {response.status_code}"
-                return result
+            mx_records = self._check_mx(domain)
+            result["valid_mx"] = len(mx_records) > 0
+            result["mx_records"] = [h for _, h in mx_records[:5]]
 
-            data = response.json()
-            details = data.get("details", {})
+            result["free_provider"] = domain in FREE_PROVIDERS
+            result["disposable"] = self._check_disposable(domain)
 
-            result.update({
-                "reputation": data.get("reputation"),
-                "suspicious": data.get("suspicious", False),
-                "references": data.get("references", 0),
-                "blacklisted": details.get("blacklisted", False),
-                "malicious_activity": details.get("malicious_activity", False),
-                "credentials_leaked": details.get("credentials_leaked", False),
-                "data_breach": details.get("data_breach", False),
-                "disposable": details.get("disposable", False),
-                "free_provider": details.get("free_provider", False),
-                "deliverable": details.get("deliverable"),
-                "valid_mx": details.get("valid_mx", False),
-                "spoofable": details.get("spoofable", False),
-                "spam": details.get("spam", False),
-                "profiles": details.get("profiles", []),
-                "first_seen": details.get("first_seen"),
-                "last_seen": details.get("last_seen"),
-                "domain_reputation": details.get("domain_reputation"),
-                "days_since_domain_creation": details.get("days_since_domain_creation"),
-            })
+            has_spf = self._check_spf(domain)
+            has_dmarc = self._check_dmarc(domain)
+            result["spoofable"] = not has_spf or not has_dmarc
+            result["spf"] = has_spf
+            result["dmarc"] = has_dmarc
+
+            if mx_records:
+                mx_host = mx_records[0][1]
+                result["deliverable"] = self._check_smtp_exists(email, domain, mx_host)
+
+            score = 0
+            if result["valid_mx"]:       score += 30
+            if not result["disposable"]: score += 25
+            if has_spf:                  score += 15
+            if has_dmarc:                score += 15
+            if result["deliverable"]:    score += 15
+
+            if score >= 70:
+                result["reputation"] = "high"
+            elif score >= 40:
+                result["reputation"] = "medium"
+            else:
+                result["reputation"] = "low"
+
+            result["suspicious"] = result["disposable"] or (not result["valid_mx"])
+            result["domain_reputation"] = "high" if (has_spf and has_dmarc) else "medium" if has_spf else "low"
 
         except Exception as e:
             result["error"] = str(e)
@@ -88,7 +144,7 @@ class EmailRepLookup:
 
     def print_result(self, result: Dict) -> None:
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
-        print(f"{Colors.BOLD}EmailRep Lookup: {result['email']}{Colors.RESET}")
+        print(f"{Colors.BOLD}Email Reputation: {result['email']}{Colors.RESET}")
         print(f"{Colors.CYAN}{'='*60}{Colors.RESET}")
 
         if result.get("error"):
@@ -99,35 +155,25 @@ class EmailRepLookup:
             "high": Colors.GREEN,
             "medium": Colors.YELLOW,
             "low": Colors.RED,
-            "none": Colors.RED,
         }.get(result.get("reputation", ""), Colors.YELLOW)
 
-        print(f"{Colors.YELLOW}Reputation:{Colors.RESET}       {rep_color}{result['reputation'].upper()}{Colors.RESET}")
+        print(f"{Colors.YELLOW}Reputation:{Colors.RESET}       {rep_color}{(result['reputation'] or 'N/A').upper()}{Colors.RESET}")
         print(f"{Colors.YELLOW}Suspicious:{Colors.RESET}       {Colors.RED + 'YES' + Colors.RESET if result['suspicious'] else Colors.GREEN + 'NO' + Colors.RESET}")
-        print(f"{Colors.YELLOW}References:{Colors.RESET}       {result['references']}")
-        print(f"{Colors.YELLOW}Domain Reputation:{Colors.RESET} {result.get('domain_reputation', 'N/A')}")
+        print(f"{Colors.YELLOW}Valid MX:{Colors.RESET}         {Colors.GREEN + 'YES' + Colors.RESET if result['valid_mx'] else Colors.RED + 'NO' + Colors.RESET}")
+        print(f"{Colors.YELLOW}Deliverable:{Colors.RESET}      {result.get('deliverable', 'N/A')}")
+        print(f"{Colors.YELLOW}SPF:{Colors.RESET}              {Colors.GREEN + 'YES' + Colors.RESET if result.get('spf') else Colors.RED + 'NO' + Colors.RESET}")
+        print(f"{Colors.YELLOW}DMARC:{Colors.RESET}            {Colors.GREEN + 'YES' + Colors.RESET if result.get('dmarc') else Colors.RED + 'NO' + Colors.RESET}")
+        print(f"{Colors.YELLOW}Domain Rep:{Colors.RESET}       {result.get('domain_reputation', 'N/A')}")
 
         flags = []
-        if result["blacklisted"]:        flags.append(f"{Colors.RED}Blacklisted{Colors.RESET}")
-        if result["malicious_activity"]: flags.append(f"{Colors.RED}Malicious Activity{Colors.RESET}")
-        if result["credentials_leaked"]: flags.append(f"{Colors.RED}Credentials Leaked{Colors.RESET}")
-        if result["data_breach"]:        flags.append(f"{Colors.RED}Data Breach{Colors.RESET}")
-        if result["spam"]:               flags.append(f"{Colors.YELLOW}Spam{Colors.RESET}")
-        if result["spoofable"]:          flags.append(f"{Colors.YELLOW}Spoofable{Colors.RESET}")
-        if result["disposable"]:         flags.append(f"{Colors.YELLOW}Disposable{Colors.RESET}")
+        if result["disposable"]:  flags.append(f"{Colors.YELLOW}Disposable{Colors.RESET}")
+        if result["spoofable"]:   flags.append(f"{Colors.YELLOW}Spoofable{Colors.RESET}")
+        if result["free_provider"]: flags.append(f"{Colors.CYAN}Free Provider{Colors.RESET}")
 
         if flags:
             print(f"\n{Colors.BOLD}Flags:{Colors.RESET}")
             for f in flags:
                 print(f"  {Colors.RED}•{Colors.RESET} {f}")
-
-        if result["profiles"]:
-            print(f"\n{Colors.BOLD}Known Profiles:{Colors.RESET} {', '.join(result['profiles'])}")
-
-        if result.get("first_seen"):
-            print(f"{Colors.YELLOW}First Seen:{Colors.RESET} {result['first_seen']}")
-        if result.get("last_seen"):
-            print(f"{Colors.YELLOW}Last Seen:{Colors.RESET}  {result['last_seen']}")
 
 
 HunterIO = EmailRepLookup
@@ -135,7 +181,7 @@ HunterIO = EmailRepLookup
 
 def run_emailrep():
     er = EmailRepLookup()
-    print(f"\n{Colors.BOLD}EmailRep Lookup{Colors.RESET}")
+    print(f"\n{Colors.BOLD}Email Reputation Lookup{Colors.RESET}")
     email = input(f"{Colors.GREEN}Enter email address: {Colors.RESET}").strip()
     if not email:
         print(f"{Colors.RED}No email provided{Colors.RESET}")
