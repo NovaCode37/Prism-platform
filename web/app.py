@@ -24,7 +24,7 @@ from modules.report_generator import generate_html_report
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id
+from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id, validate_url_not_private
 
 app = FastAPI(title="OSINT Toolkit", version="2.0")
 app.state.limiter = limiter
@@ -460,6 +460,7 @@ async def scan_url(request: Request, req: dict):
         return JSONResponse({"error": "No URL provided"}, status_code=400)
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
+    validate_url_not_private(url)
     from modules.url_scanner import URLScanner
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, URLScanner().scan, url)

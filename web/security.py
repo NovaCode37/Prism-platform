@@ -60,6 +60,24 @@ def validate_scan_id(scan_id: str) -> str:
     return scan_id
 
 
+def validate_url_not_private(url: str) -> str:
+    import socket
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    hostname = parsed.hostname
+    if not hostname:
+        raise HTTPException(status_code=400, detail="Invalid URL.")
+    try:
+        ip = socket.gethostbyname(hostname)
+    except socket.gaierror:
+        raise HTTPException(status_code=400, detail="Cannot resolve hostname.")
+    import ipaddress
+    addr = ipaddress.ip_address(ip)
+    if addr.is_private or addr.is_loopback or addr.is_reserved or addr.is_link_local:
+        raise HTTPException(status_code=400, detail="Requests to private/internal addresses are blocked.")
+    return url
+
+
 def get_allowed_origins() -> list:
     raw = os.getenv("ALLOWED_ORIGINS", "")
     if not raw or raw.strip() == "*":
