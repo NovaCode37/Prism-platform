@@ -535,7 +535,10 @@ async def analyze_email_headers(request: Request, req: dict):
 @limiter.limit("20/minute")
 async def extract_metadata_endpoint(request: Request, file: UploadFile = File(...)):
     import tempfile, shutil
-    suffix = os.path.splitext(file.filename)[1].lower()
+    ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".tiff", ".tif", ".heic", ".heif", ".webp", ".pdf", ".docx", ".docm"}
+    suffix = os.path.splitext(file.filename or "")[1].lower()
+    if suffix not in ALLOWED_EXTS:
+        return JSONResponse({"error": f"Unsupported file type: {suffix}"}, status_code=400)
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         shutil.copyfileobj(file.file, tmp)
         tmp_path = tmp.name
