@@ -1,3 +1,4 @@
+import hmac
 import os
 import re
 from typing import Optional
@@ -22,7 +23,7 @@ async def require_api_key(request: Request) -> None:
         request.headers.get("X-API-Key")
         or request.query_params.get("api_key")
     )
-    if key != API_KEY:
+    if not key or not hmac.compare_digest(key, API_KEY):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key. Pass X-API-Key header.",
