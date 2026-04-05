@@ -10,31 +10,48 @@ from config import OUTPUT_DIR, Colors
 class MaigretWrapper:
     
     def __init__(self):
-        self.maigret_installed = self._check_maigret()
+        self.maigret_bin = self._find_maigret()
+        self.maigret_installed = self.maigret_bin is not None
     
-    def _check_maigret(self) -> bool:
-        try:
-            result = subprocess.run(
-                ["maigret", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            return result.returncode == 0
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            return False
+    def _find_maigret(self) -> Optional[str]:
+        custom = os.getenv("MAIGRET_BIN")
+        if custom and os.path.isfile(custom):
+            return custom
+
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        candidates = [
+            os.path.join(project_root, "venv-maigret", "bin", "maigret"),
+            os.path.join(project_root, "venv-maigret", "Scripts", "maigret.exe"),
+            "maigret",
+        ]
+        for path in candidates:
+            try:
+                result = subprocess.run(
+                    [path, "--version"],
+                    capture_output=True, text=True, timeout=10,
+                )
+                if result.returncode == 0:
+                    return path
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                continue
+        return None
     
     def install_maigret(self) -> bool:
-        print(f"{Colors.YELLOW}Installing maigret...{Colors.RESET}")
+        print(f"{Colors.YELLOW}Installing maigret into isolated venv...{Colors.RESET}")
         try:
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            venv_path = os.path.join(project_root, "venv-maigret")
+            if not os.path.isdir(venv_path):
+                subprocess.run([sys.executable, "-m", "venv", venv_path], check=True, timeout=30)
+            pip_bin = os.path.join(venv_path, "Scripts", "pip.exe") if sys.platform == "win32" \
+                else os.path.join(venv_path, "bin", "pip")
             result = subprocess.run(
-                [sys.executable, "-m", "pip", "install", "maigret"],
-                capture_output=True,
-                text=True,
-                timeout=120
+                [pip_bin, "install", "maigret"],
+                capture_output=True, text=True, timeout=120,
             )
             if result.returncode == 0:
-                self.maigret_installed = True
+                self.maigret_bin = self._find_maigret()
+                self.maigret_installed = self.maigret_bin is not None
                 print(f"{Colors.GREEN}Maigret installed successfully{Colors.RESET}")
                 return True
             else:
@@ -63,7 +80,7 @@ class MaigretWrapper:
         output_path = os.path.join(OUTPUT_DIR, base_filename)
         
         cmd = [
-            "maigret", username,
+            self.maigret_bin, username,
             "--timeout", str(timeout),
             "--top-sites", str(top_sites),
             "--retries", "1",
