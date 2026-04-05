@@ -3,6 +3,7 @@ import aiohttp
 import json
 import csv
 import os
+import html as _html
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
@@ -85,7 +86,7 @@ class Blackbird:
         start_time = asyncio.get_event_loop().time()
         
         try:
-            async with session.get(url, allow_redirects=True, ssl=False) as response:
+            async with session.get(url, allow_redirects=True) as response:
                 response_time = asyncio.get_event_loop().time() - start_time
                 http_code = response.status
                 
@@ -119,7 +120,7 @@ class Blackbird:
         else:
             sites_to_check = {k: v for k, v in self.SITES.items() if k in sites}
         
-        connector = aiohttp.TCPConnector(limit=self.max_concurrent, ssl=False)
+        connector = aiohttp.TCPConnector(limit=self.max_concurrent)
         timeout = aiohttp.ClientTimeout(total=self.timeout)
         
         headers = {
@@ -217,9 +218,11 @@ class Blackbird:
 """
         
         for r in sorted(self.results, key=lambda x: (x.status != "found", x.site)):
-            status_class = r.status
-            url_link = f'<a href="{r.url}" target="_blank">{r.url}</a>' if r.status == "found" else r.url
-            html += f'        <tr><td>{r.site}</td><td>{url_link}</td><td class="{status_class}">{r.status.upper()}</td><td>{r.response_time:.2f}s</td></tr>\n'
+            status_class = _html.escape(r.status)
+            safe_site = _html.escape(r.site)
+            safe_url = _html.escape(r.url)
+            url_link = f'<a href="{safe_url}" target="_blank">{safe_url}</a>' if r.status == "found" else safe_url
+            html += f'        <tr><td>{safe_site}</td><td>{url_link}</td><td class="{status_class}">{r.status.upper()}</td><td>{r.response_time:.2f}s</td></tr>\n'
         
         html += """    </table>
 </body>
