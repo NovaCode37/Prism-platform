@@ -9,17 +9,25 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)
 
+<p align="center">
+  <img src="docs/gifs/main.gif" alt="PRISM Boot Animation" width="720" />
+</p>
+
 ---
 
 ## Overview
 
-PRISM aggregates data from 10+ external intelligence sources to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
+PRISM aggregates data from **10+ external intelligence sources** to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
 
 **Stack:**
 - **Backend** — Python, FastAPI, asyncio, WebSocket, Pydantic
 - **Frontend** — Next.js 14 (App Router), React, TypeScript, Tailwind CSS
 - **Infrastructure** — Docker, docker-compose, GitHub Actions CI/CD
 - **Tests** — pytest, 30+ test cases with monkeypatching
+
+<p align="center">
+  <img src="docs/pics/main_showcase/main_showcase.png" alt="PRISM Dashboard" width="720" />
+</p>
 
 ---
 
@@ -49,6 +57,154 @@ PRISM aggregates data from 10+ external intelligence sources to build a comprehe
 | Entity Graph | Interactive node-relationship visualization | — |
 | HTML Report | Self-contained PDF-ready scan report | — |
 | Groq AI Summary | Natural-language findings summary via LLM | Groq |
+
+---
+
+## Showcase
+
+### Scan in Progress
+
+<p align="center">
+  <img src="docs/gifs/scan_showcase.gif" alt="Email Scan Progress" width="720" />
+</p>
+
+### Domain Scan
+
+WHOIS registration, DNS records, OPSEC findings, VirusTotal threats, Wayback Machine snapshots, GeoIP map, and entity graph — all in one scan.
+
+<details>
+<summary><b>Findings & OPSEC Score</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/findings_showcase.png" alt="Domain Findings" width="720" /></p>
+</details>
+
+<details>
+<summary><b>WHOIS Registration</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/whois_showcase.png" alt="WHOIS" width="720" /></p>
+</details>
+
+<details>
+<summary><b>DNS Records</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/dns_showcase.png" alt="DNS" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Threat Intelligence (VirusTotal)</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/threats_showcase.png" alt="Threats" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Wayback Machine</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/wayback_showcase.png" alt="Wayback" width="720" /></p>
+</details>
+
+<details>
+<summary><b>GeoIP Map</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/map_showcase.png" alt="GeoIP Map" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Entity Graph</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/graph_showcase.png" alt="Entity Graph" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Raw JSON</b></summary>
+<p align="center"><img src="docs/pics/domain_showcase/json_showcase.png" alt="JSON Results" width="720" /></p>
+</details>
+
+### IP Scan
+
+VirusTotal + AbuseIPDB threat intel, GeoIP map with coordinates, and entity graph.
+
+<details>
+<summary><b>Threat Intelligence (VirusTotal + AbuseIPDB)</b></summary>
+<p align="center"><img src="docs/pics/ip_showcase/threats_showcase.png" alt="IP Threats" width="720" /></p>
+</details>
+
+<details>
+<summary><b>GeoIP Map</b></summary>
+<p align="center"><img src="docs/pics/ip_showcase/map_showcase.png" alt="IP Map" width="720" /></p>
+</details>
+
+### Email Scan
+
+DNS-based reputation (MX, SPF, DMARC), SMTP mailbox verification, and breach check.
+
+<details>
+<summary><b>Email Reputation + SMTP Verification</b></summary>
+<p align="center"><img src="docs/pics/email_showcase/email_showcase.png" alt="Email Rep" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Findings</b></summary>
+<p align="center"><img src="docs/pics/email_showcase/findings_showcase.png" alt="Email Findings" width="720" /></p>
+</details>
+
+### Phone Scan
+
+Number validation, carrier detection, country/region, timezone, and reverse lookup.
+
+<details>
+<summary><b>Phone Intelligence</b></summary>
+<p align="center"><img src="docs/pics/phone_showcase/phone_showcase.png" alt="Phone Intel" width="720" /></p>
+</details>
+
+<details>
+<summary><b>GeoIP Map</b></summary>
+<p align="center"><img src="docs/pics/phone_showcase/map_showcase.png" alt="Phone Map" width="720" /></p>
+</details>
+
+### Username Scan
+
+Blackbird async search across 50+ platforms with response times.
+
+<details>
+<summary><b>Accounts Found</b></summary>
+<p align="center"><img src="docs/pics/username_showcase/acc_showcase.png" alt="Accounts" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Entity Graph</b></summary>
+<p align="center"><img src="docs/pics/username_showcase/graph_showcase.png" alt="Username Graph" width="720" /></p>
+</details>
+
+### AI Analysis (Groq)
+
+LLM-powered OSINT summary with risk assessment and recommended next investigation steps. Interactive chat for follow-up questions.
+
+<details>
+<summary><b>AI Summary</b></summary>
+<p align="center"><img src="docs/pics/username_showcase/ai_summ_showcase.png" alt="AI Summary" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Ask the AI</b></summary>
+<p align="center"><img src="docs/pics/username_showcase/askai_showcase.png" alt="AI Chat" width="720" /></p>
+</details>
+
+### Standalone Tools
+
+File Metadata (EXIF/GPS), Email Header Analyzer, Crypto Address Lookup, and QR Code Decoder.
+
+<details>
+<summary><b>File Metadata & GEOINT</b></summary>
+<p align="center"><img src="docs/pics/main_showcase/filemetadata_showcase.png" alt="File Metadata" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Email Header Analyzer</b></summary>
+<p align="center"><img src="docs/pics/main_showcase/headers_showcase.png" alt="Email Headers" width="720" /></p>
+</details>
+
+<details>
+<summary><b>Crypto Address Lookup</b></summary>
+<p align="center"><img src="docs/pics/main_showcase/crypto_showcase.png" alt="Crypto Lookup" width="720" /></p>
+</details>
+
+<details>
+<summary><b>QR Code Decoder</b></summary>
+<p align="center"><img src="docs/pics/main_showcase/qrcode_showcase.png" alt="QR Decoder" width="720" /></p>
+</details>
 
 ---
 
