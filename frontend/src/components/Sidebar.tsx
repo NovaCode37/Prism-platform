@@ -61,26 +61,22 @@ const MODULE_MAP: Record<ScanType, { id: string; label: string }[]> = {
   domain: [
     { id: 'whois', label: 'WHOIS' }, { id: 'dns', label: 'DNS' },
     { id: 'geoip', label: 'GeoIP' }, { id: 'cert_transparency', label: 'Cert CT' },
+    { id: 'website', label: 'Website' }, { id: 'wayback', label: 'Wayback' },
     { id: 'shodan', label: 'Shodan' }, { id: 'virustotal', label: 'VirusTotal' },
-    { id: 'abuseipdb', label: 'AbuseIPDB' }, { id: 'wayback', label: 'Wayback' },
-    { id: 'website', label: 'Website' }, { id: 'blackbird', label: 'Username' },
-    { id: 'dorks', label: 'Dorks' },
   ],
   ip: [
     { id: 'geoip', label: 'GeoIP' }, { id: 'shodan', label: 'Shodan' },
     { id: 'virustotal', label: 'VirusTotal' }, { id: 'abuseipdb', label: 'AbuseIPDB' },
-    { id: 'wayback', label: 'Wayback' },
   ],
   email: [
-    { id: 'emailrep', label: 'EmailRep' }, { id: 'blackbird', label: 'Username' },
-    { id: 'dorks', label: 'Dorks' },
+    { id: 'emailrep', label: 'Email Rep' }, { id: 'smtp', label: 'SMTP Verify' },
+    { id: 'leaks', label: 'Breach Check' },
   ],
   phone: [
     { id: 'hlr', label: 'Phone Lookup' },
   ],
   username: [
-    { id: 'blackbird', label: 'Blackbird' }, { id: 'telegram', label: 'Telegram' },
-    { id: 'dorks', label: 'Dorks' },
+    { id: 'blackbird', label: 'Blackbird' }, { id: 'maigret', label: 'Maigret' },
   ],
 };
 

@@ -13,7 +13,7 @@
 
 ## Overview
 
-PRISM aggregates data from 8+ external intelligence sources to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
+PRISM aggregates data from 10+ external intelligence sources to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
 
 **Stack:**
 - **Backend** — Python, FastAPI, asyncio, WebSocket, Pydantic
@@ -26,7 +26,7 @@ PRISM aggregates data from 8+ external intelligence sources to build a comprehen
 ## Features
 
 | Module | Description | API Key |
-|--------|-------------|---------|
+|--------|-------------|----------|
 | WHOIS | Domain registration, registrar, dates | — |
 | DNS | A, MX, NS, TXT, CNAME, SOA records | — |
 | Certificate Transparency | Subdomain discovery via crt.sh | — |
@@ -36,13 +36,15 @@ PRISM aggregates data from 8+ external intelligence sources to build a comprehen
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |
 | Website Analyzer | Tech stack, emails, social links, metadata | — |
-| EmailRep | Email reputation, breach history, risk score | — |
+| Email Reputation | DNS-based email rep (MX, SPF, DMARC, disposable check) | — |
+| SMTP Verify | Mailbox existence check via SMTP handshake | — |
+| Breach Check | Email breach / credential leak lookup | Leak-Lookup |
 | Blackbird | Username presence across 50+ platforms (async) | — |
+| Maigret | Deep username search across 3000+ sites | — |
 | Telegram Lookup | Username/ID lookup via Bot API + scraping | Telegram |
 | Phone / HLR | Number validation, carrier, country, reverse lookup | Numverify |
 | Email Headers | SPF/DKIM/DMARC analysis, routing hops, spoofing detection | — |
 | File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | — |
-| Google Dorks | Auto-generated targeted dork queries | — |
 | OPSEC Score | Aggregated 0–100 exposure risk score | — |
 | Entity Graph | Interactive node-relationship visualization | — |
 | HTML Report | Self-contained PDF-ready scan report | — |
@@ -94,7 +96,7 @@ Copy `.env.example` → `.env`. All keys are optional — modules gracefully ski
 | `TELEGRAM_BOT_TOKEN` | Telegram user lookup | Free |
 | `LEAK_LOOKUP_API_KEY` | Breach database | Limited free |
 
-> Certificate Transparency, Wayback Machine, DNS, WHOIS, Website Analyzer, Blackbird, Email Headers, and File Metadata all work **with zero API keys**.
+> Certificate Transparency, Wayback Machine, DNS, WHOIS, Website Analyzer, Email Reputation, SMTP Verify, Blackbird, Maigret, Email Headers, and File Metadata all work **with zero API keys**.
 
 ---
 
@@ -114,8 +116,9 @@ prism/
 │   ├── shodan_lookup.py          # Shodan host intelligence
 │   ├── wayback.py                # Wayback Machine snapshots
 │   ├── blackbird.py              # Username search (async, 50+ platforms)
+│   ├── maigret_wrapper.py        # Deep username search (3000+ sites)
 │   ├── hlr_lookup.py             # Phone validation + reverse lookup
-│   ├── hunter.py                 # EmailRep reputation lookup
+│   ├── hunter.py                 # DNS-based email reputation check
 │   ├── telegram_lookup.py        # Telegram username/ID lookup
 │   ├── email_header_analyzer.py  # SPF/DKIM/DMARC + hop analysis
 │   ├── metadata_extractor.py     # EXIF/PDF/DOCX + GPS extraction

@@ -132,6 +132,39 @@ export interface TelegramData {
   error?: string;
 }
 
+export interface EmailRepData {
+  email?: string;
+  reputation?: string;
+  suspicious?: boolean;
+  valid_mx?: boolean;
+  deliverable?: boolean | null;
+  spoofable?: boolean;
+  disposable?: boolean;
+  free_provider?: boolean;
+  spf?: boolean;
+  dmarc?: boolean;
+  domain_reputation?: string;
+  mx_records?: string[];
+  error?: string;
+}
+
+export interface SmtpData {
+  email?: string;
+  exists?: boolean | null;
+  smtp_connect?: boolean;
+  catch_all?: boolean;
+  disposable?: boolean;
+  details?: string[];
+  error?: string;
+}
+
+export interface BreachData {
+  found?: boolean;
+  total?: number;
+  breaches?: (string | { name?: string; title?: string })[];
+  error?: string;
+}
+
 export interface ScanResults {
   whois?: WhoisData;
   dns?: DnsRecord;
@@ -145,6 +178,9 @@ export interface ScanResults {
   opsec?: OpsecScore;
   phone?: PhoneData;
   telegram?: TelegramData;
+  emailrep?: EmailRepData;
+  smtp?: SmtpData;
+  breaches?: BreachData;
   website?: Record<string, unknown>;
   dorks?: string[];
   report_path?: string;

@@ -13,17 +13,17 @@ const TOOLS = [
 
 const CAPS = [
   { title: 'Domain / IP',      icon: Globe,  items: ['WHOIS · DNS · GeoIP', 'Subdomains · Shodan', 'VirusTotal · Wayback'] },
-  { title: 'Email / Username', icon: User,   items: ['DNS reputation · Blackbird', 'Social accounts', 'Google Dorks'] },
+  { title: 'Email',            icon: User,   items: ['DNS reputation · SMTP', 'Breach check · Disposable', 'SPF · DKIM · DMARC'] },
   { title: 'Phone',            icon: Phone,  items: ['Validation · Carrier', 'Country · Reverse lookup'] },
-  { title: 'Threat Intel',     icon: Shield, items: ['VirusTotal · AbuseIPDB', 'CVEs · TOR detection', 'OPSEC Score'] },
+  { title: 'Username',         icon: Shield, items: ['Blackbird · Maigret', '50+ / 3000+ platforms', 'OPSEC Score'] },
 ];
 
 const TARGETS = ['domain.com', '192.168.1.1', 'user@example.com', '@username', '+1 555 000 0000'];
 
 const STATS = [
-  { label: 'Modules',  value: 12, icon: Database },
-  { label: 'Sources',  value: 8,  icon: Zap },
-  { label: 'Scan types', value: 4, icon: Eye },
+  { label: 'Modules',  value: 15, icon: Database },
+  { label: 'Sources',  value: 10, icon: Zap },
+  { label: 'Scan types', value: 5, icon: Eye },
   { label: 'Status',   value: 0,  icon: Activity, text: 'ONLINE' },
 ];
 

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal } from 'lucide-react';
+import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
 import { getReportUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
 
@@ -136,6 +136,7 @@ const TABS = [
   { id: 'accounts', label: 'Accounts', icon: User },
   { id: 'threats', label: 'Threats', icon: AlertTriangle },
   { id: 'wayback', label: 'Wayback', icon: Clock },
+  { id: 'email', label: 'Email', icon: Mail },
   { id: 'dorks', label: 'Dorks', icon: Zap },
   { id: 'phone', label: 'Phone', icon: Phone },
   { id: 'telegram', label: 'Telegram', icon: MessageCircle },
@@ -193,6 +194,7 @@ export function ScanResults({ scan }: Props) {
     if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
     if (t.id === 'threats') return r.virustotal || r.abuseipdb || r.shodan;
     if (t.id === 'wayback') return r.wayback;
+    if (t.id === 'email') return r.emailrep || r.smtp || r.breaches;
     if (t.id === 'dorks') return r.dorks?.length;
     if (t.id === 'phone') return r.phone;
     if (t.id === 'telegram') return r.telegram;
@@ -422,6 +424,98 @@ export function ScanResults({ scan }: Props) {
               </div>
             )}
           </Card>
+        )}
+
+        {tab === 'email' && (
+          <div>
+            {r.emailrep && !r.emailrep.error && (
+              <Card title="Email Reputation">
+                <div className="space-y-1.5">
+                  <div className="dt-row"><span className="dt-label">Reputation</span>
+                    <span className={`font-bold ${r.emailrep.reputation === 'high' ? 'text-green' : r.emailrep.reputation === 'medium' ? 'text-yellow' : 'text-red'}`}>
+                      {(r.emailrep.reputation || 'N/A').toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">Suspicious</span>
+                    <span className={r.emailrep.suspicious ? 'text-red' : 'text-green'}>{r.emailrep.suspicious ? 'Yes' : 'No'}</span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">Valid MX</span>
+                    <span className={r.emailrep.valid_mx ? 'text-green' : 'text-red'}>{r.emailrep.valid_mx ? 'Yes' : 'No'}</span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">Deliverable</span>
+                    <span className={r.emailrep.deliverable ? 'text-green' : r.emailrep.deliverable === false ? 'text-red' : 'text-text-3'}>
+                      {r.emailrep.deliverable === true ? 'Yes' : r.emailrep.deliverable === false ? 'No' : 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">SPF</span>
+                    <span className={r.emailrep.spf ? 'text-green' : 'text-red'}>{r.emailrep.spf ? 'Yes' : 'No'}</span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">DMARC</span>
+                    <span className={r.emailrep.dmarc ? 'text-green' : 'text-red'}>{r.emailrep.dmarc ? 'Yes' : 'No'}</span>
+                  </div>
+                  <DtRow label="Domain Reputation" value={r.emailrep.domain_reputation?.toUpperCase()} />
+                  {r.emailrep.disposable && <div className="text-red text-[12px] font-semibold mt-1">⚠ Disposable email detected</div>}
+                  {r.emailrep.spoofable && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Domain is spoofable (missing SPF/DMARC)</div>}
+                  {r.emailrep.free_provider && <div className="text-text-3 text-[12px] mt-1">Free email provider</div>}
+                  {r.emailrep.mx_records?.length > 0 && (
+                    <div className="dt-row"><span className="dt-label">MX Records</span>
+                      <div>{r.emailrep.mx_records.map((mx: string) => <span key={mx} className="tag">{mx}</span>)}</div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+            {r.emailrep?.error && (
+              <Card title="Email Reputation">
+                <div className="text-red text-sm">{r.emailrep.error}</div>
+              </Card>
+            )}
+            {r.smtp && !r.smtp.error && (
+              <Card title="SMTP Verification">
+                <div className="space-y-1.5">
+                  <div className="dt-row"><span className="dt-label">Exists</span>
+                    <span className={r.smtp.exists === true ? 'text-green' : r.smtp.exists === false ? 'text-red' : 'text-text-3'}>
+                      {r.smtp.exists === true ? 'Yes' : r.smtp.exists === false ? 'No' : 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="dt-row"><span className="dt-label">SMTP Connect</span>
+                    <span className={r.smtp.smtp_connect ? 'text-green' : 'text-red'}>{r.smtp.smtp_connect ? 'Yes' : 'No'}</span>
+                  </div>
+                  {r.smtp.catch_all && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Catch-all server (accepts any address)</div>}
+                  {r.smtp.details?.length > 0 && (
+                    <div className="mt-2">
+                      <div className="text-[10px] text-text-3 uppercase tracking-wider mb-1">Details</div>
+                      {r.smtp.details.map((d: string, i: number) => (
+                        <div key={i} className="text-[11px] text-text-2 py-0.5">• {d}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+            {r.breaches && !r.breaches.error && (
+              <Card title="Breach Check">
+                <div className="space-y-1.5">
+                  {r.breaches.found !== undefined && (
+                    <div className="dt-row"><span className="dt-label">Breaches Found</span>
+                      <span className={r.breaches.found ? 'text-red font-bold' : 'text-green'}>{r.breaches.found ? 'Yes' : 'No'}</span>
+                    </div>
+                  )}
+                  {r.breaches.breaches?.length > 0 && (
+                    <div className="mt-2">
+                      <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Breached Services</div>
+                      <div className="flex flex-wrap gap-1">
+                        {r.breaches.breaches.map((b: any, i: number) => (
+                          <span key={i} className="tag tag-red">{typeof b === 'string' ? b : b.name || b.title || JSON.stringify(b)}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {r.breaches.total !== undefined && <DtRow label="Total Breaches" value={r.breaches.total} />}
+                </div>
+              </Card>
+            )}
+          </div>
         )}
 
         {tab === 'dorks' && r.dorks && (

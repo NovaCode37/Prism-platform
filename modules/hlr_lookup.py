@@ -41,7 +41,7 @@ class HLRLookup:
             result["carrier"] = carrier.name_for_number(parsed, "en")
 
             result["country"] = geocoder.description_for_number(parsed, "en")
-            result["region"] = geocoder.description_for_number(parsed, "ru")
+            result["region"] = geocoder.description_for_number(parsed, "en")
             result["country_code"] = phonenumbers.region_code_for_number(parsed)
             
             result["timezones"] = list(timezone.time_zones_for_number(parsed))
