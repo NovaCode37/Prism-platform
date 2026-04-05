@@ -457,9 +457,9 @@ export function ScanResults({ scan }: Props) {
                   {r.emailrep.disposable && <div className="text-red text-[12px] font-semibold mt-1">⚠ Disposable email detected</div>}
                   {r.emailrep.spoofable && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Domain is spoofable (missing SPF/DMARC)</div>}
                   {r.emailrep.free_provider && <div className="text-text-3 text-[12px] mt-1">Free email provider</div>}
-                  {r.emailrep.mx_records?.length > 0 && (
+                  {(r.emailrep.mx_records?.length ?? 0) > 0 && (
                     <div className="dt-row"><span className="dt-label">MX Records</span>
-                      <div>{r.emailrep.mx_records.map((mx: string) => <span key={mx} className="tag">{mx}</span>)}</div>
+                      <div>{r.emailrep.mx_records?.map((mx: string) => <span key={mx} className="tag">{mx}</span>)}</div>
                     </div>
                   )}
                 </div>
