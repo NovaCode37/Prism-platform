@@ -482,10 +482,10 @@ export function ScanResults({ scan }: Props) {
                     <span className={r.smtp.smtp_connect ? 'text-green' : 'text-red'}>{r.smtp.smtp_connect ? 'Yes' : 'No'}</span>
                   </div>
                   {r.smtp.catch_all && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Catch-all server (accepts any address)</div>}
-                  {r.smtp.details?.length > 0 && (
+                  {(r.smtp.details?.length ?? 0) > 0 && (
                     <div className="mt-2">
                       <div className="text-[10px] text-text-3 uppercase tracking-wider mb-1">Details</div>
-                      {r.smtp.details.map((d: string, i: number) => (
+                      {r.smtp.details?.map((d: string, i: number) => (
                         <div key={i} className="text-[11px] text-text-2 py-0.5">• {d}</div>
                       ))}
                     </div>
@@ -501,11 +501,11 @@ export function ScanResults({ scan }: Props) {
                       <span className={r.breaches.found ? 'text-red font-bold' : 'text-green'}>{r.breaches.found ? 'Yes' : 'No'}</span>
                     </div>
                   )}
-                  {r.breaches.breaches?.length > 0 && (
+                  {(r.breaches.breaches?.length ?? 0) > 0 && (
                     <div className="mt-2">
                       <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Breached Services</div>
                       <div className="flex flex-wrap gap-1">
-                        {r.breaches.breaches.map((b: any, i: number) => (
+                        {r.breaches.breaches?.map((b: any, i: number) => (
                           <span key={i} className="tag tag-red">{typeof b === 'string' ? b : b.name || b.title || JSON.stringify(b)}</span>
                         ))}
                       </div>
