@@ -16,10 +16,14 @@ def _parse_received_ip(line: str) -> Optional[str]:
     ip_re = re.compile(r'\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b')
     matches = ip_re.findall(line)
     for ip in matches:
-        parts = ip.split('.')
-        if parts[0] in ('10', '127', '192', '172'):
+        parts = [int(p) for p in ip.split('.')]
+        if parts[0] == 10:
             continue
-        if parts[0] == '172' and 16 <= int(parts[1]) <= 31:
+        if parts[0] == 127:
+            continue
+        if parts[0] == 192 and parts[1] == 168:
+            continue
+        if parts[0] == 172 and 16 <= parts[1] <= 31:
             continue
         return ip
     return None

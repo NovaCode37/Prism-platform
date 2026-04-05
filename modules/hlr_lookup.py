@@ -40,9 +40,26 @@ class HLRLookup:
             
             result["carrier"] = carrier.name_for_number(parsed, "en")
 
-            result["country"] = geocoder.description_for_number(parsed, "en")
+            region_code = phonenumbers.region_code_for_number(parsed)
+            result["country_code"] = region_code
             result["region"] = geocoder.description_for_number(parsed, "en")
-            result["country_code"] = phonenumbers.region_code_for_number(parsed)
+            # Use region_code to get country name; fall back to geocoder description
+            from phonenumbers import PhoneMetadata
+            _country_names = {
+                "US": "United States", "GB": "United Kingdom", "DE": "Germany",
+                "FR": "France", "RU": "Russia", "CN": "China", "JP": "Japan",
+                "IN": "India", "BR": "Brazil", "AU": "Australia", "CA": "Canada",
+                "IT": "Italy", "ES": "Spain", "NL": "Netherlands", "SE": "Sweden",
+                "NO": "Norway", "DK": "Denmark", "FI": "Finland", "PL": "Poland",
+                "AT": "Austria", "CH": "Switzerland", "BE": "Belgium", "PT": "Portugal",
+                "IE": "Ireland", "CZ": "Czech Republic", "GR": "Greece", "TR": "Turkey",
+                "KR": "South Korea", "MX": "Mexico", "AR": "Argentina", "CO": "Colombia",
+                "ZA": "South Africa", "UA": "Ukraine", "KZ": "Kazakhstan", "IL": "Israel",
+                "AE": "United Arab Emirates", "SA": "Saudi Arabia", "TH": "Thailand",
+                "VN": "Vietnam", "PH": "Philippines", "ID": "Indonesia", "MY": "Malaysia",
+                "SG": "Singapore", "NZ": "New Zealand", "HK": "Hong Kong", "TW": "Taiwan",
+            }
+            result["country"] = _country_names.get(region_code, region_code or geocoder.description_for_number(parsed, "en"))
             
             result["timezones"] = list(timezone.time_zones_for_number(parsed))
             
