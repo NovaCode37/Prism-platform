@@ -1,19 +1,8 @@
 import os
-import urllib3
-import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-_orig_send = requests.Session.send
-def _send_no_verify(self, r, **kwargs):
-    kwargs["verify"] = False
-    return _orig_send(self, r, **kwargs)
-requests.Session.send = _send_no_verify
-
-EMAILREP_API_KEY = os.getenv("EMAILREP_API_KEY", "")
 NUMVERIFY_API_KEY = os.getenv("NUMVERIFY_API_KEY", "")
 LEAK_LOOKUP_API_KEY = os.getenv("LEAK_LOOKUP_API_KEY", "")
 IPINFO_API_KEY = os.getenv("IPINFO_API_KEY", "")

@@ -324,7 +324,6 @@ def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
             params={"q": query, "format": "json", "limit": 1},
             headers={"User-Agent": "OSINT-Toolkit/2.0"},
             timeout=8,
-            verify=False,
         )
         data = r.json()
         if data:
@@ -606,7 +605,7 @@ async def ai_summary(request: Request, req: dict):
                 headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
                 json={"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": prompt}],
                       "temperature": 0.3, "max_tokens": 1024},
-                timeout=30, verify=False,
+                timeout=30,
             )
             return r.json()
         data = await loop.run_in_executor(None, _groq_call)
@@ -656,7 +655,7 @@ async def ai_chat(request: Request, req: dict):
                     "temperature": 0.5,
                     "max_tokens": 512,
                 },
-                timeout=30, verify=False,
+                timeout=30,
             )
             return r.json()
         data = await loop.run_in_executor(None, _groq_chat)

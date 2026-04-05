@@ -36,7 +36,6 @@ class URLScanner:
                 headers=headers,
                 data={"url": url},
                 timeout=15,
-                verify=False,
             )
             if r.status_code not in (200, 201):
                 result["error"] = f"Submit failed: HTTP {r.status_code}"
@@ -57,7 +56,6 @@ class URLScanner:
                     f"{self.VT_BASE}/analyses/{analysis_id}",
                     headers=headers,
                     timeout=15,
-                    verify=False,
                 )
                 data = r2.json().get("data", {})
                 attrs = data.get("attributes", {})
