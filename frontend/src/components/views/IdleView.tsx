@@ -13,7 +13,7 @@ const TOOLS = [
 
 const CAPS = [
   { title: 'Domain / IP',      icon: Globe,  items: ['WHOIS · DNS · GeoIP', 'Subdomains · Shodan', 'VirusTotal · Wayback'] },
-  { title: 'Email / Username', icon: User,   items: ['EmailRep · Blackbird', 'Social accounts', 'Google Dorks'] },
+  { title: 'Email / Username', icon: User,   items: ['DNS reputation · Blackbird', 'Social accounts', 'Google Dorks'] },
   { title: 'Phone',            icon: Phone,  items: ['Validation · Carrier', 'Country · Reverse lookup'] },
   { title: 'Threat Intel',     icon: Shield, items: ['VirusTotal · AbuseIPDB', 'CVEs · TOR detection', 'OPSEC Score'] },
 ];

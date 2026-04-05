@@ -40,7 +40,6 @@ jobs:
 
       - name: Run tests with coverage
         env:
-          EMAILREP_API_KEY: ""
           NUMVERIFY_API_KEY: ""
           LEAK_LOOKUP_API_KEY: ""
           IPINFO_API_KEY: ""
