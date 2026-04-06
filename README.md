@@ -1,9 +1,9 @@
 # PRISM — Open Source Intelligence Platform
 
-> Passive reconnaissance framework with a modern full-stack web interface.  
-> Built for security research, OSINT investigations, and infosec portfolio demonstration.
+> All-in-one passive reconnaissance framework with a real-time web dashboard, AI-powered analysis, and 20+ OSINT modules.  
+> Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel, breach data, username search, OPSEC score, entity graphs, and a full HTML report in seconds.
 
-**Live Demo: [getprism.su](https://getprism.su)**
+**Live Demo: [getprism.su](https://getprism.su)** | **Docs: [CONTRIBUTING.md](CONTRIBUTING.md)**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)
@@ -17,13 +17,27 @@
 
 ---
 
+## Why PRISM?
+
+- **20+ modules** — WHOIS, DNS, crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, email reputation, SMTP verify, breach lookup, Blackbird (50+ sites), Maigret (3000+ sites), Telegram, phone HLR, email headers, file metadata, and more
+- **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
+- **Real-time dashboard** — WebSocket-driven scan progress, interactive entity relationship graph, GeoIP map with coordinates
+- **OPSEC Score** — aggregated 0–100 exposure risk score based on all collected data
+- **Self-contained reports** — export full scan results as a styled HTML report
+- **Zero mandatory API keys** — 12 out of 20 modules work without any keys at all
+- **One-command deploy** — `docker compose up --build` and you're running
+- **Fully open source** — MIT license, extensible module architecture, contributor-friendly
+
+---
+
 ## Overview
 
-PRISM aggregates data from **10+ external intelligence sources** to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
+PRISM aggregates data from **20+ external intelligence sources** to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
 
 **Stack:**
 - **Backend** — Python, FastAPI, asyncio, WebSocket, Pydantic
 - **Frontend** — Next.js 14 (App Router), React, TypeScript, Tailwind CSS
+- **AI** — OpenRouter API (Nvidia Nemotron) for summary and chat
 - **Infrastructure** — Docker, docker-compose, GitHub Actions CI/CD
 - **Tests** — pytest, 30+ test cases with monkeypatching
 
