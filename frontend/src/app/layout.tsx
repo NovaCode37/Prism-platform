@@ -31,8 +31,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <meta name="yandex-verification" content="YANDEX_VERIFICATION_CODE" />
         <link rel="canonical" href="https://getprism.su/" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'PRISM',
+              url: 'https://getprism.su',
+              description: 'Professional OSINT toolkit for domain reconnaissance, email verification, username search, threat intelligence, and AI-powered analysis.',
+              applicationCategory: 'SecurityApplication',
+              operatingSystem: 'Web',
+              author: {
+                '@type': 'Person',
+                name: 'NovaCode37',
+                url: 'https://github.com/NovaCode37',
+              },
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            }),
+          }}
+        />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
         <LoadingWrapper>{children}</LoadingWrapper>
