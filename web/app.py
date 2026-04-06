@@ -64,6 +64,49 @@ _scans: Dict[str, Dict] = {}
 _queues: Dict[str, asyncio.Queue] = {}
 MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS", "200"))
 
+_SCANS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scan_data")
+os.makedirs(_SCANS_DIR, exist_ok=True)
+
+def _scan_path(scan_id: str) -> str:
+    return os.path.join(_SCANS_DIR, f"{scan_id}.json")
+
+def _save_scan(scan_id: str, data: Dict) -> None:
+    safe = {k: v for k, v in data.items() if k != "results" or v is not None}
+    try:
+        with open(_scan_path(scan_id), "w", encoding="utf-8") as f:
+            json.dump(safe, f, default=str)
+    except Exception:
+        pass
+
+def _load_scan(scan_id: str) -> Optional[Dict]:
+    if scan_id in _scans:
+        return _scans[scan_id]
+    p = _scan_path(scan_id)
+    if os.path.exists(p):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return None
+
+def _list_scans_from_disk() -> List[Dict]:
+    result = []
+    try:
+        for fname in sorted(os.listdir(_SCANS_DIR), reverse=True):
+            if fname.endswith(".json"):
+                try:
+                    with open(os.path.join(_SCANS_DIR, fname), "r", encoding="utf-8") as f:
+                        s = json.load(f)
+                        result.append(s)
+                except Exception:
+                    pass
+            if len(result) >= 50:
+                break
+    except Exception:
+        pass
+    return result
+
 def _evict_old_scans() -> None:
     if len(_scans) <= MAX_STORED_SCANS:
         return
@@ -105,6 +148,7 @@ async def _push(scan_id: str, msg: Dict) -> None:
         if "progress" not in scan:
             scan["progress"] = []
         scan["progress"].append(msg)
+        _save_scan(scan_id, scan)
     q = _queues.get(scan_id)
     if q:
         await q.put(msg)
@@ -272,11 +316,13 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 "completed_at": datetime.now().isoformat(),
             }
         )
+        _save_scan(scan_id, _scans[scan_id])
         await _push(scan_id, {"type": "scan_complete", "scan_id": scan_id})
 
     except Exception as exc:
         safe_err = str(exc).split("\n")[0][:200]
         _scans[scan_id].update({"status": "error", "error": safe_err})
+        _save_scan(scan_id, _scans[scan_id])
         await _push(scan_id, {"type": "scan_error", "error": safe_err})
     finally:
         await _push(scan_id, {"type": "_done"})
@@ -303,7 +349,9 @@ async def start_scan(request: Request, req: ScanRequest):
         "status": "running",
         "started_at": datetime.now().isoformat(),
         "results": None,
+        "progress": [],
     }
+    _save_scan(scan_id, _scans[scan_id])
     _queues[scan_id] = asyncio.Queue()
 
     def _run_in_thread():
@@ -322,7 +370,7 @@ async def start_scan(request: Request, req: ScanRequest):
 @limiter.limit("30/minute")
 async def get_scan(request: Request, scan_id: str):
     validate_scan_id(scan_id)
-    scan = _scans.get(scan_id)
+    scan = _load_scan(scan_id)
     if not scan:
         return JSONResponse({"error": "Scan not found"}, status_code=404)
     safe = {k: v for k, v in scan.items() if k not in ("results",)}
@@ -352,7 +400,7 @@ def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
 @limiter.limit("30/minute")
 async def get_graph(request: Request, scan_id: str):
     validate_scan_id(scan_id)
-    scan = _scans.get(scan_id)
+    scan = _load_scan(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
     return scan["results"].get("graph", {"nodes": [], "edges": []})
@@ -396,7 +444,7 @@ _COUNTRY_COORDS: Dict[str, tuple] = {
 @limiter.limit("30/minute")
 async def get_map_data(request: Request, scan_id: str):
     validate_scan_id(scan_id)
-    scan = _scans.get(scan_id)
+    scan = _load_scan(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
 
@@ -480,7 +528,7 @@ async def get_map_data(request: Request, scan_id: str):
 @limiter.limit("10/minute")
 async def download_report(request: Request, scan_id: str):
     validate_scan_id(scan_id)
-    scan = _scans.get(scan_id)
+    scan = _load_scan(scan_id)
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
     results = scan["results"]
@@ -687,15 +735,16 @@ async def ai_chat(request: Request, req: dict):
 @app.get("/api/scans", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
 async def list_scans(request: Request):
+    all_scans = _list_scans_from_disk()
     return [
         {
-            "scan_id": s["scan_id"],
-            "target": s["target"],
-            "scan_type": s["scan_type"],
-            "status": s["status"],
-            "started_at": s["started_at"],
+            "scan_id": s.get("scan_id", ""),
+            "target": s.get("target", ""),
+            "scan_type": s.get("scan_type", ""),
+            "status": s.get("status", ""),
+            "started_at": s.get("started_at", ""),
         }
-        for s in reversed(list(_scans.values()))
+        for s in all_scans
     ]
 
 @app.websocket("/ws/{scan_id}")
