@@ -605,7 +605,7 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'ai' && (
           <div>
-            <Card title="AI OSINT Analysis · Groq Llama 3">
+            <Card title="AI OSINT Analysis · Nvidia Nemotron">
               {!aiSummary && !aiLoading && (
                 <button onClick={runAi} className="btn-primary w-full">
                   <Brain size={13} /> Generate AI Summary

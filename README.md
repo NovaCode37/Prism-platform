@@ -56,7 +56,7 @@ PRISM aggregates data from **10+ external intelligence sources** to build a comp
 | OPSEC Score | Aggregated 0–100 exposure risk score | — |
 | Entity Graph | Interactive node-relationship visualization | — |
 | HTML Report | Self-contained PDF-ready scan report | — |
-| Groq AI Summary | Natural-language findings summary via LLM | Groq |
+| AI Summary | Natural-language findings summary via LLM | OpenRouter |
 
 ---
 
@@ -168,7 +168,7 @@ Blackbird async search across 50+ platforms with response times.
 <p align="center"><img src="docs/pics/username_showcase/graph_showcase.png" alt="Username Graph" width="720" /></p>
 </details>
 
-### AI Analysis (Groq)
+### AI Analysis (OpenRouter)
 
 LLM-powered OSINT summary with risk assessment and recommended next investigation steps. Interactive chat for follow-up questions.
 
@@ -248,7 +248,7 @@ Copy `.env.example` → `.env`. All keys are optional — modules gracefully ski
 | `VIRUSTOTAL_API_KEY` | Threat intelligence | 500 req/day |
 | `ABUSEIPDB_API_KEY` | IP abuse score | 1000 req/day |
 | `SHODAN_API_KEY` | Port scan + CVE lookup | Free tier |
-| `GROQ_API_KEY` | AI summary (llama-3.1-8b) | Free tier |
+| `OPENROUTER_API_KEY` | AI summary (Nvidia Nemotron) | Free tier |
 | `TELEGRAM_BOT_TOKEN` | Telegram user lookup | Free |
 | `LEAK_LOOKUP_API_KEY` | Breach database | Limited free |
 

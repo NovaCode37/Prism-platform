@@ -27,7 +27,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 _LLM_KEY = OPENROUTER_API_KEY or GROQ_API_KEY
 _LLM_URL = "https://openrouter.ai/api/v1/chat/completions" if OPENROUTER_API_KEY else "https://api.groq.com/openai/v1/chat/completions"
-_LLM_MODEL = "qwen/qwen3.6-plus:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant"
+_LLM_MODEL = "nvidia/nemotron-3-nano-30b-a3b:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant"
 
 from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id, validate_url_not_private
 
