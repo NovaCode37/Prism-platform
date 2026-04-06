@@ -24,6 +24,10 @@ from modules.opsec_score import score_from_results
 from modules.report_generator import generate_html_report
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+_LLM_KEY = OPENROUTER_API_KEY or GROQ_API_KEY
+_LLM_URL = "https://openrouter.ai/api/v1/chat/completions" if OPENROUTER_API_KEY else "https://api.groq.com/openai/v1/chat/completions"
+_LLM_MODEL = "meta-llama/llama-3.1-8b-instruct:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant"
 
 from web.security import require_api_key, validate_target, check_upload_size, get_allowed_origins, limiter, validate_scan_id, validate_url_not_private
 
@@ -639,10 +643,10 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
 @app.post("/api/ai/summary", dependencies=[Depends(require_api_key)])
 @limiter.limit("5/minute")
 async def ai_summary(request: Request, req: dict):
-    if not GROQ_API_KEY:
-        return JSONResponse({"error": "GROQ_API_KEY not set in .env"}, status_code=400)
+    if not _LLM_KEY:
+        return JSONResponse({"error": "OPENROUTER_API_KEY or GROQ_API_KEY not set in .env"}, status_code=400)
     scan_id = req.get("scan_id")
-    scan = _scans.get(scan_id) if scan_id else None
+    scan = _load_scan(scan_id) if scan_id else None
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found"}, status_code=404)
 
@@ -662,22 +666,23 @@ async def ai_summary(request: Request, req: dict):
 
     try:
         loop = asyncio.get_event_loop()
-        def _groq_call():
+        def _llm_call():
             r = _requests.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-                json={"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": prompt}],
+                _LLM_URL,
+                headers={"Authorization": f"Bearer {_LLM_KEY}", "Content-Type": "application/json",
+                         "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
+                json={"model": _LLM_MODEL, "messages": [{"role": "user", "content": prompt}],
                       "temperature": 0.3, "max_tokens": 1024},
                 timeout=30,
             )
             return r.json()
-        data = await loop.run_in_executor(None, _groq_call)
+        data = await loop.run_in_executor(None, _llm_call)
         if "error" in data:
             return JSONResponse({"error": data["error"].get("message", str(data["error"]))}, status_code=400)
         if not data.get("choices"):
             return JSONResponse({"error": f"Unexpected response: {json.dumps(data)[:300]}"}, status_code=500)
         text = data["choices"][0]["message"]["content"]
-        return {"summary": text, "model": data.get("model", "llama3-8b-8192")}
+        return {"summary": text, "model": data.get("model", _LLM_MODEL)}
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
@@ -685,13 +690,13 @@ async def ai_summary(request: Request, req: dict):
 @app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def ai_chat(request: Request, req: dict):
-    if not GROQ_API_KEY:
-        return JSONResponse({"error": "GROQ_API_KEY not set in .env"}, status_code=400)
+    if not _LLM_KEY:
+        return JSONResponse({"error": "OPENROUTER_API_KEY or GROQ_API_KEY not set in .env"}, status_code=400)
     scan_id = req.get("scan_id")
     message = req.get("message", "").strip()
     if not message:
         return JSONResponse({"error": "No message provided"}, status_code=400)
-    scan = _scans.get(scan_id) if scan_id else None
+    scan = _load_scan(scan_id) if scan_id else None
     context = ""
     if scan and scan.get("results"):
         results = scan["results"]
@@ -702,12 +707,13 @@ async def ai_chat(request: Request, req: dict):
                    f"{json.dumps(summary_data, indent=2, default=str)[:4000]}\n\n")
     try:
         loop = asyncio.get_event_loop()
-        def _groq_chat():
+        def _llm_chat():
             r = _requests.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
+                _LLM_URL,
+                headers={"Authorization": f"Bearer {_LLM_KEY}", "Content-Type": "application/json",
+                         "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
                 json={
-                    "model": "llama-3.1-8b-instant",
+                    "model": _LLM_MODEL,
                     "messages": [
                         {"role": "system", "content": (
                             "You are a professional OSINT analyst assistant. "
@@ -721,7 +727,7 @@ async def ai_chat(request: Request, req: dict):
                 timeout=30,
             )
             return r.json()
-        data = await loop.run_in_executor(None, _groq_chat)
+        data = await loop.run_in_executor(None, _llm_chat)
         if "error" in data:
             return JSONResponse({"error": data["error"].get("message", str(data["error"]))}, status_code=400)
         if not data.get("choices"):
