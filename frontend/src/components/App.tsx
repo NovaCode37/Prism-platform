@@ -57,56 +57,6 @@ export function App() {
     }
   }, []);
 
-  const connectWs = useCallback((id: string) => {
-    if (wsRef.current) wsRef.current.close();
-    const url = getWsUrl(id);
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
-
-    ws.onmessage = (e) => {
-      try {
-        const msg = JSON.parse(e.data);
-
-        if (msg.type === 'module_start') {
-          setProgressLog(prev => [...prev, `→ ${msg.module}`]);
-
-        } else if (msg.type === 'module_done') {
-          if (msg.status === 'error') {
-            setProgressLog(prev => [...prev, `✗ ${msg.module}: ${msg.error || 'error'}`]);
-          } else {
-            setProgressLog(prev => [...prev, `✓ ${msg.module}`]);
-          }
-
-        } else if (msg.type === '_done') {
-          ws.close();
-          fetchAndShowResults(id);
-
-        } else if (msg.type === 'scan_error') {
-          setScanStatus('failed');
-          setProgressLog(prev => [...prev, `SCAN ERROR: ${msg.error}`]);
-
-        } else if (msg.type === 'error') {
-          setScanStatus('failed');
-          setProgressLog(prev => [...prev, `ERROR: ${msg.error ?? msg.message}`]);
-        }
-      } catch {
-        setProgressLog(prev => [...prev, e.data]);
-      }
-    };
-
-    ws.onerror = () => {
-      setScanStatus('failed');
-      setProgressLog(prev => [...prev, 'WebSocket connection error — is the backend running on port 8080?']);
-    };
-
-    ws.onclose = (e) => {
-      if (!e.wasClean && scanStatus === 'running') {
-        setProgressLog(prev => [...prev, 'WebSocket closed — polling for results…']);
-        pollForResults(id);
-      }
-    };
-  }, [scanStatus, fetchAndShowResults]);
-
   const pollForResults = useCallback(async (id: string) => {
     for (let i = 0; i < 60; i++) {
       await new Promise(r => setTimeout(r, 3000));
@@ -134,6 +84,60 @@ export function App() {
     }
     setScanStatus('failed');
   }, []);
+
+  const connectWs = useCallback((id: string) => {
+    if (wsRef.current) wsRef.current.close();
+    const url = getWsUrl(id);
+    const ws = new WebSocket(url);
+    wsRef.current = ws;
+    let done = false;
+
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+
+        if (msg.type === 'module_start') {
+          setProgressLog(prev => [...prev, `→ ${msg.module}`]);
+
+        } else if (msg.type === 'module_done') {
+          if (msg.status === 'error') {
+            setProgressLog(prev => [...prev, `✗ ${msg.module}: ${msg.error || 'error'}`]);
+          } else {
+            setProgressLog(prev => [...prev, `✓ ${msg.module}`]);
+          }
+
+        } else if (msg.type === '_done') {
+          done = true;
+          ws.close();
+          fetchAndShowResults(id);
+
+        } else if (msg.type === 'scan_error') {
+          done = true;
+          setScanStatus('failed');
+          setProgressLog(prev => [...prev, `SCAN ERROR: ${msg.error}`]);
+
+        } else if (msg.type === 'error') {
+          done = true;
+          setScanStatus('failed');
+          setProgressLog(prev => [...prev, `ERROR: ${msg.error ?? msg.message}`]);
+        }
+      } catch {
+        setProgressLog(prev => [...prev, e.data]);
+      }
+    };
+
+    ws.onerror = () => {
+      if (!done) {
+        setProgressLog(prev => [...prev, 'WebSocket unavailable — switching to polling…']);
+      }
+    };
+
+    ws.onclose = () => {
+      if (!done) {
+        pollForResults(id);
+      }
+    };
+  }, [fetchAndShowResults, pollForResults]);
 
   const handleScan = useCallback(async (target: string, type: ScanType, modules: string[]) => {
     setScanTarget(target);
