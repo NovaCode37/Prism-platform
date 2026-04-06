@@ -3,6 +3,8 @@
 > Passive reconnaissance framework with a modern full-stack web interface.  
 > Built for security research, OSINT investigations, and infosec portfolio demonstration.
 
+**🌐 Live Demo: [getprism.su](https://getprism.su)**
+
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)
@@ -324,6 +326,12 @@ This tool is intended **exclusively for lawful use**:
 - Academic and educational purposes
 
 Do **not** use PRISM for unauthorized data collection, surveillance, or any activity that violates applicable law. The author assumes no liability for misuse.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
 
 ---
 
