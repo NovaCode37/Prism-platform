@@ -58,10 +58,27 @@ export function App() {
   }, []);
 
   const pollForResults = useCallback(async (id: string) => {
-    for (let i = 0; i < 60; i++) {
-      await new Promise(r => setTimeout(r, 3000));
+    let seenProgress = 0;
+    for (let i = 0; i < 120; i++) {
+      await new Promise(r => setTimeout(r, 1500));
       try {
         const data = await getScan(id) as any;
+        const progress: any[] = data.progress ?? [];
+        if (progress.length > seenProgress) {
+          const newMsgs = progress.slice(seenProgress);
+          seenProgress = progress.length;
+          setProgressLog(prev => {
+            const lines = [...prev];
+            for (const msg of newMsgs) {
+              if (msg.type === 'module_start') lines.push(`→ ${msg.module}`);
+              else if (msg.type === 'module_done') {
+                if (msg.status === 'error') lines.push(`✗ ${msg.module}: ${msg.error || 'error'}`);
+                else lines.push(`✓ ${msg.module}`);
+              }
+            }
+            return lines;
+          });
+        }
         if (data.status === 'completed') {
           const normalized = {
             ...data,
@@ -78,6 +95,7 @@ export function App() {
         }
         if (data.status === 'error') {
           setScanStatus('failed');
+          setProgressLog(prev => [...prev, `Error: ${data.error || 'unknown'}`]);
           return;
         }
       } catch { /* keep polling */ }

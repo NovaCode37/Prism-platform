@@ -100,6 +100,11 @@ def _detect_type(target: str) -> str:
     return "username"
 
 async def _push(scan_id: str, msg: Dict) -> None:
+    scan = _scans.get(scan_id)
+    if scan is not None:
+        if "progress" not in scan:
+            scan["progress"] = []
+        scan["progress"].append(msg)
     q = _queues.get(scan_id)
     if q:
         await q.put(msg)
@@ -324,6 +329,7 @@ async def get_scan(request: Request, scan_id: str):
     if scan.get("results"):
         res_copy = {k: v for k, v in scan["results"].items() if k not in ("graph", "report_path")}
         safe["results"] = res_copy
+    safe["progress"] = scan.get("progress", [])
     return safe
 
 def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
