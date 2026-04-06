@@ -3,7 +3,7 @@
 > Passive reconnaissance framework with a modern full-stack web interface.  
 > Built for security research, OSINT investigations, and infosec portfolio demonstration.
 
-**🌐 Live Demo: [getprism.su](https://getprism.su)**
+**Live Demo: [getprism.su](https://getprism.su)**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)
