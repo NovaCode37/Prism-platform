@@ -29,7 +29,6 @@ function ErrorCard({ message }: { message: string }) {
   );
 }
 
-
 function Row({ label, value }: { label: string; value?: string | number | null }) {
   if (!value && value !== 0) return null;
   return (

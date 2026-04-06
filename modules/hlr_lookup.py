@@ -7,11 +7,11 @@ sys.path.append('..')
 from config import NUMVERIFY_API_KEY, Colors
 
 class HLRLookup:
-    
+
     def __init__(self):
         self.api_key = NUMVERIFY_API_KEY
         self.numverify_url = "http://apilayer.net/api/validate"
-    
+
     def validate_phone(self, phone: str, country_code: str = None) -> Dict[str, Any]:
         result = {
             "phone": phone,
@@ -24,7 +24,7 @@ class HLRLookup:
             "formatted": None,
             "error": None
         }
-        
+
         try:
             if country_code:
                 parsed = phonenumbers.parse(phone, country_code)
@@ -32,12 +32,12 @@ class HLRLookup:
                 if not phone.startswith('+'):
                     phone = '+' + phone
                 parsed = phonenumbers.parse(phone)
-            
+
             result["valid"] = phonenumbers.is_valid_number(parsed)
             result["formatted"] = phonenumbers.format_number(
                 parsed, phonenumbers.PhoneNumberFormat.INTERNATIONAL
             )
-            
+
             result["carrier"] = carrier.name_for_number(parsed, "en")
 
             region_code = phonenumbers.region_code_for_number(parsed)
@@ -60,9 +60,9 @@ class HLRLookup:
                 "SG": "Singapore", "NZ": "New Zealand", "HK": "Hong Kong", "TW": "Taiwan",
             }
             result["country"] = _country_names.get(region_code, region_code or geocoder.description_for_number(parsed, "en"))
-            
+
             result["timezones"] = list(timezone.time_zones_for_number(parsed))
-            
+
             number_type = phonenumbers.number_type(parsed)
             type_map = {
                 phonenumbers.PhoneNumberType.MOBILE: "Mobile",
@@ -75,19 +75,19 @@ class HLRLookup:
                 phonenumbers.PhoneNumberType.UNKNOWN: "Unknown"
             }
             result["line_type"] = type_map.get(number_type, "Unknown")
-            
+
             if self.api_key:
                 api_result = self._numverify_lookup(phone)
                 if api_result:
                     result.update(api_result)
-                    
+
         except phonenumbers.NumberParseException as e:
             result["error"] = f"Parse error: {str(e)}"
         except Exception as e:
             result["error"] = str(e)
-        
+
         return result
-    
+
     def _numverify_lookup(self, phone: str) -> Optional[Dict]:
         try:
             params = {
@@ -109,25 +109,25 @@ class HLRLookup:
         except Exception:
             pass
         return None
-    
+
     def print_result(self, result: Dict):
         print(f"\n{Colors.CYAN}{'='*50}{Colors.RESET}")
         print(f"{Colors.BOLD}HLR Lookup Result{Colors.RESET}")
         print(f"{Colors.CYAN}{'='*50}{Colors.RESET}")
-        
+
         if result.get("error"):
             print(f"{Colors.RED}Error: {result['error']}{Colors.RESET}")
             return
-        
+
         status = f"{Colors.GREEN}✓ Valid{Colors.RESET}" if result["valid"] else f"{Colors.RED}✗ Invalid{Colors.RESET}"
-        
+
         print(f"{Colors.YELLOW}Phone:{Colors.RESET} {result.get('formatted', result['phone'])}")
         print(f"{Colors.YELLOW}Status:{Colors.RESET} {status}")
         print(f"{Colors.YELLOW}Type:{Colors.RESET} {result.get('line_type', 'N/A')}")
         print(f"{Colors.YELLOW}Carrier:{Colors.RESET} {result.get('carrier') or 'N/A'}")
         print(f"{Colors.YELLOW}Country:{Colors.RESET} {result.get('country') or result.get('country_name', 'N/A')}")
         print(f"{Colors.YELLOW}Region:{Colors.RESET} {result.get('region') or result.get('location', 'N/A')}")
-        
+
         if result.get("timezones"):
             print(f"{Colors.YELLOW}Timezones:{Colors.RESET} {', '.join(result['timezones'])}")
 
@@ -203,22 +203,21 @@ class HLRLookup:
 
         return result
 
-
 def run_hlr_lookup():
     hlr = HLRLookup()
-    
+
     print(f"\n{Colors.BOLD}HLR Lookup - Mobile Number Checker{Colors.RESET}")
     print(f"{Colors.CYAN}Enter phone number with country code (e.g., +79001234567){Colors.RESET}")
-    
+
     phone = input(f"\n{Colors.GREEN}Phone number: {Colors.RESET}").strip()
-    
+
     if not phone:
         print(f"{Colors.RED}No phone number provided{Colors.RESET}")
         return None
-    
+
     result = hlr.validate_phone(phone)
     hlr.print_result(result)
-    
+
     return result
 
 if __name__ == "__main__":

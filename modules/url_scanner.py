@@ -7,7 +7,6 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from config import VIRUSTOTAL_API_KEY
 
-
 class URLScanner:
     VT_BASE = "https://www.virustotal.com/api/v3"
 

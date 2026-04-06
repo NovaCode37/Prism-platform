@@ -17,7 +17,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import config  
+import config
 
 from modules.graph_builder import build_graph
 from modules.opsec_score import score_from_results
@@ -210,7 +210,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     scan_id, "wayback", WaybackMachine().get_snapshots, target, 15
                 )
 
-
             if want("shodan"):
                 from modules.shodan_lookup import ShodanLookup
                 ip = target
@@ -399,7 +398,6 @@ def _geocode_sync(query: str) -> Optional[Tuple[float, float]]:
         pass
     return None
 
-
 @app.get("/api/scan/{scan_id}/graph", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
 async def get_graph(request: Request, scan_id: str):
@@ -408,7 +406,6 @@ async def get_graph(request: Request, scan_id: str):
     if not scan or not scan.get("results"):
         return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
     return scan["results"].get("graph", {"nodes": [], "edges": []})
-
 
 _COUNTRY_COORDS: Dict[str, tuple] = {
     "RU": (55.7558, 37.6173), "US": (38.8951, -77.0364), "GB": (51.5074, -0.1278),
@@ -527,7 +524,6 @@ async def get_map_data(request: Request, scan_id: str):
     zoom = 4 if (markers and markers[0].get("type") == "phone") else None
     return {"markers": markers, "center": center, "zoom": zoom}
 
-
 @app.get("/api/scan/{scan_id}/report", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def download_report(request: Request, scan_id: str):
@@ -563,7 +559,6 @@ async def scan_url(request: Request, req: dict):
     result = await loop.run_in_executor(None, URLScanner().scan, url)
     return result
 
-
 @app.post("/api/crypto", dependencies=[Depends(require_api_key)])
 @limiter.limit("20/minute")
 async def crypto_lookup(request: Request, req: dict):
@@ -575,7 +570,6 @@ async def crypto_lookup(request: Request, req: dict):
     result = await loop.run_in_executor(None, CryptoLookup().lookup, address)
     return result
 
-
 @app.post("/api/darkweb", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def darkweb_search(request: Request, req: dict):
@@ -586,7 +580,6 @@ async def darkweb_search(request: Request, req: dict):
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, DarkWebSearch().search, query)
     return result
-
 
 @app.post("/api/qr-decode", dependencies=[Depends(require_api_key), Depends(check_upload_size)])
 @limiter.limit("20/minute")
@@ -600,7 +593,6 @@ async def decode_qr(request: Request, file: UploadFile = File(...)):
     result = await loop.run_in_executor(None, QRDecoder().decode, data, file.filename)
     return result
 
-
 @app.post("/api/email-headers", dependencies=[Depends(require_api_key)])
 @limiter.limit("20/minute")
 async def analyze_email_headers(request: Request, req: dict):
@@ -611,7 +603,6 @@ async def analyze_email_headers(request: Request, req: dict):
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, analyze_headers, raw)
     return result
-
 
 @app.post("/api/metadata", dependencies=[Depends(require_api_key), Depends(check_upload_size)])
 @limiter.limit("20/minute")
@@ -638,7 +629,6 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
             os.unlink(tmp_path)
         except Exception:
             pass
-
 
 @app.post("/api/ai/summary", dependencies=[Depends(require_api_key)])
 @limiter.limit("5/minute")
@@ -685,7 +675,6 @@ async def ai_summary(request: Request, req: dict):
         return {"summary": text, "model": data.get("model", _LLM_MODEL)}
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
-
 
 @app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
@@ -736,7 +725,6 @@ async def ai_chat(request: Request, req: dict):
         return {"reply": reply, "model": data.get("model", "")}
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
-
 
 @app.get("/api/scans", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")

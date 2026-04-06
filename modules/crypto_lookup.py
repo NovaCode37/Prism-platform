@@ -2,7 +2,6 @@ import re
 import requests
 from typing import Dict, Any
 
-
 class CryptoLookup:
 
     def detect_type(self, address: str) -> str:

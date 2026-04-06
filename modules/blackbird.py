@@ -20,7 +20,7 @@ class SiteResult:
     response_time: float = 0.0
 
 class Blackbird:
-    
+
     SITES = {
         "GitHub": ("https://github.com/{}", "status", 404),
         "Twitter/X": ("https://x.com/{}", "status", 404),
@@ -72,24 +72,24 @@ class Blackbird:
         "Pornhub": ("https://www.pornhub.com/users/{}", "status", 404),
         "OnlyFans": ("https://onlyfans.com/{}", "status", 404),
     }
-    
+
     def __init__(self, timeout: int = 10, max_concurrent: int = 20):
         self.timeout = timeout
         self.max_concurrent = max_concurrent
         self.results: List[SiteResult] = []
-        
-    async def check_site(self, session: aiohttp.ClientSession, username: str, 
+
+    async def check_site(self, session: aiohttp.ClientSession, username: str,
                          site: str, config: tuple) -> SiteResult:
         url_template, error_type, error_indicator = config
         url = url_template.format(username)
-        
+
         start_time = asyncio.get_event_loop().time()
-        
+
         try:
             async with session.get(url, allow_redirects=True) as response:
                 response_time = asyncio.get_event_loop().time() - start_time
                 http_code = response.status
-                
+
                 if error_type == "status":
                     if http_code == error_indicator or http_code >= 400:
                         status = "not_found"
@@ -104,47 +104,47 @@ class Blackbird:
                             status = "found" if http_code == 200 else "not_found"
                     except:
                         status = "error"
-                
+
                 return SiteResult(site, url, status, http_code, response_time)
-                
+
         except asyncio.TimeoutError:
             return SiteResult(site, url, "timeout", 0, self.timeout)
         except Exception as e:
             return SiteResult(site, url, "error", 0, 0)
-    
+
     async def search(self, username: str, sites: List[str] = None) -> List[SiteResult]:
         self.results = []
-        
+
         if sites is None:
             sites_to_check = self.SITES
         else:
             sites_to_check = {k: v for k, v in self.SITES.items() if k in sites}
-        
+
         connector = aiohttp.TCPConnector(limit=self.max_concurrent)
         timeout = aiohttp.ClientTimeout(total=self.timeout)
-        
+
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5"
         }
-        
+
         async with aiohttp.ClientSession(connector=connector, timeout=timeout, headers=headers) as session:
             tasks = [
-                self.check_site(session, username, site, config) 
+                self.check_site(session, username, site, config)
                 for site, config in sites_to_check.items()
             ]
             self.results = await asyncio.gather(*tasks)
-        
+
         return self.results
-    
+
     def get_found(self) -> List[SiteResult]:
         return [r for r in self.results if r.status == "found"]
-    
+
     def export_json(self, username: str, filepath: str = None) -> str:
         if filepath is None:
             filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
-        
+
         data = {
             "username": username,
             "timestamp": datetime.now().isoformat(),
@@ -161,30 +161,30 @@ class Blackbird:
                 for r in self.results
             ]
         }
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        
+
         return filepath
-    
+
     def export_csv(self, username: str, filepath: str = None) -> str:
         if filepath is None:
             filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
-        
+
         with open(filepath, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(["Site", "URL", "Status", "HTTP Code", "Response Time (s)"])
             for r in self.results:
                 writer.writerow([r.site, r.url, r.status, r.http_code, round(r.response_time, 3)])
-        
+
         return filepath
-    
+
     def export_html(self, username: str, filepath: str = None) -> str:
         if filepath is None:
             filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html")
-        
+
         found = self.get_found()
-        
+
         html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -216,29 +216,29 @@ class Blackbird:
     <table>
         <tr><th>Site</th><th>URL</th><th>Status</th><th>Response Time</th></tr>
 """
-        
+
         for r in sorted(self.results, key=lambda x: (x.status != "found", x.site)):
             status_class = _html.escape(r.status)
             safe_site = _html.escape(r.site)
             safe_url = _html.escape(r.url)
             url_link = f'<a href="{safe_url}" target="_blank">{safe_url}</a>' if r.status == "found" else safe_url
             html += f'        <tr><td>{safe_site}</td><td>{url_link}</td><td class="{status_class}">{r.status.upper()}</td><td>{r.response_time:.2f}s</td></tr>\n'
-        
+
         html += """    </table>
 </body>
 </html>"""
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(html)
-        
+
         return filepath
-    
+
     def export_txt(self, username: str, filepath: str = None) -> str:
         if filepath is None:
             filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
-        
+
         found = self.get_found()
-        
+
         lines = [
             f"Blackbird Report - Username: {username}",
             f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
@@ -249,35 +249,35 @@ class Blackbird:
             "FOUND ACCOUNTS:",
             "=" * 60,
         ]
-        
+
         for r in found:
             lines.append(f"[+] {r.site}: {r.url}")
-        
+
         lines.extend(["", "=" * 60, "ALL RESULTS:", "=" * 60])
-        
+
         for r in self.results:
             status_symbol = "+" if r.status == "found" else "-" if r.status == "not_found" else "?" if r.status == "error" else "!"
             lines.append(f"[{status_symbol}] {r.site}: {r.status} ({r.response_time:.2f}s)")
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        
+
         return filepath
-    
+
     def print_results(self, username: str):
         found = self.get_found()
-        
+
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
         print(f"{Colors.BOLD}Blackbird Username Search: {username}{Colors.RESET}")
         print(f"{Colors.CYAN}{'='*60}{Colors.RESET}")
         print(f"{Colors.YELLOW}Sites Checked:{Colors.RESET} {len(self.results)}")
         print(f"{Colors.YELLOW}Accounts Found:{Colors.RESET} {Colors.GREEN}{len(found)}{Colors.RESET}")
-        
+
         if found:
             print(f"\n{Colors.BOLD}Found Accounts:{Colors.RESET}")
             for r in found:
                 print(f"  {Colors.GREEN}[+]{Colors.RESET} {r.site}: {Colors.CYAN}{r.url}{Colors.RESET}")
-        
+
         errors = [r for r in self.results if r.status in ("error", "timeout")]
         if errors:
             print(f"\n{Colors.YELLOW}Errors/Timeouts: {len(errors)}{Colors.RESET}")
@@ -285,26 +285,26 @@ class Blackbird:
 def run_blackbird():
     print(f"\n{Colors.BOLD}Blackbird - Username Search{Colors.RESET}")
     username = input(f"{Colors.GREEN}Enter username to search: {Colors.RESET}").strip()
-    
+
     if not username:
         print(f"{Colors.RED}No username provided{Colors.RESET}")
         return None
-    
+
     print(f"\n{Colors.CYAN}Searching for '{username}' across {len(Blackbird.SITES)} sites...{Colors.RESET}")
-    
+
     bb = Blackbird(timeout=10, max_concurrent=25)
     asyncio.run(bb.search(username))
     bb.print_results(username)
-    
+
     export = input(f"\n{Colors.GREEN}Export results? (json/csv/html/txt/all/no): {Colors.RESET}").strip().lower()
-    
+
     if export and export != "no":
         exports = []
         if export == "all":
             exports = ["json", "csv", "html", "txt"]
         else:
             exports = [export]
-        
+
         for fmt in exports:
             if fmt == "json":
                 path = bb.export_json(username)
@@ -317,7 +317,7 @@ def run_blackbird():
             else:
                 continue
             print(f"{Colors.GREEN}Exported to:{Colors.RESET} {path}")
-    
+
     return bb.results
 
 if __name__ == "__main__":

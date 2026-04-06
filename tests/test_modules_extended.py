@@ -499,8 +499,6 @@ class TestAbuseIPDB:
         assert result["country"] == "CN"
         assert result["error"] is None
 
-
-
 class TestBlackbird:
     def test_sites_dict_not_empty(self):
         from modules.blackbird import Blackbird

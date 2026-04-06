@@ -5,7 +5,6 @@ import xml.etree.ElementTree as ET
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-
 def _extract_xmp(file_path: str) -> Optional[str]:
     try:
         with open(file_path, "rb") as f:
@@ -28,7 +27,6 @@ def _extract_xmp(file_path: str) -> Optional[str]:
     except Exception:
         return None
 
-
 def _xmp_frac(s: str) -> Optional[float]:
     s = s.strip()
     try:
@@ -38,7 +36,6 @@ def _xmp_frac(s: str) -> Optional[float]:
         return float(s)
     except Exception:
         return None
-
 
 def _parse_xmp_coord(raw: str) -> Optional[float]:
     raw = raw.strip()
@@ -59,7 +56,6 @@ def _parse_xmp_coord(raw: str) -> Optional[float]:
         return round(dec, 6)
     except Exception:
         return None
-
 
 def _parse_xmp_metadata(xmp_str: str) -> Dict[str, Any]:
     result: Dict[str, Any] = {"raw_exif": {}, "gps": None, "author": None, "software": None, "timestamps": {}}
@@ -132,7 +128,6 @@ def _parse_xmp_metadata(xmp_str: str) -> Dict[str, Any]:
         pass
     return result
 
-
 def _to_float(val) -> Optional[float]:
     try:
         if hasattr(val, 'numerator'):
@@ -140,7 +135,6 @@ def _to_float(val) -> Optional[float]:
         return float(val)
     except Exception:
         return None
-
 
 def _dms_to_decimal(dms_tuple, ref: str) -> Optional[float]:
     try:
@@ -155,7 +149,6 @@ def _dms_to_decimal(dms_tuple, ref: str) -> Optional[float]:
         return round(decimal, 6)
     except Exception:
         return None
-
 
 def _parse_exif_gps(gps_ifd: Dict) -> Optional[Dict]:
     try:
@@ -186,7 +179,6 @@ def _parse_exif_gps(gps_ifd: Dict) -> Optional[Dict]:
         return result
     except Exception:
         return None
-
 
 def extract_image_metadata(file_path: str) -> Dict[str, Any]:
     result = {
@@ -278,7 +270,6 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
 
     return result
 
-
 def extract_pdf_metadata(file_path: str) -> Dict[str, Any]:
     result = {
         "file": os.path.basename(file_path),
@@ -333,7 +324,6 @@ def extract_pdf_metadata(file_path: str) -> Dict[str, Any]:
 
     return result
 
-
 def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
     result = {
         "file": os.path.basename(file_path),
@@ -369,7 +359,6 @@ def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
         result["error"] = str(e)
 
     return result
-
 
 def extract_metadata(file_path: str) -> Dict[str, Any]:
     ext = os.path.splitext(file_path)[1].lower()

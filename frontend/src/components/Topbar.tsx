@@ -78,7 +78,7 @@ export function Topbar({ status, onHome }: Props) {
         )}
         <div className="w-px h-4 bg-border-1" />
         <a
-          href="https://github.com"
+          href="https://github.com/NovaCode37/Prism-platform"
           target="_blank"
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
