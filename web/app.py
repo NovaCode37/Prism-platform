@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import uuid
+import threading
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import requests as _requests
@@ -300,7 +301,15 @@ async def start_scan(request: Request, req: ScanRequest):
     }
     _queues[scan_id] = asyncio.Queue()
 
-    asyncio.create_task(_execute_scan(scan_id, target, scan_type, req.modules))
+    def _run_in_thread():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(_execute_scan(scan_id, target, scan_type, req.modules))
+        finally:
+            loop.close()
+
+    threading.Thread(target=_run_in_thread, daemon=True).start()
 
     return {"scan_id": scan_id, "scan_type": scan_type}
 
