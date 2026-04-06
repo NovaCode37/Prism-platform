@@ -4,7 +4,7 @@ import os
 import sys
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import requests as _requests
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, Request
