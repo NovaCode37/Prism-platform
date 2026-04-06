@@ -214,7 +214,7 @@ File Metadata (EXIF/GPS), Email Header Analyzer, Crypto Address Lookup, and QR C
 
 ```bash
 cp .env.example .env        # add your API keys
-docker-compose up --build
+docker compose up --build
 ```
 
 Open **http://localhost:3000** (frontend) and **http://localhost:8080** (API).
