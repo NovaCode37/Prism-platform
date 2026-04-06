@@ -80,7 +80,7 @@ TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 class ScanRequest(BaseModel):
     target: str
     scan_type: str = "auto"
-    modules: list[str] = []
+    modules: List[str] = []
 
 def _detect_type(target: str) -> str:
     if "@" in target:
