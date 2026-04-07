@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import sys
+import time
 import uuid
 import threading
 from datetime import datetime
@@ -70,6 +71,36 @@ MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS", "200"))
 
 _SCANS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scan_data")
 os.makedirs(_SCANS_DIR, exist_ok=True)
+
+_CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "module_cache")
+os.makedirs(_CACHE_DIR, exist_ok=True)
+_CACHE_TTL = int(os.getenv("CACHE_TTL_HOURS", "24")) * 3600
+
+def _cache_key(module: str, target: str) -> str:
+    import hashlib
+    h = hashlib.md5(f"{module}:{target.lower().strip()}".encode()).hexdigest()
+    return os.path.join(_CACHE_DIR, f"{module}_{h}.json")
+
+def _get_cached(module: str, target: str) -> Optional[Dict]:
+    path = _cache_key(module, target)
+    if not os.path.exists(path):
+        return None
+    try:
+        age = time.time() - os.path.getmtime(path)
+        if age > _CACHE_TTL:
+            os.remove(path)
+            return None
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+def _set_cache(module: str, target: str, data: Any) -> None:
+    try:
+        with open(_cache_key(module, target), "w", encoding="utf-8") as f:
+            json.dump(data, f, default=str)
+    except Exception:
+        pass
 
 def _scan_path(scan_id: str) -> str:
     return os.path.join(_SCANS_DIR, f"{scan_id}.json")
@@ -157,14 +188,24 @@ async def _push(scan_id: str, msg: Dict) -> None:
     if q:
         await q.put(msg)
 
+_CACHED_MODULES = {"shodan", "hlr", "virustotal", "abuseipdb", "geoip"}
+
 async def _run_module(scan_id: str, name: str, coro_or_func, *args, **kwargs) -> Any:
     await _push(scan_id, {"type": "module_start", "module": name})
+    cache_target = args[0] if args else None
+    if name in _CACHED_MODULES and cache_target:
+        cached = _get_cached(name, str(cache_target))
+        if cached is not None:
+            await _push(scan_id, {"type": "module_done", "module": name, "status": "ok", "cached": True})
+            return cached
     try:
         if asyncio.iscoroutinefunction(coro_or_func):
             result = await coro_or_func(*args, **kwargs)
         else:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, lambda: coro_or_func(*args, **kwargs))
+        if name in _CACHED_MODULES and cache_target and not (isinstance(result, dict) and result.get("error")):
+            _set_cache(name, str(cache_target), result)
         await _push(scan_id, {"type": "module_done", "module": name, "status": "ok"})
         return result
     except Exception as exc:
