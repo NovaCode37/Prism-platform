@@ -7,7 +7,7 @@ Thanks for your interest in contributing! This document explains how to get star
 1. **Fork** the repository
 2. **Clone** your fork:
    ```bash
-   git clone https://github.com/<NovaCode37>/Prism-platform.git
+   git clone https://github.com/<your-nick>/Prism-platform.git
    cd Prism-platform
    ```
 3. **Create a branch** for your feature or fix:
