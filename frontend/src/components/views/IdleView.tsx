@@ -132,6 +132,19 @@ export function IdleView({ onTool }: Props) {
           ))}
         </div>
       </div>
+
+      <div className="w-full max-w-2xl mt-6 px-4 py-3 rounded border border-border-1 bg-surface-2 text-center">
+        <p className="text-[11px] text-text-3">
+          This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.
+        </p>
+        <p className="text-[11px] text-text-3 mt-1">
+          For full access,{' '}
+          <a href="https://github.com/NovaCode37/Prism-platform" target="_blank" rel="noopener noreferrer" className="text-blue hover:underline">
+            self-host PRISM
+          </a>
+          {' '}with your own API keys.
+        </p>
+      </div>
     </div>
   );
 }
