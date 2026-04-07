@@ -147,6 +147,8 @@ class TestEmailRepLookup:
         assert result["spf"] is False
         assert result["suspicious"] is True
 
+
+
 class TestSMTPVerifier:
     def test_validate_email_format_valid(self):
         from modules.smtp_verify import SMTPVerifier
@@ -223,6 +225,8 @@ class TestSMTPVerifier:
         assert v._check_disposable("gmail.com") is False
         assert v._check_disposable("company.com") is False
 
+
+
 class TestHLRLookup:
     def test_validate_valid_phone(self):
         from modules.hlr_lookup import HLRLookup
@@ -286,6 +290,8 @@ class TestHLRLookup:
         result = HLRLookup().validate_phone("+43800901051")
         assert result["country"] == "Austria"
         assert result["country_code"] == "AT"
+
+
 
 class TestLeakLookup:
     def test_check_email_hibp_not_found(self, monkeypatch):
@@ -396,6 +402,8 @@ class TestLeakLookup:
         assert "is_compromised" in result
         assert result["is_compromised"] is False
 
+
+
 class TestVirusTotal:
     def test_no_api_key(self, monkeypatch):
         from modules.threat_intel import VirusTotal
@@ -462,6 +470,8 @@ class TestVirusTotal:
         result = vt.check_ip("0.0.0.0")
         assert result["error"] is not None
 
+
+
 class TestAbuseIPDB:
     def test_no_api_key(self, monkeypatch):
         from modules.threat_intel import AbuseIPDB
@@ -498,6 +508,8 @@ class TestAbuseIPDB:
         assert result["is_tor"] is True
         assert result["country"] == "CN"
         assert result["error"] is None
+
+
 
 class TestBlackbird:
     def test_sites_dict_not_empty(self):
@@ -579,6 +591,8 @@ class TestBlackbird:
             content = f.read()
         assert "[+] GitHub" in content
 
+
+
 class TestCryptoLookup:
     def test_detect_bitcoin_legacy(self):
         from modules.crypto_lookup import CryptoLookup
@@ -600,6 +614,8 @@ class TestCryptoLookup:
         cl = CryptoLookup()
         assert cl.detect_type("not_a_crypto_address") == "unknown"
         assert cl.detect_type("") == "unknown"
+
+
 
 class TestEmailHeaderAnalyzer:
     def test_parse_received_ip_skips_private(self):
@@ -627,6 +643,8 @@ class TestEmailHeaderAnalyzer:
         from modules.email_header_analyzer import _parse_received_ip
         assert _parse_received_ip("from mail.example.com (192.0.2.1)") == "192.0.2.1"
         assert _parse_received_ip("from mail.example.com (192.168.1.1)") is None
+
+
 
 class TestOpsecScoreExtended:
     def test_smtp_active_deduction(self):
@@ -700,6 +718,8 @@ class TestOpsecScoreExtended:
         assert result["score"] < 100
         assert result["risk_level"] in ("CRITICAL", "HIGH", "MEDIUM", "LOW", "MINIMAL")
         assert len(result["all_findings"]) > 0
+
+
 
 class TestGraphBuilderExtended:
     def test_phone_graph(self):

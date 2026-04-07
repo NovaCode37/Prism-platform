@@ -1,12 +1,13 @@
 version: '3.9'
 
 services:
-  osint:
+  backend:
     build: .
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     volumes:
       - ./results:/app/results
+      - ./scan_data:/app/scan_data
       - ./.env:/app/.env:ro
     environment:
       - PYTHONUNBUFFERED=1
@@ -17,3 +18,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

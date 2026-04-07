@@ -224,18 +224,28 @@ File Metadata (EXIF/GPS), Email Header Analyzer, Crypto Address Lookup, and QR C
 
 ---
 
-## Quick Start
+## Self-Hosting
 
 ### Docker (recommended)
 
 ```bash
+git clone https://github.com/NovaCode37/Prism-platform.git
+cd Prism-platform
 cp .env.example .env        # add your API keys
 docker compose up --build
 ```
 
-Open **http://localhost:3000** (frontend) and **http://localhost:8080** (API).
+Open **http://localhost** — frontend + API are served behind Nginx on port 80.
 
-### Manual
+**Architecture:**
+```
+Port 80 (Nginx)
+├── /          → Next.js static frontend
+├── /api/*     → FastAPI backend (port 8080 internal)
+└── /ws        → WebSocket scan progress
+```
+
+### Manual (development)
 
 ```bash
 # Backend
@@ -249,7 +259,27 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:3000**
+Open **http://localhost:3000** (proxies API to :8080 automatically)
+
+### VPS / Dedicated Server
+
+For production on a VPS (Ubuntu/Debian):
+
+```bash
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# Deploy
+git clone https://github.com/NovaCode37/Prism-platform.git
+cd Prism-platform
+cp .env.example .env && nano .env   # add your keys
+docker compose up -d --build
+
+# Optional: add SSL with Certbot
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
+```
 
 ---
 
