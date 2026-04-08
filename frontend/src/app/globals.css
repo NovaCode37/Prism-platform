@@ -160,13 +160,50 @@
   --yellow: #d29922;
 }
 
+/* Light theme */
+[data-theme='light'] {
+  --background: #ffffff;
+  --surface-1: #f6f8fa;
+  --surface-2: #eaeef2;
+  --border-1: #d0d7de;
+  --border-2: #d8dee4;
+  --border-3: #b1bac4;
+  --text-1: #24292f;
+  --text-2: #424a53;
+  --text-3: #656d76;
+  --blue: #0969da;
+  --purple: #8250df;
+  --green: #1a7f37;
+  --red: #d1242f;
+  --yellow: #9e6a03;
+}
+
+/* Dark theme (default) */
+[data-theme='dark'] {
+  --background: #0d1117;
+  --surface-1: #161b22;
+  --surface-2: #0d1117;
+  --border-1: #30363d;
+  --border-2: #21262d;
+  --border-3: #444c56;
+  --text-1: #e6edf3;
+  --text-2: #c9d1d9;
+  --text-3: #8b949e;
+  --blue: #4f8ef7;
+  --purple: #7c5cfc;
+  --green: #3fb950;
+  --red: #f85149;
+  --yellow: #d29922;
+}
+
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: #0d1117;
-  color: #e6edf3;
+  background: var(--background);
+  color: var(--text-1);
   font-family: 'Silkscreen', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
