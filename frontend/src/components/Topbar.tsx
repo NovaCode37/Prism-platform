@@ -29,7 +29,7 @@ function useDateTime() {
 
 export function Topbar({ status, onHome }: Props) {
   const { date, time } = useDateTime();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
@@ -85,7 +85,7 @@ export function Topbar({ status, onHome }: Props) {
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          {mounted ? (theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} />}
         </button>
         <a
           href="https://github.com/NovaCode37/Prism-platform"
