@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Terminal } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/lib/useTheme';
 import { Logo } from './Logo';
 import type { ScanStatus } from '@/lib/types';
 
@@ -28,6 +29,7 @@ function useDateTime() {
 
 export function Topbar({ status, onHome }: Props) {
   const { date, time } = useDateTime();
+  const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
@@ -77,6 +79,14 @@ export function Topbar({ status, onHome }: Props) {
           </div>
         )}
         <div className="w-px h-4 bg-border-1" />
+        <button
+          onClick={toggleTheme}
+          className="text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2"
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+          aria-label="Toggle theme"
+        >
+          {mounted ? (theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} />}
+        </button>
         <a
           href="https://github.com/NovaCode37/Prism-platform"
           target="_blank"

@@ -56,6 +56,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);})();`,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
         <LoadingWrapper>{children}</LoadingWrapper>
