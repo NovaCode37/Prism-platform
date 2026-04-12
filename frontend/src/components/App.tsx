@@ -13,6 +13,7 @@ type View = 'idle' | 'tool' | 'scanning' | 'results';
 
 export function App() {
   const [view, setView] = useState<View>('idle');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toolMode, setToolMode] = useState<ToolMode>(null);
   const [scanId, setScanId] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState<ScanStatus>('idle');
@@ -179,9 +180,10 @@ export function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar status={scanStatus} onHome={handleHome} />
+      <Topbar status={scanStatus} onHome={handleHome} onMenuToggle={() => setSidebarOpen(v => !v)} />
       <div className="flex flex-1 relative">
-        <Sidebar onScan={handleScan} isRunning={scanStatus === 'running'} />
+        {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/50 z-40 md:hidden" />}
+        <Sidebar onScan={handleScan} isRunning={scanStatus === 'running'} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="flex-1 min-w-0 relative z-10">
           {view === 'idle' && <IdleView onTool={handleTool} />}
           {view === 'tool' && toolMode && (
