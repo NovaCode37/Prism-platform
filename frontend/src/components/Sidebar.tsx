@@ -83,9 +83,11 @@ const MODULE_MAP: Record<ScanType, { id: string; label: string }[]> = {
 interface Props {
   onScan: (target: string, type: ScanType, modules: string[]) => void;
   isRunning: boolean;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export function Sidebar({ onScan, isRunning }: Props) {
+export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
   const [target, setTarget] = useState('');
   const [scanType, setScanType] = useState<ScanType>('domain');
   const [modules, setModules] = useState<string[]>(MODULE_MAP.domain.map(m => m.id));
@@ -116,7 +118,8 @@ export function Sidebar({ onScan, isRunning }: Props) {
   };
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border-1 bg-surface-1 flex flex-col h-[calc(100vh-48px)] sticky top-12 overflow-y-auto">
+    <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface-1 border-r border-border-1 flex flex-col h-screen transform transition-transform duration-200 ease-in-out md:relative md:z-auto md:transform-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1">✕</button>
       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-3">
         <div>
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">Target</label>
