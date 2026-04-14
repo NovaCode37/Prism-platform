@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail } from 'lucide-react';
+import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
 import { getReportUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
 
-function MapView({ scanId }: { scanId: string }) {
+function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
   const [data, setData] = useState<{ markers: { lat: number; lng: number; label: string; city?: string; country?: string; org?: string; ip?: string }[]; center: { lat: number; lng: number } | null } | null>(null);
   const [error, setError] = useState('');
 
@@ -28,7 +28,15 @@ function MapView({ scanId }: { scanId: string }) {
       <iframe src={iframeSrc} className="w-full rounded-md border border-border-1" style={{ height: 360, border: 0 }}
         title="IP Geolocation Map" loading="lazy" />
       <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-[12px]">
-        {m.ip && <div className="dt-row"><span className="dt-label">IP</span><span className="dt-value font-mono">{m.ip}</span></div>}
+        {m.ip && (
+          <div className="dt-row">
+            <span className="dt-label">IP</span>
+            <div className="flex items-center gap-1.5">
+              <span className="dt-value font-mono">{m.ip}</span>
+              <CopyIconButton onClick={() => onCopy(m.ip ?? '')} label="Copy IP" />
+            </div>
+          </div>
+        )}
         {(m.city || m.country) && <div className="dt-row"><span className="dt-label">Location</span><span className="dt-value">{[m.city, m.country].filter(Boolean).join(', ')}</span></div>}
         {m.org && <div className="dt-row"><span className="dt-label">Organization</span><span className="dt-value">{m.org}</span></div>}
         <div className="dt-row"><span className="dt-label">Coordinates</span><span className="dt-value font-mono">{m.lat.toFixed(4)}, {m.lng.toFixed(4)}</span></div>
@@ -115,6 +123,20 @@ function Card({ title, children }: { title?: string; children: React.ReactNode }
   );
 }
 
+function CopyIconButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-text-3 hover:text-text-1 transition-colors p-0.5 rounded-sm hover:bg-surface-2"
+      title={label}
+      aria-label={label}
+    >
+      <Copy size={11} />
+    </button>
+  );
+}
+
 function FindingRow({ f }: { f: OpsecFinding }) {
   const cls = f.severity === 'HIGH' ? 'badge badge-high' : f.severity === 'MEDIUM' ? 'badge badge-med' : 'badge badge-low';
   return (
@@ -158,8 +180,31 @@ export function ScanResults({ scan }: Props) {
   const [chatHistory, setChatHistory] = useState<{role:'user'|'ai'; text:string}[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
   const [showJson, setShowJson] = useState(false);
+  const [copyToast, setCopyToast] = useState('');
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const r = scan.results;
   const opsec = r.opsec;
+
+  const showToast = (message: string) => {
+    setCopyToast(message);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setCopyToast(''), 1200);
+  };
+
+  const copyValue = async (value: string | number | null | undefined) => {
+    const text = String(value ?? '').trim();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied!');
+    } catch {
+      showToast('Copy failed');
+    }
+  };
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+  }, []);
 
   const sendChat = async () => {
     const msg = chatInput.trim();
@@ -205,7 +250,10 @@ export function ScanResults({ scan }: Props) {
     <div className="flex flex-col h-[calc(100vh-48px)] animate-fade-in">
       <div className="px-5 py-3 border-b border-border-1 bg-surface-1 flex items-center justify-between gap-4">
         <div>
-          <div className="font-bold text-text-1 text-[15px]">{scan.target}</div>
+          <div className="flex items-center gap-1.5">
+            <div className="font-bold text-text-1 text-[15px]">{scan.target}</div>
+            <CopyIconButton onClick={() => copyValue(scan.target)} label="Copy target" />
+          </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="badge badge-info">{scan.scan_type?.toUpperCase()}</span>
             {scan.started_at && (
@@ -282,12 +330,26 @@ export function ScanResults({ scan }: Props) {
               <DtRow label="Expires" value={r.whois.expiration_date?.slice(0, 10)} />
               {r.whois.emails?.length && (
                 <div className="dt-row"><span className="dt-label">Emails</span>
-                  <div>{r.whois.emails.map(e => <span key={e} className="tag tag-red">{e}</span>)}</div>
+                  <div className="flex flex-wrap gap-1">
+                    {r.whois.emails.map(e => (
+                      <span key={e} className="inline-flex items-center gap-1">
+                        <span className="tag tag-red">{e}</span>
+                        <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
               {r.whois.name_servers?.length && (
                 <div className="dt-row"><span className="dt-label">Name Servers</span>
-                  <div>{r.whois.name_servers.slice(0, 4).map(ns => <span key={ns} className="tag">{ns}</span>)}</div>
+                  <div className="flex flex-wrap gap-1">
+                    {r.whois.name_servers.slice(0, 4).map(ns => (
+                      <span key={ns} className="inline-flex items-center gap-1">
+                        <span className="tag">{ns}</span>
+                        <CopyIconButton onClick={() => copyValue(ns)} label="Copy domain" />
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -299,11 +361,15 @@ export function ScanResults({ scan }: Props) {
             {Object.entries(r.dns.records).filter(([, v]) => Array.isArray(v) && v.length > 0).map(([type, records]) => (
               <div key={type} className="mb-4">
                 <div className="text-[11px] font-bold text-blue mb-1.5 uppercase tracking-wider">{type}</div>
-                {(records as unknown[]).map((rec, i) => (
-                  <div key={i} className="font-mono text-[11px] text-text-2 py-0.5">
-                    {typeof rec === 'object' ? JSON.stringify(rec) : String(rec)}
-                  </div>
-                ))}
+                {(records as unknown[]).map((rec, i) => {
+                  const text = typeof rec === 'object' ? JSON.stringify(rec) : String(rec);
+                  return (
+                    <div key={i} className="flex items-center gap-1.5 py-0.5">
+                      <div className="font-mono text-[11px] text-text-2 break-all flex-1">{text}</div>
+                      <CopyIconButton onClick={() => copyValue(text)} label="Copy DNS record" />
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </Card>
@@ -313,7 +379,12 @@ export function ScanResults({ scan }: Props) {
           <Card title={`Certificate Transparency — ${r.cert_transparency.subdomains?.length} subdomains`}>
             <div className="text-[11px] text-text-3 mb-3">{r.cert_transparency.total_certs} certificate(s) analysed</div>
             <div className="flex flex-wrap gap-1">
-              {r.cert_transparency.subdomains?.map(s => <span key={s} className="tag">{s}</span>)}
+              {r.cert_transparency.subdomains?.map(s => (
+                <span key={s} className="inline-flex items-center gap-1">
+                  <span className="tag">{s}</span>
+                  <CopyIconButton onClick={() => copyValue(s)} label="Copy subdomain" />
+                </span>
+              ))}
             </div>
           </Card>
         )}
@@ -327,7 +398,12 @@ export function ScanResults({ scan }: Props) {
               <tbody>{r.blackbird?.filter(b => b.status === 'found').map(b => (
                 <tr key={b.site} className="border-b border-border-1 last:border-0">
                   <td className="py-2 font-medium text-text-1">{b.site}</td>
-                  <td className="py-2"><a href={b.url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate block max-w-xs">{b.url}</a></td>
+                  <td className="py-2">
+                    <div className="flex items-center gap-1.5">
+                      <a href={b.url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate block max-w-xs">{b.url}</a>
+                      <CopyIconButton onClick={() => copyValue(b.url)} label="Copy username URL" />
+                    </div>
+                  </td>
                   <td className="py-2 text-right font-mono text-text-3">{b.response_time?.toFixed(2)}s</td>
                 </tr>
               ))}</tbody>
@@ -374,7 +450,10 @@ export function ScanResults({ scan }: Props) {
                   <div className="mb-3">
                     <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Open Ports</div>
                     {r.shodan.open_ports.map(p => (
-                      <span key={p} className={`tag ${[21,22,23,3389,5900,445,3306,5432,27017,6379].includes(p) ? 'tag-red' : ''}`}>{p}</span>
+                      <span key={p} className="inline-flex items-center gap-1 mr-1">
+                        <span className={`tag ${[21,22,23,3389,5900,445,3306,5432,27017,6379].includes(p) ? 'tag-red' : ''}`}>{p}</span>
+                        <CopyIconButton onClick={() => copyValue(p)} label="Copy Shodan port" />
+                      </span>
                     ))}
                   </div>
                 )}
@@ -579,7 +658,7 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'map' && (
           <Card title="IP Geolocation Map">
-            <MapView scanId={scan.id} />
+            <MapView scanId={scan.id} onCopy={copyValue} />
           </Card>
         )}
 
@@ -675,6 +754,11 @@ export function ScanResults({ scan }: Props) {
           </div>
         )}
       </div>
+      {copyToast && (
+        <div className="fixed bottom-4 right-4 z-[70] px-3 py-1.5 rounded border border-border-1 bg-surface-2 text-[11px] font-semibold text-text-1 shadow-xl">
+          {copyToast}
+        </div>
+      )}
     </div>
   );
 }
