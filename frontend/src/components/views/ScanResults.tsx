@@ -251,11 +251,9 @@ export function ScanResults({ scan }: Props) {
       <div className="px-4 sm:px-5 py-3 border-b border-border-1 bg-surface-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-1.5">
-            <div className="font-bold text-text-1 text-[15px]">{scan.target}</div>
+            <div className="font-bold text-text-1 text-[15px] break-all">{scan.target}</div>
             <CopyIconButton onClick={() => copyValue(scan.target)} label="Copy target" />
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
-          <div className="font-bold text-text-1 text-[15px] break-all">{scan.target}</div>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <span className="badge badge-info">{scan.scan_type?.toUpperCase()}</span>
             {scan.started_at && (
