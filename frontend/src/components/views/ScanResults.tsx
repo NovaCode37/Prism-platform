@@ -25,7 +25,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
 
   return (
     <div>
-      <iframe src={iframeSrc} className="w-full rounded-md border border-border-1" style={{ height: 360, border: 0 }}
+      <iframe src={iframeSrc} className="w-full rounded-md border border-border-1 h-64 sm:h-[360px]" style={{ border: 0 }}
         title="IP Geolocation Map" loading="lazy" />
       <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-[12px]">
         {m.ip && (
@@ -95,7 +95,7 @@ function GraphView({ scanId }: { scanId: string }) {
       {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">Loading graph…</div>}
       {status === 'empty' && <div className="text-text-3 text-sm py-4">No graph data available for this scan</div>}
       {status === 'error' && <div className="text-red text-sm py-4">{error}</div>}
-      <div ref={containerRef} style={{ height: status === 'ready' ? 480 : 0, background: 'transparent' }} />
+      <div ref={containerRef} className="h-72 sm:h-[480px]" style={{ height: status === 'ready' ? undefined : 0, background: 'transparent' }} />
     </div>
   );
 }
@@ -248,16 +248,18 @@ export function ScanResults({ scan }: Props) {
 
   return (
     <div className="flex flex-col h-[calc(100vh-48px)] animate-fade-in">
-      <div className="px-5 py-3 border-b border-border-1 bg-surface-1 flex items-center justify-between gap-4">
+      <div className="px-4 sm:px-5 py-3 border-b border-border-1 bg-surface-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-1.5">
             <div className="font-bold text-text-1 text-[15px]">{scan.target}</div>
             <CopyIconButton onClick={() => copyValue(scan.target)} label="Copy target" />
           </div>
           <div className="flex items-center gap-2 mt-0.5">
+          <div className="font-bold text-text-1 text-[15px] break-all">{scan.target}</div>
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <span className="badge badge-info">{scan.scan_type?.toUpperCase()}</span>
             {scan.started_at && (
-              <span className="text-[10px] text-text-3">{scan.started_at.slice(0, 19).replace('T', ' ')}</span>
+              <span className="text-[10px] text-text-3 hidden sm:inline">{scan.started_at.slice(0, 19).replace('T', ' ')}</span>
             )}
           </div>
         </div>
@@ -273,7 +275,7 @@ export function ScanResults({ scan }: Props) {
       </div>
 
       {opsec && (
-        <div className="px-5 py-2.5 bg-surface-2 border-b border-border-1 flex items-center gap-6 flex-wrap">
+        <div className="px-4 sm:px-5 py-2.5 bg-surface-2 border-b border-border-1 flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-3">
             <div className="text-3xl font-black" style={{ color: RISK_COLOR[opsec.risk_level] }}>
               {opsec.score}
@@ -391,7 +393,8 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'accounts' && (
           <Card title="Username Search">
-            <table className="w-full text-[12px]">
+            <div className="overflow-x-auto -mx-4 px-4">
+            <table className="w-full text-[12px] min-w-[400px]">
               <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
                 <th className="pb-2">Platform</th><th className="pb-2">URL</th><th className="pb-2 text-right">Time</th>
               </tr></thead>
@@ -408,6 +411,7 @@ export function ScanResults({ scan }: Props) {
                 </tr>
               ))}</tbody>
             </table>
+            </div>
           </Card>
         )}
 
@@ -415,7 +419,7 @@ export function ScanResults({ scan }: Props) {
           <div>
             {r.virustotal && !r.virustotal.error && (
               <Card title="VirusTotal">
-                <div className="flex gap-6 mb-4">
+                <div className="grid grid-cols-2 sm:flex sm:gap-6 mb-4 gap-3">
                   {[['Malicious', r.virustotal.malicious, '#f85149'], ['Suspicious', r.virustotal.suspicious, '#d29922'], ['Harmless', r.virustotal.harmless, '#3fb950'], ['Undetected', r.virustotal.undetected, '#484f58']].map(([l, v, c]) => (
                     <div key={String(l)} className="text-center">
                       <div className="text-2xl font-black" style={{ color: String(c) }}>{v}</div>

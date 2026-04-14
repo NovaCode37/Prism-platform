@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon, Menu } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
 import { Logo } from './Logo';
 import type { ScanStatus } from '@/lib/types';
@@ -8,6 +8,7 @@ import type { ScanStatus } from '@/lib/types';
 interface Props {
   status: ScanStatus;
   onHome: () => void;
+  onMenuToggle: () => void;
 }
 
 function useDateTime() {
@@ -27,12 +28,15 @@ function useDateTime() {
   return dt;
 }
 
-export function Topbar({ status, onHome }: Props) {
+export function Topbar({ status, onHome, onMenuToggle }: Props) {
   const { date, time } = useDateTime();
   const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
+      <button onClick={onMenuToggle} className="md:hidden text-text-3 hover:text-text-1 transition-colors p-1 -ml-1">
+        <Menu size={18} />
+      </button>
 
       <button onClick={onHome} className="flex items-center gap-2.5 cursor-pointer group shrink-0">
         <Logo size={26} />

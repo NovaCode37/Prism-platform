@@ -82,7 +82,7 @@ export function IdleView({ onTool }: Props) {
         <span className="text-blue opacity-80" style={{ animation: 'cursor-blink 0.8s step-end infinite' }}>▌</span>
       </div>
 
-      <div className="flex gap-3 mb-8">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
         {STATS.map((s, i) => (
           <div key={s.label} className="flex flex-col items-center px-4 py-2.5 rounded border border-border-1 bg-surface-2 min-w-[70px]">
             <s.icon size={11} className="text-blue mb-1.5 opacity-60" />
@@ -99,7 +99,7 @@ export function IdleView({ onTool }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-2xl mb-8">
         {CAPS.map(c => (
           <div key={c.title} className="card p-3 hover:border-border-3 transition-colors">
             <div className="flex items-center gap-1.5 mb-2">
@@ -115,7 +115,7 @@ export function IdleView({ onTool }: Props) {
 
       <div className="w-full max-w-2xl">
         <div className="text-[10px] font-semibold text-text-3 uppercase tracking-wider mb-2">Standalone Tools</div>
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           {TOOLS.map(({ id, label, desc, icon: Icon }) => (
             <button
               key={id}
