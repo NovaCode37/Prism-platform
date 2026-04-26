@@ -49,7 +49,7 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
           className="text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded-full text-white"
           style={{ background: 'linear-gradient(135deg,#4f8ef7,#7c5cfc)' }}
         >
-          v2.0
+          v2.1
         </span>
       </button>
 

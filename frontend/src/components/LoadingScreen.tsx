@@ -103,7 +103,7 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
       setTimeout(() => setActiveModules(prev => [...prev, i]), 350 + i * 520);
     });
 
-    const bootText = '> PRISM OSINT v2.0 — boot sequence initiated...';
+    const bootText = '> PRISM OSINT v2.1 — boot sequence initiated...';
     let charIdx = 0;
     const typeTimer = setInterval(() => {
       if (charIdx <= bootText.length) {
@@ -158,7 +158,7 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
       </div>
 
       <div className="prism-loading-text">PRISM</div>
-      <div className="prism-loading-sub">OSINT Platform v2.0</div>
+      <div className="prism-loading-sub">OSINT Platform v2.1</div>
 
       <div className="prism-status-bar">
         <div className="prism-status-text">{STATUSES[statusIdx]}</div>

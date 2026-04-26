@@ -21,8 +21,8 @@ const CAPS = [
 const TARGETS = ['domain.com', '192.168.1.1', 'user@example.com', '@username', '+1 555 000 0000'];
 
 const STATS = [
-  { label: 'Modules',  value: 15, icon: Database },
-  { label: 'Sources',  value: 10, icon: Zap },
+  { label: 'Modules',  value: 22, icon: Database },
+  { label: 'Sources',  value: 12, icon: Zap },
   { label: 'Scan types', value: 5, icon: Eye },
   { label: 'Status',   value: 0,  icon: Activity, text: 'ONLINE' },
 ];
