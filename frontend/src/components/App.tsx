@@ -83,6 +83,14 @@ export function App() {
             }
             return lines;
           });
+          setModuleStatuses(prev => {
+            const next = { ...prev };
+            for (const msg of newMsgs) {
+              if (msg.type === 'module_start') next[msg.module] = 'running';
+              else if (msg.type === 'module_done') next[msg.module] = msg.status === 'error' ? 'error' : 'ok';
+            }
+            return next;
+          });
         }
         if (data.status === 'completed') {
           const normalized = {
