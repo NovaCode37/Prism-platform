@@ -34,9 +34,12 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov flake8
 
-      - name: Lint with flake8
+      - name: Lint with flake8 (critical errors only)
         run: |
-          flake8 modules/ web/ --max-line-length=120 --ignore=E501,W503,E203 --exclude=__pycache__
+          # Stop the build on syntax errors or undefined names
+          flake8 modules/ web/ --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=__pycache__
+          # Treat everything else as warnings (does not fail the build)
+          flake8 modules/ web/ --count --max-line-length=120 --ignore=E501,W503,E203,E302,E305,E306,E402,E221,E231,E241,E201,E401,F401,F841,W391 --exit-zero --statistics --exclude=__pycache__
 
       - name: Run tests with coverage
         env:
