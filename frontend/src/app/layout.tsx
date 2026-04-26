@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { LoadingWrapper } from '@/components/LoadingScreen';
+import { I18nProvider } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title: 'PRISM — Open Source Intelligence Platform',
@@ -63,7 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
-        <LoadingWrapper>{children}</LoadingWrapper>
+        <I18nProvider>
+          <LoadingWrapper>{children}</LoadingWrapper>
+        </I18nProvider>
       </body>
     </html>
   );

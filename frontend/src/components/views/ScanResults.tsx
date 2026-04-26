@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
 import { getReportUrl, getReportPdfUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
+import { useTranslations } from '@/lib/i18n';
 
 function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
   const [data, setData] = useState<{ markers: { lat: number; lng: number; label: string; city?: string; country?: string; org?: string; ip?: string }[]; center: { lat: number; lng: number } | null } | null>(null);
@@ -173,6 +174,7 @@ const TABS = [
 interface Props { scan: ScanMeta & { results: ScanResults }; }
 
 export function ScanResults({ scan }: Props) {
+  const { t: i18n } = useTranslations();
   const [tab, setTab] = useState('findings');
   const [aiSummary, setAiSummary] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -268,11 +270,11 @@ export function ScanResults({ scan }: Props) {
         <div className="flex gap-2">
           <a href={getReportUrl(scan.id)} target="_blank" rel="noreferrer"
             className="btn-ghost text-[11px] h-8 px-3">
-            <ExternalLink size={11} /> HTML Report
+            <ExternalLink size={11} /> {i18n('results.htmlReport')}
           </a>
           <a href={getReportPdfUrl(scan.id)} target="_blank" rel="noreferrer"
             className="btn-ghost text-[11px] h-8 px-3">
-            <Printer size={11} /> PDF Report
+            <Printer size={11} /> {i18n('results.pdfReport')}
           </a>
         </div>
       </div>
@@ -306,7 +308,7 @@ export function ScanResults({ scan }: Props) {
         {visibleTabs.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)}
             className={`tab-btn ${tab === id ? 'active' : ''}`}>
-            <Icon size={11} />{label}
+            <Icon size={11} />{i18n(`results.tabs.${id}`) === `results.tabs.${id}` ? label : i18n(`results.tabs.${id}`)}
           </button>
         ))}
       </div>

@@ -1,5 +1,6 @@
 'use client';
 import { Terminal, Check, X, Loader2, Circle } from 'lucide-react';
+import { useTranslations } from '@/lib/i18n';
 
 interface Props {
   log: string[];
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 0 }: Props) {
+  const { t } = useTranslations();
   const entries = Object.entries(moduleStatuses);
   const completed = entries.filter(([, s]) => s === 'ok' || s === 'error').length;
   const cap = Math.max(totalModules, entries.length);
@@ -17,7 +19,7 @@ export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 
   return (
     <div className="p-6 animate-fade-in">
       <div className="mb-4">
-        <div className="text-xs text-text-3 uppercase tracking-wider font-semibold mb-1">Scanning</div>
+        <div className="text-xs text-text-3 uppercase tracking-wider font-semibold mb-1">{t('topbar.scanning')}</div>
         <div className="text-lg font-bold text-text-1">{target}</div>
       </div>
 
@@ -25,7 +27,7 @@ export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2 text-[11px]">
             <span className="text-text-2 font-semibold">
-              {completed}/{cap} modules
+              {completed}/{cap} {t('progress.modulesLabel')}
             </span>
             <span className="text-text-3 font-mono">{percent}%</span>
           </div>
@@ -56,11 +58,11 @@ export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 
       <div className="card overflow-hidden">
         <div className="card-head flex items-center gap-2">
           <Terminal size={11} />
-          Progress Log
+          {t('progress.log')}
         </div>
         <div className="p-3 font-mono text-[11px] min-h-[200px] max-h-[60vh] overflow-y-auto space-y-0.5">
           {log.length === 0 ? (
-            <div className="text-text-3">Initializing scan…</div>
+            <div className="text-text-3">{t('progress.initializing')}</div>
           ) : (
             log.map((line, i) => {
               const isErr = line.toLowerCase().includes('error') || line.toLowerCase().includes('fail');
@@ -75,7 +77,7 @@ export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 
           )}
           <div className="flex items-center gap-1.5 text-blue mt-2">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue animate-pulse" />
-            <span className="animate-pulse">Running…</span>
+            <span className="animate-pulse">{t('progress.running')}</span>
           </div>
         </div>
       </div>

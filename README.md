@@ -1,15 +1,19 @@
 # PRISM — Open Source Intelligence Platform
 
-> All-in-one passive reconnaissance framework with a real-time web dashboard, AI-powered analysis, and 20+ OSINT modules.  
-> Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel, breach data, username search, OPSEC score, entity graphs, and a full HTML report in seconds.
+> All-in-one passive reconnaissance framework with a real-time web dashboard, AI-powered analysis, and 22+ OSINT modules.  
+> Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel, breach data, username search, dark-web mirrors, OPSEC score, entity graphs, and HTML/PDF reports in seconds.
 
-**Live Demo: [getprism.su](https://getprism.su)** | **Docs: [CONTRIBUTING.md](CONTRIBUTING.md)**
+**Live Demo: [getprism.su](https://getprism.su)**  ·  **Docs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [CONTRIBUTING.md](CONTRIBUTING.md)**
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)
+[![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](Dockerfile)
+[![GitHub stars](https://img.shields.io/github/stars/NovaCode37/Prism-platform?style=flat-square&logo=github&color=yellow)](https://github.com/NovaCode37/Prism-platform/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/NovaCode37/Prism-platform?style=flat-square&logo=github)](https://github.com/NovaCode37/Prism-platform/network/members)
 
 <p align="center">
   <img src="docs/gifs/main.gif" alt="PRISM Boot Animation" width="720" />
@@ -19,12 +23,13 @@
 
 ## Why PRISM?
 
-- **20+ modules** — WHOIS, DNS, crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, email reputation, SMTP verify, breach lookup, Blackbird (50+ sites), Maigret (3000+ sites), Telegram, phone HLR, email headers, file metadata, and more
+- **22+ modules** — WHOIS, DNS, crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, **Censys**, **Dark Web (Ahmia + DarkSearch)**, email reputation, SMTP verify, breach lookup, Blackbird (50+ sites), Maigret (3000+ sites), Telegram, phone HLR, email headers, file metadata, and more
 - **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
-- **Real-time dashboard** — WebSocket-driven scan progress, interactive entity relationship graph, GeoIP map with coordinates
+- **Real-time dashboard** — WebSocket-driven scan progress with **module-level progress bar (5/8 · 62%)**, interactive entity relationship graph, GeoIP map with coordinates
 - **OPSEC Score** — aggregated 0–100 exposure risk score based on all collected data
-- **Self-contained reports** — export full scan results as a styled HTML report
-- **Zero mandatory API keys** — 12 out of 20 modules work without any keys at all
+- **HTML & PDF reports** — export full scan results as a styled, self-contained HTML or print-ready PDF
+- **Multi-language UI** — English & Russian out of the box (i18n)
+- **Zero mandatory API keys** — 14 out of 22 modules work without any keys at all
 - **One-command deploy** — `docker compose up --build` and you're running
 - **Fully open source** — MIT license, extensible module architecture, contributor-friendly
 
@@ -35,7 +40,7 @@
 PRISM aggregates data from **20+ external intelligence sources** to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML reports, and an automated OPSEC exposure score.
 
 **Stack:**
-- **Backend** — Python, FastAPI, asyncio, WebSocket, Pydantic
+- **Backend** — Python, FastAPI, asyncio, WebSocket, Pydantic, WeasyPrint (PDF)
 - **Frontend** — Next.js 14 (App Router), React, TypeScript, Tailwind CSS
 - **AI** — OpenRouter API (Nvidia Nemotron) for summary and chat
 - **Infrastructure** — Docker, docker-compose, GitHub Actions CI/CD
@@ -57,8 +62,10 @@ PRISM aggregates data from **20+ external intelligence sources** to build a comp
 | Wayback Machine | Historical snapshots, sensitive URL patterns | — |
 | GeoIP | IP geolocation, ASN, timezone | ipinfo.io |
 | Shodan | Open ports, services, known CVEs | Shodan |
+| Censys | Host services, ASN, certificate → subdomain discovery | Censys |
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |
+| Dark Web Checker | .onion mirrors via Ahmia + DarkSearch | — |
 | Website Analyzer | Tech stack, emails, social links, metadata | — |
 | Email Reputation | DNS-based email rep (MX, SPF, DMARC, disposable check) | — |
 | SMTP Verify | Mailbox existence check via SMTP handshake | — |
@@ -71,7 +78,7 @@ PRISM aggregates data from **20+ external intelligence sources** to build a comp
 | File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | — |
 | OPSEC Score | Aggregated 0–100 exposure risk score | — |
 | Entity Graph | Interactive node-relationship visualization | — |
-| HTML Report | Self-contained PDF-ready scan report | — |
+| HTML / PDF Report | Self-contained styled report (HTML + WeasyPrint PDF) | — |
 | AI Summary | Natural-language findings summary via LLM | OpenRouter |
 
 ---
@@ -267,8 +274,9 @@ Copy `.env.example` → `.env`. All keys are optional — modules gracefully ski
 | `OPENROUTER_API_KEY` | AI summary (Nvidia Nemotron) | Free tier |
 | `TELEGRAM_BOT_TOKEN` | Telegram user lookup | Free |
 | `LEAK_LOOKUP_API_KEY` | Breach database | Limited free |
+| `CENSYS_API_ID` + `CENSYS_API_SECRET` | Host & certificate search | 250 req/mo |
 
-> Certificate Transparency, Wayback Machine, DNS, WHOIS, Website Analyzer, Email Reputation, SMTP Verify, Blackbird, Maigret, Email Headers, and File Metadata all work **with zero API keys**.
+> Certificate Transparency, Wayback Machine, DNS, WHOIS, Website Analyzer, Email Reputation, SMTP Verify, Blackbird, Maigret, Email Headers, File Metadata, and **Dark Web Checker** all work **with zero API keys**.
 
 ---
 
@@ -329,6 +337,37 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 1. **Lint** — flake8
 2. **Test** — pytest with coverage
 3. **Build** — Docker image
+
+---
+
+## Roadmap
+
+### v2.1 (current)
+- [x] Module-level scan progress bar with completion %
+- [x] PDF report export (WeasyPrint)
+- [x] Censys integration (host + certificate search)
+- [x] Dark-web `.onion` mirror checker (Ahmia + DarkSearch)
+- [x] i18n — English & Russian UI
+- [x] One-click copy buttons across results
+- [x] Mobile-responsive layout
+
+### v2.2 (planned)
+- [ ] Scheduled scans with diff alerting
+- [ ] Webhook / Slack / Discord notifications
+- [ ] Scan history & comparison view
+- [ ] More languages (DE, FR, ES, ZH)
+- [ ] Browser extension for one-click scans
+- [ ] Public REST API with token-based auth
+
+> Want to contribute? Pick an open issue tagged `good first issue` or open a new one.
+
+---
+
+## Star History
+
+<a href="https://www.star-history.com/#NovaCode37/Prism-platform&Date">
+  <img src="https://api.star-history.com/svg?repos=NovaCode37/Prism-platform&type=Date" alt="Star History Chart" width="640" />
+</a>
 
 ---
 

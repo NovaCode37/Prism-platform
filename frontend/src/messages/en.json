@@ -1,0 +1,67 @@
+{
+  "topbar": {
+    "tagline": "Open Source Intelligence",
+    "scanning": "Scanning",
+    "complete": "Complete",
+    "failed": "Failed",
+    "toggleTheme": "Toggle theme",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "target": "Target",
+    "targetPlaceholder": "domain, IP, email, phone…",
+    "scanType": "Scan Type",
+    "modules": "Modules",
+    "runScan": "Run Scan",
+    "scanning": "Scanning…",
+    "recent": "Recent",
+    "noRecent": "No recent scans"
+  },
+  "idle": {
+    "headline": "OSINT reconnaissance for security researchers",
+    "subheadline": "Scan domains, IPs, emails, phones and usernames. Get threat intel, breach data, OPSEC scoring and entity graphs in seconds.",
+    "tools": "Quick tools",
+    "capabilities": "What PRISM can do"
+  },
+  "progress": {
+    "modulesLabel": "modules",
+    "initializing": "Initializing scan…",
+    "running": "Running…",
+    "log": "Progress Log"
+  },
+  "results": {
+    "htmlReport": "HTML Report",
+    "pdfReport": "PDF Report",
+    "tabs": {
+      "findings": "Findings",
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "subdomains": "Subdomains",
+      "accounts": "Accounts",
+      "threats": "Threats",
+      "censys": "Censys",
+      "darkweb": "Dark Web",
+      "wayback": "Wayback",
+      "email": "Email",
+      "dorks": "Dorks",
+      "phone": "Phone",
+      "telegram": "Telegram",
+      "map": "Map",
+      "graph": "Graph",
+      "json": "JSON",
+      "ai": "AI"
+    }
+  },
+  "common": {
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyFailed": "Copy failed",
+    "loading": "Loading…",
+    "error": "Error"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "EN",
+    "ru": "RU"
+  }
+}

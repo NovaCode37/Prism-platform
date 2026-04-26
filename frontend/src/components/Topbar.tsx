@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon, Menu } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon, Menu, Languages } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
+import { useTranslations } from '@/lib/i18n';
 import { Logo } from './Logo';
 import type { ScanStatus } from '@/lib/types';
 
@@ -31,6 +32,7 @@ function useDateTime() {
 export function Topbar({ status, onHome, onMenuToggle }: Props) {
   const { date, time } = useDateTime();
   const { theme, toggleTheme, mounted } = useTheme();
+  const { locale, setLocale, t } = useTranslations();
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
@@ -54,7 +56,7 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
       <div className="flex-1 flex items-center justify-center gap-4">
         <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-text-3 uppercase tracking-widest opacity-40">
           <Terminal size={9} />
-          Open Source Intelligence
+          {t('topbar.tagline')}
         </div>
         <div className="w-px h-4 bg-border-1 hidden sm:block" />
         <div className="flex items-center gap-2 font-mono text-[10px] text-text-3">
@@ -67,22 +69,31 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
         {status === 'running' && (
           <div className="flex items-center gap-1.5 text-yellow text-[11px] font-medium">
             <Loader2 size={12} className="spin" />
-            Scanning
+            {t('topbar.scanning')}
           </div>
         )}
         {status === 'completed' && (
           <div className="flex items-center gap-1.5 text-green text-[11px] font-medium">
             <CheckCircle size={12} />
-            Complete
+            {t('topbar.complete')}
           </div>
         )}
         {status === 'failed' && (
           <div className="flex items-center gap-1.5 text-red text-[11px] font-medium">
             <XCircle size={12} />
-            Failed
+            {t('topbar.failed')}
           </div>
         )}
         <div className="w-px h-4 bg-border-1" />
+        <button
+          onClick={() => setLocale(locale === 'en' ? 'ru' : 'en')}
+          className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2 text-[10px] font-bold uppercase tracking-wider"
+          title={t('lang.label')}
+          aria-label="Toggle language"
+        >
+          <Languages size={13} />
+          <span className="hidden sm:inline">{locale === 'en' ? 'EN' : 'RU'}</span>
+        </button>
         <button
           onClick={toggleTheme}
           className="text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2"

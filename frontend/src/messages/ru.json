@@ -1,0 +1,67 @@
+{
+  "topbar": {
+    "tagline": "Разведка по открытым источникам",
+    "scanning": "Сканирование",
+    "complete": "Готово",
+    "failed": "Ошибка",
+    "toggleTheme": "Сменить тему",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "target": "Цель",
+    "targetPlaceholder": "домен, IP, email, телефон…",
+    "scanType": "Тип скана",
+    "modules": "Модули",
+    "runScan": "Запустить",
+    "scanning": "Сканирую…",
+    "recent": "Недавние",
+    "noRecent": "Нет недавних сканов"
+  },
+  "idle": {
+    "headline": "OSINT-разведка для исследователей безопасности",
+    "subheadline": "Сканируй домены, IP, email, телефоны и юзернеймы. Получай threat intel, утечки, OPSEC-оценку и графы связей за секунды.",
+    "tools": "Быстрые инструменты",
+    "capabilities": "Что умеет PRISM"
+  },
+  "progress": {
+    "modulesLabel": "модулей",
+    "initializing": "Инициализация скана…",
+    "running": "Выполняется…",
+    "log": "Лог выполнения"
+  },
+  "results": {
+    "htmlReport": "HTML отчёт",
+    "pdfReport": "PDF отчёт",
+    "tabs": {
+      "findings": "Находки",
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "subdomains": "Поддомены",
+      "accounts": "Аккаунты",
+      "threats": "Угрозы",
+      "censys": "Censys",
+      "darkweb": "Даркнет",
+      "wayback": "Wayback",
+      "email": "Email",
+      "dorks": "Dorks",
+      "phone": "Телефон",
+      "telegram": "Telegram",
+      "map": "Карта",
+      "graph": "Граф",
+      "json": "JSON",
+      "ai": "AI"
+    }
+  },
+  "common": {
+    "copy": "Скопировать",
+    "copied": "Скопировано!",
+    "copyFailed": "Ошибка копирования",
+    "loading": "Загрузка…",
+    "error": "Ошибка"
+  },
+  "lang": {
+    "label": "Язык",
+    "en": "EN",
+    "ru": "RU"
+  }
+}

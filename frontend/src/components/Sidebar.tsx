@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Play, Loader2, ChevronDown, ChevronUp, Lightbulb, RotateCcw, Trash2 } from 'lucide-react';
+import { useTranslations } from '@/lib/i18n';
 import type { ScanType } from '@/lib/types';
 
 const TYPE_COLOR: Record<ScanType, string> = {
@@ -90,6 +91,7 @@ interface Props {
 }
 
 export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
+  const { t } = useTranslations();
   const [target, setTarget] = useState('');
   const [scanType, setScanType] = useState<ScanType>('domain');
   const [modules, setModules] = useState<string[]>(MODULE_MAP.domain.map(m => m.id));
@@ -124,18 +126,18 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
       <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1">✕</button>
       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-3">
         <div>
-          <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">Target</label>
+          <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.target')}</label>
           <input
             value={target}
             onChange={e => setTarget(e.target.value)}
-            placeholder="domain, IP, email, phone…"
+            placeholder={t('sidebar.targetPlaceholder')}
             className="input-field"
             disabled={isRunning}
           />
         </div>
 
         <div>
-          <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">Scan Type</label>
+          <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.scanType')}</label>
           <div className="grid grid-cols-3 gap-1">
             {(['domain','ip','email','phone','username'] as ScanType[]).map(t => (
               <button
@@ -158,7 +160,7 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
           onClick={() => setShowModules(v => !v)}
           className="flex items-center justify-between text-[10px] font-semibold text-text-3 uppercase tracking-wider hover:text-text-2 transition-colors"
         >
-          Modules ({modules.length}/{MODULE_MAP[scanType].length})
+          {t('sidebar.modules')} ({modules.length}/{MODULE_MAP[scanType].length})
           {showModules ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
         </button>
 
@@ -187,7 +189,7 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
           className="btn-primary mt-1"
         >
           {isRunning ? <Loader2 size={13} className="spin" /> : <Play size={13} />}
-          {isRunning ? 'Scanning…' : 'Run Scan'}
+          {isRunning ? t('sidebar.scanning') : t('sidebar.runScan')}
         </button>
       </form>
 
@@ -196,7 +198,7 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[10px] font-semibold text-text-3 uppercase tracking-wider">
               <RotateCcw size={9} />
-              Recent
+              {t('sidebar.recent')}
             </div>
             {recents.length > 0 && (
               <button onClick={clearRecents} className="text-text-3 hover:text-red transition-colors">
@@ -206,7 +208,7 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
           </div>
 
           {recents.length === 0 ? (
-            <div className="text-[10px] text-text-3 opacity-40 italic">No recent scans</div>
+            <div className="text-[10px] text-text-3 opacity-40 italic">{t('sidebar.noRecent')}</div>
           ) : (
             <div className="flex flex-col gap-1">
               {recents.map((r, i) => (
