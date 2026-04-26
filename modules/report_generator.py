@@ -545,3 +545,56 @@ def generate_html_report(
         f.write(html)
 
     return output_path
+
+
+def generate_pdf_report(
+    target: str,
+    scan_type: str,
+    results: Dict[str, Any],
+    opsec: Optional[Dict[str, Any]] = None,
+    output_path: Optional[str] = None,
+) -> str:
+    """Generate a PDF version of the scan report using WeasyPrint.
+
+    WeasyPrint does not execute JavaScript, so the interactive Leaflet map
+    is omitted. All other report data (OPSEC score, findings, WHOIS, DNS,
+    threat intel, etc.) is preserved.
+    """
+    try:
+        from weasyprint import HTML
+    except ImportError as e:
+        raise ImportError(
+            "weasyprint is required for PDF export. Install with: pip install weasyprint"
+        ) from e
+
+    env = Environment(loader=BaseLoader(), autoescape=True)
+    env.filters["tojson"] = lambda v: json.dumps(v)
+    template = env.from_string(REPORT_TEMPLATE)
+
+    context = {
+        "target": target,
+        "scan_type": scan_type,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "results": results,
+        "opsec": opsec,
+        "opsec_circle_color": _opsec_circle_color(opsec["score"]) if opsec else "#636e72",
+        "cat_labels": CAT_LABELS,
+        "bar_color": _bar_color,
+    }
+
+    html = template.render(**context)
+    # Strip Leaflet JS/CSS that WeasyPrint cannot render
+    html = re.sub(r'<link[^>]*leaflet[^>]*>', '', html, flags=re.IGNORECASE)
+    html = re.sub(r'<script[^>]*leaflet[^>]*></script>', '', html, flags=re.IGNORECASE)
+    html = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL)
+    html = re.sub(r'<div id="report-map"[^>]*></div>', '', html)
+
+    if output_path is None:
+        results_dir = os.path.join(os.path.dirname(__file__), "..", "results")
+        os.makedirs(results_dir, exist_ok=True)
+        safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_path = os.path.join(results_dir, f"report_{safe_target}_{ts}.pdf")
+
+    HTML(string=html).write_pdf(output_path)
+    return output_path

@@ -183,9 +183,34 @@ export interface ScanResults {
   breaches?: BreachData;
   website?: Record<string, unknown>;
   dorks?: string[];
+  censys?: CensysData;
+  onion?: OnionData;
   report_path?: string;
   map_data?: unknown;
   graph?: unknown;
+}
+
+export interface CensysData {
+  error?: string | null;
+  ip?: string;
+  domain?: string;
+  asn?: number;
+  as_name?: string;
+  country?: string;
+  city?: string;
+  open_ports?: number[];
+  services?: { port: number; service?: string; transport?: string; software?: string | null }[];
+  subdomains?: string[];
+  certificates?: { fingerprint?: string; issuer?: string; names?: string[] }[];
+  total?: number;
+}
+
+export interface OnionData {
+  error?: string | null;
+  target?: string;
+  total_found?: number;
+  results?: { source?: string; url: string; title?: string | null; description?: string | null }[];
+  sources?: { ahmia?: number; darksearch?: number };
 }
 
 export interface UrlScanResult {

@@ -11,6 +11,8 @@ VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY", "")
 ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", "")
 SHODAN_API_KEY = os.getenv("SHODAN_API_KEY", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+CENSYS_API_ID = os.getenv("CENSYS_API_ID", "")
+CENSYS_API_SECRET = os.getenv("CENSYS_API_SECRET", "")
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "results")
 os.makedirs(OUTPUT_DIR, exist_ok=True)

@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy } from 'lucide-react';
+import { ExternalLink, Printer, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
-import { getReportUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
+import { getReportUrl, getReportPdfUrl, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
 
 function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
   const [data, setData] = useState<{ markers: { lat: number; lng: number; label: string; city?: string; country?: string; org?: string; ip?: string }[]; center: { lat: number; lng: number } | null } | null>(null);
@@ -157,6 +157,8 @@ const TABS = [
   { id: 'subdomains', label: 'Subdomains', icon: Lock },
   { id: 'accounts', label: 'Accounts', icon: User },
   { id: 'threats', label: 'Threats', icon: AlertTriangle },
+  { id: 'censys', label: 'Censys', icon: Eye },
+  { id: 'darkweb', label: 'Dark Web', icon: ShieldAlert },
   { id: 'wayback', label: 'Wayback', icon: Clock },
   { id: 'email', label: 'Email', icon: Mail },
   { id: 'dorks', label: 'Dorks', icon: Zap },
@@ -238,6 +240,8 @@ export function ScanResults({ scan }: Props) {
     if (t.id === 'subdomains') return r.cert_transparency?.subdomains?.length;
     if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
     if (t.id === 'threats') return r.virustotal || r.abuseipdb || r.shodan;
+    if (t.id === 'censys') return r.censys && !r.censys.error;
+    if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
     if (t.id === 'wayback') return r.wayback;
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches;
     if (t.id === 'dorks') return r.dorks?.length;
@@ -266,9 +270,10 @@ export function ScanResults({ scan }: Props) {
             className="btn-ghost text-[11px] h-8 px-3">
             <ExternalLink size={11} /> HTML Report
           </a>
-          <button onClick={() => window.print()} className="btn-ghost text-[11px] h-8 px-3">
-            <Printer size={11} /> Print PDF
-          </button>
+          <a href={getReportPdfUrl(scan.id)} target="_blank" rel="noreferrer"
+            className="btn-ghost text-[11px] h-8 px-3">
+            <Printer size={11} /> PDF Report
+          </a>
         </div>
       </div>
 
@@ -468,6 +473,78 @@ export function ScanResults({ scan }: Props) {
               </Card>
             )}
           </div>
+        )}
+
+        {tab === 'censys' && r.censys && !r.censys.error && (
+          <Card title={`Censys — ${r.censys.domain ? 'Certificate Search' : 'Host Info'}`}>
+            <div className="space-y-1.5">
+              {r.censys.ip && <div className="dt-row"><span className="dt-label">IP</span><span className="dt-value">{r.censys.ip}</span></div>}
+              {r.censys.asn && <div className="dt-row"><span className="dt-label">ASN</span><span className="dt-value">AS{r.censys.asn} {r.censys.as_name ?? ''}</span></div>}
+              {r.censys.country && <div className="dt-row"><span className="dt-label">Location</span><span className="dt-value">{[r.censys.city, r.censys.country].filter(Boolean).join(', ')}</span></div>}
+              {r.censys.open_ports && r.censys.open_ports.length > 0 && (
+                <div className="dt-row"><span className="dt-label">Open Ports</span>
+                  <div className="flex flex-wrap gap-1">
+                    {r.censys.open_ports.map(p => (
+                      <span key={p} className="inline-flex items-center gap-1">
+                        <span className="tag">{p}</span>
+                        <CopyIconButton onClick={() => copyValue(p)} label="Copy port" />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {r.censys.subdomains && r.censys.subdomains.length > 0 && (
+                <div className="dt-row"><span className="dt-label">Subdomains ({r.censys.subdomains.length})</span>
+                  <div className="flex flex-wrap gap-1">
+                    {r.censys.subdomains.map(s => (
+                      <span key={s} className="inline-flex items-center gap-1">
+                        <span className="tag tag-blue">{s}</span>
+                        <CopyIconButton onClick={() => copyValue(s)} label="Copy subdomain" />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {r.censys.services && r.censys.services.length > 0 && (
+                <div className="mt-3">
+                  <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Services</div>
+                  <table className="w-full text-[12px]">
+                    <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
+                      <th className="pb-2">Port</th><th className="pb-2">Service</th><th className="pb-2">Software</th>
+                    </tr></thead>
+                    <tbody>{r.censys.services.map((s, i) => (
+                      <tr key={i} className="border-b border-border-1 last:border-0">
+                        <td className="py-1.5 font-mono">{s.port}/{s.transport ?? 'tcp'}</td>
+                        <td className="py-1.5">{s.service ?? '—'}</td>
+                        <td className="py-1.5 text-text-3">{s.software ?? '—'}</td>
+                      </tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {tab === 'darkweb' && r.onion && (
+          <Card title={`Dark Web Mirrors — ${r.onion.total_found} found`}>
+            <div className="text-[11px] text-text-3 mb-3">
+              Sources: Ahmia ({r.onion.sources?.ahmia ?? 0}) · DarkSearch ({r.onion.sources?.darksearch ?? 0})
+            </div>
+            <div className="space-y-2">
+              {r.onion.results?.map((item, i) => (
+                <div key={i} className="border border-border-1 rounded p-2.5 bg-surface-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] tag tag-red uppercase">{item.source}</span>
+                    <span className="font-mono text-[11px] text-text-1 break-all flex-1">{item.url}</span>
+                    <CopyIconButton onClick={() => copyValue(item.url)} label="Copy onion URL" />
+                  </div>
+                  {item.title && <div className="text-[12px] text-text-2 mt-1.5">{item.title}</div>}
+                  {item.description && <div className="text-[11px] text-text-3 mt-0.5">{item.description}</div>}
+                </div>
+              ))}
+            </div>
+          </Card>
         )}
 
         {tab === 'wayback' && r.wayback && (

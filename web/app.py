@@ -22,7 +22,7 @@ import config
 
 from modules.graph_builder import build_graph
 from modules.opsec_score import score_from_results
-from modules.report_generator import generate_html_report
+from modules.report_generator import generate_html_report, generate_pdf_report
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
@@ -273,6 +273,18 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
             if want("abuseipdb") and scan_type == "ip":
                 from modules.threat_intel import AbuseIPDB
                 results["abuseipdb"] = await _run_module(scan_id, "abuseipdb", AbuseIPDB().check_ip, target)
+
+            if want("onion") and scan_type == "domain":
+                from modules.onion_checker import OnionChecker
+                results["onion"] = await _run_module(scan_id, "onion", OnionChecker().check, target)
+
+            if want("censys"):
+                from modules.censys_lookup import CensysLookup
+                cl = CensysLookup()
+                if scan_type == "domain":
+                    results["censys"] = await _run_module(scan_id, "censys", cl.search_domain, target)
+                else:
+                    results["censys"] = await _run_module(scan_id, "censys", cl.search_ip, target)
 
         elif scan_type == "email":
             if want("smtp"):
@@ -584,6 +596,31 @@ async def download_report(request: Request, scan_id: str):
         report_path,
         media_type="text/html",
         filename=os.path.basename(report_path),
+    )
+
+@app.get("/api/scan/{scan_id}/report/pdf", dependencies=[Depends(require_api_key)])
+@limiter.limit("5/minute")
+async def download_report_pdf(request: Request, scan_id: str):
+    validate_scan_id(scan_id)
+    scan = _load_scan(scan_id)
+    if not scan or not scan.get("results"):
+        return JSONResponse({"error": "Scan not found or not completed"}, status_code=404)
+    results = scan["results"]
+    opsec = results.get("opsec_score")
+    loop = asyncio.get_event_loop()
+    try:
+        pdf_path = await loop.run_in_executor(
+            None,
+            lambda: generate_pdf_report(scan["target"], scan["scan_type"], results, opsec),
+        )
+    except ImportError as e:
+        return JSONResponse({"error": str(e)}, status_code=501)
+    except Exception as e:
+        return JSONResponse({"error": f"PDF generation failed: {str(e)[:200]}"}, status_code=500)
+    return FileResponse(
+        pdf_path,
+        media_type="application/pdf",
+        filename=os.path.basename(pdf_path),
     )
 
 @app.post("/api/url-scan", dependencies=[Depends(require_api_key)])

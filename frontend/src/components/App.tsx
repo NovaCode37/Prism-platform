@@ -20,6 +20,8 @@ export function App() {
   const [scanMeta, setScanMeta] = useState<(ScanMeta & { results: ScanResultsType }) | null>(null);
   const [progressLog, setProgressLog] = useState<string[]>([]);
   const [scanTarget, setScanTarget] = useState('');
+  const [moduleStatuses, setModuleStatuses] = useState<Record<string, 'running' | 'ok' | 'error'>>({});
+  const [totalModules, setTotalModules] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
 
   const handleHome = useCallback(() => {
@@ -31,6 +33,8 @@ export function App() {
     setScanMeta(null);
     setProgressLog([]);
     setScanTarget('');
+    setModuleStatuses({});
+    setTotalModules(0);
   }, []);
 
   const handleTool = useCallback((mode: ToolMode) => {
@@ -117,8 +121,10 @@ export function App() {
 
         if (msg.type === 'module_start') {
           setProgressLog(prev => [...prev, `→ ${msg.module}`]);
+          setModuleStatuses(prev => ({ ...prev, [msg.module]: 'running' }));
 
         } else if (msg.type === 'module_done') {
+          setModuleStatuses(prev => ({ ...prev, [msg.module]: msg.status === 'error' ? 'error' : 'ok' }));
           if (msg.status === 'error') {
             setProgressLog(prev => [...prev, `✗ ${msg.module}: ${msg.error || 'error'}`]);
           } else {
@@ -161,6 +167,8 @@ export function App() {
   const handleScan = useCallback(async (target: string, type: ScanType, modules: string[]) => {
     setScanTarget(target);
     setProgressLog([]);
+    setModuleStatuses({});
+    setTotalModules(modules.length);
     setScanStatus('running');
     setView('scanning');
     setScanMeta(null);
@@ -190,7 +198,7 @@ export function App() {
             <ToolPanels mode={toolMode} onBack={() => setView('idle')} />
           )}
           {view === 'scanning' && (
-            <ScanProgress log={progressLog} target={scanTarget} />
+            <ScanProgress log={progressLog} target={scanTarget} moduleStatuses={moduleStatuses} totalModules={totalModules} />
           )}
           {view === 'results' && scanMeta && (
             <ScanResults scan={scanMeta} />

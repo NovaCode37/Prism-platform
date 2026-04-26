@@ -63,10 +63,12 @@ const MODULE_MAP: Record<ScanType, { id: string; label: string }[]> = {
     { id: 'geoip', label: 'GeoIP' }, { id: 'cert_transparency', label: 'Cert CT' },
     { id: 'website', label: 'Website' }, { id: 'wayback', label: 'Wayback' },
     { id: 'shodan', label: 'Shodan' }, { id: 'virustotal', label: 'VirusTotal' },
+    { id: 'censys', label: 'Censys' }, { id: 'onion', label: 'Dark Web' },
   ],
   ip: [
     { id: 'geoip', label: 'GeoIP' }, { id: 'shodan', label: 'Shodan' },
     { id: 'virustotal', label: 'VirusTotal' }, { id: 'abuseipdb', label: 'AbuseIPDB' },
+    { id: 'censys', label: 'Censys' },
   ],
   email: [
     { id: 'emailrep', label: 'Email Rep' }, { id: 'smtp', label: 'SMTP Verify' },

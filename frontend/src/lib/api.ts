@@ -99,3 +99,9 @@ export function getReportUrl(scanId: string): string {
     ? `${API}/api/scan/${scanId}/report?api_key=${API_KEY}`
     : `${API}/api/scan/${scanId}/report`;
 }
+
+export function getReportPdfUrl(scanId: string): string {
+  return API_KEY
+    ? `${API}/api/scan/${scanId}/report/pdf?api_key=${API_KEY}`
+    : `${API}/api/scan/${scanId}/report/pdf`;
+}
