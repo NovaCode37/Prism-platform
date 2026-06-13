@@ -3,7 +3,7 @@
 > Self-hosted OSINT platform with **22+ modules**, **OPSEC scoring**, **AI summary**, and a real-time web dashboard.
 > Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel, breach data, username search, dark-web mirrors, OPSEC score, entity graphs, and HTML/PDF reports in seconds.
 
-**[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)** · **[FAQ](#faq)**
+**[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)**
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-2.3.0-7c5cfc?style=flat-square)](CHANGELOG.md)
@@ -505,23 +505,6 @@ ETH:          0x0639476A71255FD2C15dceD53e167952DcddEE8A
 ```
 
 ---
-
-## FAQ
-
-**Do I need API keys?**
-No — 14 of 22 modules work without any keys.
-
-**Is it free?**
-Yes, MIT licensed and completely self-hosted.
-
-**Can I run it without installing anything?**
-Try the live demo, or spin it up with the one-command Docker demo.
-
-**Which LLM does the AI summary use?**
-Any OpenAI-compatible endpoint — OpenRouter, Groq, or local Ollama all work.
-
----
-
 
 ## Contributing
 
