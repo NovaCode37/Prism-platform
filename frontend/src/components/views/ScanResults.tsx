@@ -406,7 +406,7 @@ export function ScanResults({ scan }: Props) {
   const [aiError, setAiError] = useState('');
   const [aiModel, setAiModel] = useState('');
   const [chatInput, setChatInput] = useState('');
-  const [chatHistory, setChatHistory] = useState<{role:'user'|'ai'; text:string}[]>([]);
+  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
   const [showJson, setShowJson] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -724,6 +724,10 @@ export function ScanResults({ scan }: Props) {
             className="btn-ghost text-[11px] h-8 px-3">
             <FileText size={11} /> {i18n('results.mdReport') !== 'results.mdReport' ? i18n('results.mdReport') : 'Markdown'}
           </button>
+          <button type="button" onClick={() => copyValue(JSON.stringify(scan.results, null, 2))}
+            className="btn-ghost text-[11px] h-8 px-3" title="Copy JSON" aria-label="Copy JSON">
+            <Copy size={11} /> Copy JSON
+          </button>
           {allEmails.length >= 2 && (
             <button type="button" onClick={copyAllEmails}
               className="btn-ghost text-[11px] h-8 px-3">
@@ -873,23 +877,23 @@ export function ScanResults({ scan }: Props) {
               </div>
             </div>
             <div className="overflow-x-auto -mx-4 px-4">
-            <table className="w-full text-[12px] min-w-[400px]">
-              <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
-                <th className="pb-2">Platform</th><th className="pb-2">URL</th><th className="pb-2 text-right">Time</th>
-              </tr></thead>
-              <tbody>{r.blackbird?.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).map(b => (
-                <tr key={b.site} className="border-b border-border-1 last:border-0">
-                  <td className="py-2 font-medium text-text-1">{b.site}</td>
-                  <td className="py-2">
-                    <div className="flex items-center gap-1.5">
-                      <a href={b.url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate block max-w-xs">{b.url}</a>
-                      <CopyIconButton onClick={() => copyValue(b.url)} label="Copy username URL" />
-                    </div>
-                  </td>
-                  <td className="py-2 text-right font-mono text-text-3">{b.response_time?.toFixed(2)}s</td>
-                </tr>
-              ))}</tbody>
-            </table>
+              <table className="w-full text-[12px] min-w-[400px]">
+                <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
+                  <th className="pb-2">Platform</th><th className="pb-2">URL</th><th className="pb-2 text-right">Time</th>
+                </tr></thead>
+                <tbody>{r.blackbird?.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).map(b => (
+                  <tr key={b.site} className="border-b border-border-1 last:border-0">
+                    <td className="py-2 font-medium text-text-1">{b.site}</td>
+                    <td className="py-2">
+                      <div className="flex items-center gap-1.5">
+                        <a href={b.url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate block max-w-xs">{b.url}</a>
+                        <CopyIconButton onClick={() => copyValue(b.url)} label="Copy username URL" />
+                      </div>
+                    </td>
+                    <td className="py-2 text-right font-mono text-text-3">{b.response_time?.toFixed(2)}s</td>
+                  </tr>
+                ))}</tbody>
+              </table>
             </div>
           </Card>
         )}
@@ -929,7 +933,7 @@ export function ScanResults({ scan }: Props) {
                   <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Open Ports</div>
                   {r.shodan.open_ports.map(p => (
                     <span key={p} className="inline-flex items-center gap-1 mr-1">
-                      <span className={`tag ${[21,22,23,3389,5900,445,3306,5432,27017,6379].includes(p) ? 'tag-red' : ''}`}>{p}</span>
+                      <span className={`tag ${[21, 22, 23, 3389, 5900, 445, 3306, 5432, 27017, 6379].includes(p) ? 'tag-red' : ''}`}>{p}</span>
                       <CopyIconButton onClick={() => copyValue(p)} label="Copy Shodan port" />
                     </span>
                   ))}
@@ -1035,7 +1039,7 @@ export function ScanResults({ scan }: Props) {
                         {s.wayback_url}
                       </a>
                       <span className="text-text-3">{s.mime}</span>
-                      {s.size > 0 && <span className="text-text-3">{Math.round(s.size/1024)}KB</span>}
+                      {s.size > 0 && <span className="text-text-3">{Math.round(s.size / 1024)}KB</span>}
                     </div>
                   ))}
                 </div>
@@ -1261,11 +1265,10 @@ export function ScanResults({ scan }: Props) {
                 <div className="space-y-3 mb-4 max-h-72 overflow-y-auto pr-1">
                   {chatHistory.map((m, i) => (
                     <div key={i} className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] rounded-lg px-3 py-2 text-[12px] leading-relaxed whitespace-pre-wrap ${
-                        m.role === 'user'
+                      <div className={`max-w-[80%] rounded-lg px-3 py-2 text-[12px] leading-relaxed whitespace-pre-wrap ${m.role === 'user'
                           ? 'bg-blue/20 text-text-1 border border-blue/30'
                           : 'bg-surface-3 text-text-1 border border-border-1'
-                      }`}>
+                        }`}>
                         {m.text}
                       </div>
                     </div>
