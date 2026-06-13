@@ -270,6 +270,20 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
               <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto">
                 <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
               </button>
+              <button
+                onClick={async () => {
+                  if (confirm(t('sidebar.clearHistoryConfirm'))) {
+                    try {
+                      await import('@/lib/api').then(m => m.clearScans());
+                      await fetchHistory();
+                    } catch {}
+                  }
+                }}
+                className="text-text-3 hover:text-red transition-colors"
+                aria-label={t('sidebar.clearHistory')}
+              >
+                <Trash2 size={10} />
+              </button>
             </div>
             {historyLoading ? (
               <div className="flex justify-center py-2"><Loader2 size={14} className="spin text-text-3" /></div>

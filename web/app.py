@@ -196,6 +196,27 @@ def _list_scans_from_disk(principal: Optional[str] = None) -> List[Dict]:
 def _scan_visible_to(scan: Dict, principal: str) -> bool:
     return (scan.get("owner") or ANONYMOUS_PRINCIPAL) == principal
 
+@app.delete("/api/scans")
+async def clear_scan_history(principal: str = Depends(get_principal)):
+    """Delete all scan files owned by the current principal."""
+    try:
+        removed = []
+        for fname in os.listdir(_SCANS_DIR):
+            if not fname.endswith(".json"):
+                continue
+            path = os.path.join(_SCANS_DIR, fname)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    scan = json.load(f)
+                if (scan.get("owner") or ANONYMOUS_PRINCIPAL) == principal:
+                    os.remove(path)
+                    removed.append(fname)
+            except Exception:
+                continue
+        return JSONResponse({"message": f"Deleted {len(removed)} scan(s)."})
+    except Exception as e:
+        return JSONResponse({"detail": str(e)}, status_code=500)
+
 def _evict_old_scans() -> None:
     if len(_scans) <= MAX_STORED_SCANS:
         return
