@@ -710,6 +710,15 @@ export function ScanResults({ scan }: Props) {
 
   const [accountFilter, setAccountFilter] = useState('');
 
+  const skippedIpProviders = [
+    { name: 'Shodan', mod: r.shodan, key: 'SHODAN_API_KEY' },
+    { name: 'VirusTotal', mod: r.virustotal, key: 'VIRUSTOTAL_API_KEY' },
+    { name: 'AbuseIPDB', mod: r.abuseipdb, key: 'ABUSEIPDB_API_KEY' },
+    { name: 'Censys', mod: r.censys, key: 'CENSYS_API_ID / CENSYS_API_SECRET' },
+  ].filter(({ mod }) => mod && modStatus(mod) === 'skipped');
+
+  const showLimitedIpNotice = scan.scan_type === 'ip' && skippedIpProviders.length > 0;
+
   const visibleTabs = TABS.filter(t => {
     if (t.id === 'whois') return r.whois && !r.whois.error;
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
@@ -717,7 +726,7 @@ export function ScanResults({ scan }: Props) {
     if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
     if (t.id === 'github') return r.github && modStatus(r.github) === 'ok';
     if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(m => m && modStatus(m) !== 'error');
-    if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
+    if (t.id === 'censys') return r.censys && modStatus(r.censys) !== 'error';
     if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
     if (t.id === 'wayback') return r.wayback;
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches;
@@ -792,6 +801,26 @@ export function ScanResults({ scan }: Props) {
           )}
         </div>
       </div>
+
+      {showLimitedIpNotice && (
+        <div className="px-4 sm:px-5 py-3 border-b border-border-1 bg-yellow/5">
+          <div className="flex items-start gap-2.5 max-w-5xl">
+            <AlertTriangle size={15} className="text-yellow mt-0.5 shrink-0" />
+            <div className="min-w-0">
+              <div className="text-[12px] font-semibold text-text-1">
+                IP scan completed with limited provider data
+              </div>
+              <div className="text-[11px] text-text-2 mt-0.5 leading-relaxed">
+                {skippedIpProviders.map(p => p.name).join(', ')} skipped because provider keys are missing. Add{' '}
+                <code className="font-mono text-text-1">
+                  {skippedIpProviders.map(p => p.key).join(', ')}
+                </code>{' '}
+                to <code className="font-mono text-text-1">.env</code> and recreate the container for deeper IP intelligence.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {opsec && (
         <div className="px-4 sm:px-5 py-2.5 bg-surface-2 border-b border-border-1 flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-hide">

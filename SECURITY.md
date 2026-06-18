@@ -80,9 +80,10 @@ For production deployments I recommend:
 5. Run behind a reverse proxy (nginx, Caddy, Cloudflare) terminating TLS.
 6. Set `TRUST_PROXY_HEADERS=true` only when PRISM is not directly reachable, and restrict `FORWARDED_ALLOW_IPS` to the reverse proxy source IPs.
 7. Set `TRUSTED_HOSTS` to the public hostname(s) accepted by the backend.
-8. Restrict outbound network egress where possible (PRISM does call many third-party APIs).
-9. Mount `scan_data/` and `module_cache/` on persistent, access-controlled storage.
-10. Keep your Docker images updated and run `pytest -q` after every dependency upgrade.
+8. Treat `PRISM_UI_API_KEY` as public browser configuration; do not use a server-only secret for it.
+9. Restrict outbound network egress where possible (PRISM does call many third-party APIs).
+10. Mount `scan_data/` and `module_cache/` on persistent, access-controlled storage.
+11. Keep your Docker images updated and run `pytest -q` after every dependency upgrade.
 
 ## Legal use
 

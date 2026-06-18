@@ -243,7 +243,7 @@ The reference deployment uses:
 
 - Nginx reverse proxy (TLS via Let's Encrypt)
 - `uvicorn` workers behind systemd
-- Static frontend served via `next build && next start` or a CDN
+- Static Next.js export served by FastAPI in the Docker image
 - Same-origin API/WebSocket routing via `/api/*` and `/ws/*`; use matching `PRISM_BASE_PATH` and `NEXT_PUBLIC_BASE_PATH` for subpath deployments such as `/prism`
 - Trusted proxy headers enabled only with `TRUST_PROXY_HEADERS=true` and restricted `FORWARDED_ALLOW_IPS`
 - `module_cache/` and `scan_data/` mounted on persistent volume

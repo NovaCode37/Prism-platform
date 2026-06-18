@@ -6,13 +6,13 @@ import time
 import uuid
 import threading
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 import re
 import requests as _requests
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, Request
-from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from slowapi import _rate_limit_exceeded_handler
@@ -48,6 +48,9 @@ _BASE_PATH = normalize_base_path(os.getenv("PRISM_BASE_PATH", ""))
 _TRUST_PROXY_HEADERS = env_flag("TRUST_PROXY_HEADERS")
 _FORWARDED_ALLOW_IPS = os.getenv("FORWARDED_ALLOW_IPS", "127.0.0.1,::1").strip() or "127.0.0.1,::1"
 _TRUSTED_HOSTS = parse_csv_env("TRUSTED_HOSTS")
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+_FRONTEND_DIR = Path(os.getenv("PRISM_FRONTEND_DIR") or (_PROJECT_ROOT / "frontend" / "out")).resolve()
+_RESERVED_FRONTEND_PATHS = {"api", "ws", "healthz", "docs", "redoc", "openapi.json"}
 
 app = FastAPI(
     title="OSINT Toolkit",
@@ -59,10 +62,6 @@ app = FastAPI(
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-_STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
-if os.path.isdir(_STATIC_DIR):
-    app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -92,7 +91,7 @@ if _TRUST_PROXY_HEADERS:
 async def _startup_banner() -> None:
     base_note = f" (public base path: {_BASE_PATH})" if _BASE_PATH else ""
     print(
-        f"\n  PRISM API is running on http://localhost:8080{base_note}\n"
+        f"\n  PRISM is running on http://localhost:8080{base_note}\n"
         "  ⭐ If you find it useful, star the repo: "
         "https://github.com/NovaCode37/Prism-platform\n",
         flush=True,
@@ -223,8 +222,6 @@ def _evict_old_scans() -> None:
     for k, _ in completed[:to_remove]:
         _scans.pop(k, None)
         _queues.pop(k, None)
-
-TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
 class ScanRequest(BaseModel):
     target: str
@@ -607,12 +604,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 },
             }
             threading.Thread(target=_send_webhook, args=(webhook_url, payload), daemon=True).start()
-
-@app.get("/", response_class=HTMLResponse)
-async def index():
-    path = os.path.join(TEMPLATES_DIR, "index.html")
-    with open(path, encoding="utf-8") as f:
-        return f.read()
 
 @app.get("/healthz", include_in_schema=False)
 async def healthz():
@@ -1205,6 +1196,69 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
             await websocket.close()
         except Exception:
             pass
+
+def _frontend_config_script() -> str:
+    config = {
+        "apiUrl": os.getenv("NEXT_PUBLIC_API_URL", ""),
+        "apiKey": os.getenv("PRISM_UI_API_KEY", os.getenv("NEXT_PUBLIC_API_KEY", "")),
+        "basePath": _BASE_PATH,
+    }
+    payload = json.dumps(config, separators=(",", ":")).replace("</", "<\\/")
+    return f'<script id="prism-runtime-config">window.__PRISM_CONFIG__={payload};</script>'
+
+def _frontend_not_found() -> JSONResponse:
+    return JSONResponse({"detail": "Frontend build not found"}, status_code=404)
+
+def _is_reserved_frontend_path(path: str) -> bool:
+    first_segment = path.strip("/").split("/", 1)[0]
+    return first_segment in _RESERVED_FRONTEND_PATHS
+
+def _safe_frontend_file(path: str) -> Optional[Path]:
+    if not _FRONTEND_DIR.is_dir():
+        return None
+    root = _FRONTEND_DIR.resolve()
+    try:
+        candidate = (root / path).resolve()
+        candidate.relative_to(root)
+    except ValueError:
+        return None
+    if candidate.is_dir():
+        index = candidate / "index.html"
+        return index if index.is_file() else None
+    return candidate if candidate.is_file() else None
+
+def _serve_frontend_index(index_path: Path) -> Response:
+    html = index_path.read_text(encoding="utf-8")
+    script = _frontend_config_script()
+    if "</head>" in html:
+        html = html.replace("</head>", f"{script}</head>", 1)
+    else:
+        html = f"{script}{html}"
+    return Response(html, media_type="text/html")
+
+def _serve_frontend_path(path: str):
+    normalized = path.strip("/")
+    if normalized and _is_reserved_frontend_path(normalized):
+        return JSONResponse({"detail": "Not found"}, status_code=404)
+
+    file_path = _safe_frontend_file(normalized or "index.html")
+    if file_path:
+        if file_path.name == "index.html":
+            return _serve_frontend_index(file_path)
+        return FileResponse(file_path)
+
+    index_path = _safe_frontend_file("index.html")
+    if index_path:
+        return _serve_frontend_index(index_path)
+    return _frontend_not_found()
+
+@app.get("/", include_in_schema=False)
+async def frontend_root():
+    return _serve_frontend_path("")
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def frontend_fallback(full_path: str):
+    return _serve_frontend_path(full_path)
 
 if __name__ == "__main__":
     import uvicorn

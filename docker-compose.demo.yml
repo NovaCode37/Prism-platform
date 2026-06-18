@@ -1,6 +1,10 @@
 services:
   prism-demo:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_BASE_PATH: ${NEXT_PUBLIC_BASE_PATH:-}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
     ports:
       - "8080:8080"
     environment:

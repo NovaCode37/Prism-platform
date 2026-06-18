@@ -1,20 +1,18 @@
 import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult } from './types';
+import { getPrismApiKey, getPrismApiUrl, getPrismBasePath } from './prism-config';
 import { buildApiUrl, buildWsUrl, normalizeBasePath } from './url-utils';
 
-const API = process.env.NEXT_PUBLIC_API_URL || '';
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
-
 function apiUrl(path: string): string {
-  return buildApiUrl(path, API, BASE_PATH);
+  return buildApiUrl(path, getPrismApiUrl(), getPrismBasePath());
 }
 
 function backendLabel(): string {
-  return API || normalizeBasePath(BASE_PATH) || 'same-origin backend';
+  return getPrismApiUrl() || normalizeBasePath(getPrismBasePath()) || 'same-origin backend';
 }
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
-  return API_KEY ? { 'X-API-Key': API_KEY, ...extra } : extra;
+  const apiKey = getPrismApiKey();
+  return apiKey ? { 'X-API-Key': apiKey, ...extra } : extra;
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
@@ -104,9 +102,9 @@ export async function getGraphData(scanId: string): Promise<unknown> {
 
 export function getWsUrl(scanId: string): string {
   return buildWsUrl(scanId, {
-    apiBase: API,
-    apiKey: API_KEY,
-    basePath: BASE_PATH,
+    apiBase: getPrismApiUrl(),
+    apiKey: getPrismApiKey(),
+    basePath: getPrismBasePath(),
   });
 }
 

@@ -14,6 +14,9 @@ PROXY_ENV = (
     "TRUST_PROXY_HEADERS",
     "FORWARDED_ALLOW_IPS",
     "TRUSTED_HOSTS",
+    "PRISM_FRONTEND_DIR",
+    "PRISM_UI_API_KEY",
+    "NEXT_PUBLIC_API_URL",
     "API_KEY",
     "API_KEYS",
     "ALLOW_ANON_API",
@@ -76,6 +79,15 @@ def _get_json(app, path, headers=None):
     return status, json.loads(body.decode("utf-8"))
 
 
+def _move_latest_route_before_frontend_fallback(app):
+    latest = app.router.routes.pop()
+    fallback_index = next(
+        index for index, route in enumerate(app.router.routes)
+        if getattr(route, "path", None) == "/{full_path:path}"
+    )
+    app.router.routes.insert(fallback_index, latest)
+
+
 def test_normalize_base_path():
     from web.security import normalize_base_path
 
@@ -111,6 +123,52 @@ def test_crypto_route_is_registered(monkeypatch):
     assert ("/api/crypto", "POST") in routes
 
 
+def test_serves_next_index_with_runtime_config(monkeypatch, tmp_path):
+    frontend_dir = tmp_path / "out"
+    frontend_dir.mkdir()
+    (frontend_dir / "index.html").write_text("<html><head></head><body>PRISM Next</body></html>", encoding="utf-8")
+    app_mod = _load_app(
+        monkeypatch,
+        PRISM_FRONTEND_DIR=str(frontend_dir),
+        PRISM_BASE_PATH="/prism",
+        PRISM_UI_API_KEY="public-browser-key",
+        NEXT_PUBLIC_API_URL="https://api.example.com",
+    )
+
+    status, body = asyncio.run(_asgi_get(app_mod.app, "/"))
+    text = body.decode("utf-8")
+
+    assert status == 200
+    assert "PRISM Next" in text
+    assert 'window.__PRISM_CONFIG__={"apiUrl":"https://api.example.com","apiKey":"public-browser-key","basePath":"/prism"}' in text
+
+
+def test_serves_next_static_asset(monkeypatch, tmp_path):
+    frontend_dir = tmp_path / "out"
+    asset_dir = frontend_dir / "_next" / "static"
+    asset_dir.mkdir(parents=True)
+    (frontend_dir / "index.html").write_text("<html><head></head><body>PRISM Next</body></html>", encoding="utf-8")
+    (asset_dir / "app.js").write_text("console.log('ok');", encoding="utf-8")
+    app_mod = _load_app(monkeypatch, PRISM_FRONTEND_DIR=str(frontend_dir))
+
+    status, body = asyncio.run(_asgi_get(app_mod.app, "/_next/static/app.js"))
+
+    assert status == 200
+    assert body == b"console.log('ok');"
+
+
+def test_reserved_paths_are_not_spa_fallback(monkeypatch, tmp_path):
+    frontend_dir = tmp_path / "out"
+    frontend_dir.mkdir()
+    (frontend_dir / "index.html").write_text("<html><head></head><body>PRISM Next</body></html>", encoding="utf-8")
+    app_mod = _load_app(monkeypatch, PRISM_FRONTEND_DIR=str(frontend_dir))
+
+    status, body = asyncio.run(_asgi_get(app_mod.app, "/api/not-real"))
+
+    assert status == 404
+    assert "PRISM Next" not in body.decode("utf-8")
+
+
 def test_forwarded_headers_are_ignored_by_default(monkeypatch):
     app_mod = _load_app(monkeypatch)
 
@@ -120,6 +178,7 @@ def test_forwarded_headers_are_ignored_by_default(monkeypatch):
             "client": request.client.host if request.client else None,
             "scheme": request.url.scheme,
         }
+    _move_latest_route_before_frontend_fallback(app_mod.app)
 
     _status, body = _get_json(
         app_mod.app,
@@ -146,6 +205,7 @@ def test_forwarded_headers_are_used_for_trusted_proxy(monkeypatch):
             "client": request.client.host if request.client else None,
             "scheme": request.url.scheme,
         }
+    _move_latest_route_before_frontend_fallback(app_mod.app)
 
     _status, body = _get_json(
         app_mod.app,
@@ -172,6 +232,7 @@ def test_forwarded_headers_require_allowed_proxy(monkeypatch):
             "client": request.client.host if request.client else None,
             "scheme": request.url.scheme,
         }
+    _move_latest_route_before_frontend_fallback(app_mod.app)
 
     _status, body = _get_json(
         app_mod.app,

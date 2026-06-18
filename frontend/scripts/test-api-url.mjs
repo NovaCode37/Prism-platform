@@ -2,16 +2,20 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 
-const sourceUrl = new URL('../src/lib/url-utils.ts', import.meta.url);
-const source = await readFile(sourceUrl, 'utf8');
-const output = ts.transpileModule(source, {
-  compilerOptions: {
-    module: ts.ModuleKind.ES2022,
-    target: ts.ScriptTarget.ES2022,
-  },
-}).outputText;
+async function loadTsModule(path) {
+  const sourceUrl = new URL(path, import.meta.url);
+  const source = await readFile(sourceUrl, 'utf8');
+  const output = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ES2022,
+      target: ts.ScriptTarget.ES2022,
+    },
+  }).outputText;
+  return import(`data:text/javascript;charset=utf-8,${encodeURIComponent(output)}`);
+}
 
-const utils = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(output)}`);
+const utils = await loadTsModule('../src/lib/url-utils.ts');
+const config = await loadTsModule('../src/lib/prism-config.ts');
 
 assert.equal(utils.normalizeBasePath(''), '');
 assert.equal(utils.normalizeBasePath('/'), '');
@@ -41,5 +45,10 @@ assert.equal(
   }),
   'ws://localhost:8080/ws/scan-1?api_key=secret',
 );
+
+assert.equal(config.getPrismApiUrl({ apiUrl: '' }, 'http://localhost:8080'), '');
+assert.equal(config.getPrismApiUrl({ apiUrl: 'https://api.example.com' }, ''), 'https://api.example.com');
+assert.equal(config.getPrismApiKey({ apiKey: 'runtime-key' }, 'build-key'), 'runtime-key');
+assert.equal(config.getPrismBasePath({ basePath: '/prism' }, ''), '/prism');
 
 console.log('api url tests passed');

@@ -1,13 +1,16 @@
-version: '3.9'
-
 services:
   osint:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_BASE_PATH: ${NEXT_PUBLIC_BASE_PATH:-}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     volumes:
       - ./results:/app/results
-      - ./.env:/app/.env:ro
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
