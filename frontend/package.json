@@ -6,7 +6,8 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:urls": "node scripts/test-api-url.mjs"
   },
   "dependencies": {
     "next": "^14.2.0",

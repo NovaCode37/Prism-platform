@@ -12,6 +12,25 @@ from slowapi.util import get_remote_address
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB") or "20") * 1024 * 1024
 MAX_TARGET_LEN   = 512
 
+def env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in ("1", "true", "yes", "on")
+
+def normalize_base_path(raw: Optional[str]) -> str:
+    if not raw:
+        return ""
+    value = raw.strip()
+    if not value or value == "/":
+        return ""
+    value = value.strip("/")
+    return f"/{value}" if value else ""
+
+def parse_csv_env(name: str) -> List[str]:
+    raw = os.getenv(name, "")
+    return [item.strip() for item in raw.split(",") if item.strip()]
+
 def _parse_keys() -> List[str]:
     raw_multi = os.getenv("API_KEYS", "").strip()
     raw_single = os.getenv("API_KEY", "").strip()

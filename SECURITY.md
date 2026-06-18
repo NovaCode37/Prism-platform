@@ -65,6 +65,7 @@ PRISM ships with the following defaults to reduce attack surface:
 - **HMAC-signed webhooks** when `WEBHOOK_SECRET` is set (`X-Prism-Secret` header).
 - **Security response headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
 - **Rate limiting** — global defaults `200/day, 60/hour` and per-route limits via `slowapi`.
+- **Trusted proxy headers are opt-in** — `TRUST_PROXY_HEADERS=true` only trusts `X-Forwarded-*` values from `FORWARDED_ALLOW_IPS`.
 - **Input validation** — target length cap, forbidden shell metacharacters in `validate_target`, UUID format check on scan IDs.
 - **Optional `DISABLE_DOCS=true`** to hide `/docs`, `/redoc`, `/openapi.json` in production.
 
@@ -77,9 +78,11 @@ For production deployments I recommend:
 3. Set `WEBHOOK_SECRET` and validate the `X-Prism-Secret` header on the receiving side.
 4. Set `DISABLE_DOCS=true`.
 5. Run behind a reverse proxy (nginx, Caddy, Cloudflare) terminating TLS.
-6. Restrict outbound network egress where possible (PRISM does call many third-party APIs).
-7. Mount `scan_data/` and `module_cache/` on persistent, access-controlled storage.
-8. Keep your Docker images updated and run `pytest -q` after every dependency upgrade.
+6. Set `TRUST_PROXY_HEADERS=true` only when PRISM is not directly reachable, and restrict `FORWARDED_ALLOW_IPS` to the reverse proxy source IPs.
+7. Set `TRUSTED_HOSTS` to the public hostname(s) accepted by the backend.
+8. Restrict outbound network egress where possible (PRISM does call many third-party APIs).
+9. Mount `scan_data/` and `module_cache/` on persistent, access-controlled storage.
+10. Keep your Docker images updated and run `pytest -q` after every dependency upgrade.
 
 ## Legal use
 

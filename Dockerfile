@@ -25,6 +25,6 @@ RUN mkdir -p results
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
+  CMD sh -c 'host="${HEALTHCHECK_HOST:-${TRUSTED_HOSTS%%,*}}"; if [ -z "$host" ] || [ "$host" = "*" ]; then host=localhost; fi; curl -f -H "Host: $host" http://localhost:8080/healthz || exit 1'
 
-CMD ["python", "-m", "uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8080", "--no-proxy-headers"]

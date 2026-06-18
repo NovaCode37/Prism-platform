@@ -26,7 +26,7 @@ venv\Scripts\activate      # Windows
 
 pip install -r requirements.txt
 cp .env.example .env       # add API keys (optional)
-python -m uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload
+python -m uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload --no-proxy-headers
 ```
 
 ### Frontend

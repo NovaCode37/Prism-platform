@@ -1,7 +1,17 @@
 import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult } from './types';
+import { buildApiUrl, buildWsUrl, normalizeBasePath } from './url-utils';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
+
+function apiUrl(path: string): string {
+  return buildApiUrl(path, API, BASE_PATH);
+}
+
+function backendLabel(): string {
+  return API || normalizeBasePath(BASE_PATH) || 'same-origin backend';
+}
 
 function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
   return API_KEY ? { 'X-API-Key': API_KEY, ...extra } : extra;
@@ -10,13 +20,13 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 async function post<T>(path: string, body: unknown): Promise<T> {
   let r: Response;
   try {
-    r = await fetch(`${API}${path}`, {
+    r = await fetch(apiUrl(path), {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body),
     });
   } catch (e) {
-    throw new Error(`Cannot reach backend at ${API || 'http://localhost:8080'} — is it running?`);
+    throw new Error(`Cannot reach backend at ${backendLabel()} - is it running?`);
   }
   const text = await r.text();
   if (!r.ok) {
@@ -36,7 +46,7 @@ export async function startScan(target: string, scan_type: ScanType, modules: st
 }
 
 export async function getScan(id: string): Promise<ScanMeta & { results: ScanResults }> {
-  const r = await fetch(`${API}/api/scan/${id}`, { headers: authHeaders() });
+  const r = await fetch(apiUrl(`/api/scan/${id}`), { headers: authHeaders() });
   return r.json();
 }
 
@@ -59,7 +69,7 @@ export async function searchDarkweb(query: string): Promise<DarkWebResult> {
 export async function decodeQr(file: File): Promise<QrResult> {
   const fd = new FormData();
   fd.append('file', file);
-  const r = await fetch(`${API}/api/qr-decode`, { method: 'POST', headers: authHeaders(), body: fd });
+  const r = await fetch(apiUrl('/api/qr-decode'), { method: 'POST', headers: authHeaders(), body: fd });
   return r.json();
 }
 
@@ -70,7 +80,7 @@ export async function analyzeHeaders(headers: string): Promise<HeaderAnalysisRes
 export async function extractMetadata(file: File): Promise<MetaResult> {
   const fd = new FormData();
   fd.append('file', file);
-  const r = await fetch(`${API}/api/metadata`, { method: 'POST', headers: authHeaders(), body: fd });
+  const r = await fetch(apiUrl('/api/metadata'), { method: 'POST', headers: authHeaders(), body: fd });
   return r.json();
 }
 
@@ -83,19 +93,21 @@ export async function sendAiChat(scan_id: string, message: string): Promise<{ re
 }
 
 export async function getMapData(scanId: string): Promise<unknown> {
-  const r = await fetch(`${API}/api/scan/${scanId}/map`, { headers: authHeaders() });
+  const r = await fetch(apiUrl(`/api/scan/${scanId}/map`), { headers: authHeaders() });
   return r.json();
 }
 
 export async function getGraphData(scanId: string): Promise<unknown> {
-  const r = await fetch(`${API}/api/scan/${scanId}/graph`, { headers: authHeaders() });
+  const r = await fetch(apiUrl(`/api/scan/${scanId}/graph`), { headers: authHeaders() });
   return r.json();
 }
 
 export function getWsUrl(scanId: string): string {
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-  const ws = base.replace(/^http/, 'ws');
-  return API_KEY ? `${ws}/ws/${scanId}?api_key=${API_KEY}` : `${ws}/ws/${scanId}`;
+  return buildWsUrl(scanId, {
+    apiBase: API,
+    apiKey: API_KEY,
+    basePath: BASE_PATH,
+  });
 }
 
 export type ScanListItem = {
@@ -107,13 +119,13 @@ export type ScanListItem = {
 };
 
 export async function listScans(): Promise<ScanListItem[]> {
-  const r = await fetch(`${API}/api/scans`, { headers: authHeaders() });
+  const r = await fetch(apiUrl('/api/scans'), { headers: authHeaders() });
   if (!r.ok) return [];
   return r.json();
 }
 
 export async function clearScans(): Promise<{ deleted: number }> {
-  const r = await fetch(`${API}/api/scans`, {
+  const r = await fetch(apiUrl('/api/scans'), {
     method: 'DELETE',
     headers: authHeaders(),
   });
@@ -129,7 +141,7 @@ export async function clearScans(): Promise<{ deleted: number }> {
 export async function fetchReportBlob(scanId: string, format: 'html' | 'pdf', lang?: string): Promise<Blob> {
   const suffix = format === 'pdf' ? '/pdf' : '';
   const q = lang ? `?lang=${encodeURIComponent(lang)}` : '';
-  const r = await fetch(`${API}/api/scan/${scanId}/report${suffix}${q}`, { headers: authHeaders() });
+  const r = await fetch(apiUrl(`/api/scan/${scanId}/report${suffix}${q}`), { headers: authHeaders() });
   if (!r.ok) {
     const text = await r.text();
     let detail = text.slice(0, 200);

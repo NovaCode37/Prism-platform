@@ -18,6 +18,8 @@ from pydantic import BaseModel
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import config
@@ -38,12 +40,19 @@ from web.security import (
     require_api_key, validate_target, check_upload_size, get_allowed_origins,
     limiter, validate_scan_id, validate_url_not_private,
     get_principal, principal_for_key, ANONYMOUS_PRINCIPAL,
+    env_flag, normalize_base_path, parse_csv_env,
 )
 
 _disable_docs = os.getenv("DISABLE_DOCS", "").lower() in ("1", "true", "yes")
+_BASE_PATH = normalize_base_path(os.getenv("PRISM_BASE_PATH", ""))
+_TRUST_PROXY_HEADERS = env_flag("TRUST_PROXY_HEADERS")
+_FORWARDED_ALLOW_IPS = os.getenv("FORWARDED_ALLOW_IPS", "127.0.0.1,::1").strip() or "127.0.0.1,::1"
+_TRUSTED_HOSTS = parse_csv_env("TRUSTED_HOSTS")
+
 app = FastAPI(
     title="OSINT Toolkit",
     version="2.4.0",
+    root_path=_BASE_PATH,
     docs_url=None if _disable_docs else "/docs",
     redoc_url=None if _disable_docs else "/redoc",
     openapi_url=None if _disable_docs else "/openapi.json",
@@ -73,10 +82,17 @@ async def add_security_headers(request, call_next):
     response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
     return response
 
+if _TRUSTED_HOSTS and _TRUSTED_HOSTS != ["*"]:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=_TRUSTED_HOSTS)
+
+if _TRUST_PROXY_HEADERS:
+    app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=_FORWARDED_ALLOW_IPS)
+
 @app.on_event("startup")
 async def _startup_banner() -> None:
+    base_note = f" (public base path: {_BASE_PATH})" if _BASE_PATH else ""
     print(
-        "\n  PRISM is running on http://localhost:8080\n"
+        f"\n  PRISM API is running on http://localhost:8080{base_note}\n"
         "  ⭐ If you find it useful, star the repo: "
         "https://github.com/NovaCode37/Prism-platform\n",
         flush=True,
@@ -598,6 +614,10 @@ async def index():
     with open(path, encoding="utf-8") as f:
         return f.read()
 
+@app.get("/healthz", include_in_schema=False)
+async def healthz():
+    return {"status": "ok"}
+
 @app.post("/api/scan", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def start_scan(request: Request, req: ScanRequest):
@@ -921,6 +941,7 @@ async def mac_lookup(request: Request, req: dict):
             return result
         return JSONResponse({"error": str(e), "mac": normalized_mac, "vendor": None}, status_code=500)
 
+@app.post("/api/crypto", dependencies=[Depends(require_api_key)])
 @limiter.limit("20/minute")
 async def crypto_lookup(request: Request, req: dict):
     address = req.get("address", "").strip()
@@ -1187,4 +1208,4 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("web.app:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("web.app:app", host="0.0.0.0", port=8080, reload=True, proxy_headers=False)

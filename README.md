@@ -255,13 +255,14 @@ git clone https://github.com/NovaCode37/Prism-platform.git
 cd Prism-platform
 pip install -r requirements.txt
 cp .env.example .env
-python -m uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload
+python -m uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload --no-proxy-headers
 
 # 2. Frontend (in a separate terminal, from repo root)
 cd frontend
 npm install
 # create .env.local with the same key you put into API_KEYS / API_KEY:
 #   NEXT_PUBLIC_API_URL=http://localhost:8080
+#   NEXT_PUBLIC_BASE_PATH=
 #   NEXT_PUBLIC_API_KEY=<your-api-key>
 npm run dev
 ```
@@ -284,11 +285,75 @@ PRISM is configured via environment variables (`.env`). All API keys are optiona
 | `API_KEY`            | Single API key (legacy, also accepted)                                  |
 | `ALLOW_ANON_API`     | `true` to allow unauthenticated API access (off by default)             |
 | `ALLOWED_ORIGINS`    | Comma-separated CORS origins; empty/unset = no cross-origin             |
+| `PRISM_BASE_PATH`    | Public API/WS path prefix when mounted under a subpath, e.g. `/prism`   |
+| `TRUST_PROXY_HEADERS`| `true` to trust forwarded headers from configured reverse proxies       |
+| `FORWARDED_ALLOW_IPS`| Comma-separated proxy IPs allowed to set `X-Forwarded-*` headers        |
+| `TRUSTED_HOSTS`      | Optional comma-separated allowed `Host` values for the backend          |
+| `HEALTHCHECK_HOST`   | Optional Host header override for Docker health checks                  |
 | `MAX_UPLOAD_MB`      | Max upload size for file-based tools (default `20`)                     |
 | `MAX_STORED_SCANS`   | In-memory scan cap before disk-only mode (default `200`)                |
 | `CACHE_TTL_HOURS`    | Per-module cache TTL (default `24`)                                     |
 | `WEBHOOK_SECRET`     | If set, signs webhook callbacks with `X-Prism-Secret`                   |
 | `DISABLE_DOCS`       | `true` to disable `/docs`, `/redoc`, `/openapi.json` in production      |
+
+### Reverse proxy
+
+The supported production topology is the Next.js frontend plus FastAPI API/WebSocket backend on the same public origin. Keep `NEXT_PUBLIC_API_URL` empty for same-origin deployments, and set the same subpath in both apps only when the public URL uses one.
+
+Root deployment (`https://prism.example.com`):
+
+```env
+PRISM_BASE_PATH=
+TRUST_PROXY_HEADERS=true
+FORWARDED_ALLOW_IPS=172.18.0.1
+TRUSTED_HOSTS=prism.example.com
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_BASE_PATH=
+```
+
+Subpath deployment (`https://example.com/prism`), with the proxy stripping `/prism` before forwarding to the backend:
+
+```env
+PRISM_BASE_PATH=/prism
+TRUST_PROXY_HEADERS=true
+FORWARDED_ALLOW_IPS=172.18.0.1
+TRUSTED_HOSTS=example.com
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_BASE_PATH=/prism
+```
+
+Minimal nginx location for the API/WS backend:
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:8080/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+location /ws/ {
+    proxy_pass http://127.0.0.1:8080/ws/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+For `/prism`, expose equivalent locations at `/prism/api/` and `/prism/ws/` and strip the prefix in `proxy_pass`. The legacy FastAPI HTML dashboard is not covered by the subpath compatibility guarantee.
+
+Minimal Caddy example:
+
+```caddyfile
+prism.example.com {
+    reverse_proxy /api/* 127.0.0.1:8080
+    reverse_proxy /ws/* 127.0.0.1:8080
+    reverse_proxy 127.0.0.1:3000
+}
+```
 
 ### External provider keys
 
@@ -323,6 +388,11 @@ PRISM is configured via environment variables (`.env`). All API keys are optiona
 | `CENSYS_API_ID`      | Authenticates attack surface and internet-wide scanning queries | No | Censys Search Console |
 | `CENSYS_API_SECRET`  | Paired with CENSYS_API_ID for Censys data access | No | Censys Search Console |
 | `ALLOWED_ORIGINS`    | Configures CORS settings to restrict which frontend domains can talk to your backend | No | Set to a comma-separated list of domains |
+| `PRISM_BASE_PATH`    | Public backend path prefix for reverse proxy subpath deployments | No | Set to `/prism` or leave empty |
+| `TRUST_PROXY_HEADERS`| Enables trusted `X-Forwarded-*` handling behind a reverse proxy | No | Set to true only behind trusted proxy |
+| `FORWARDED_ALLOW_IPS`| Proxy source IPs allowed to set forwarded headers | No | Comma-separated IPs or `*` for trusted private networks |
+| `TRUSTED_HOSTS`      | Restricts accepted backend Host headers | No | Comma-separated public hostnames |
+| `HEALTHCHECK_HOST`   | Host header sent by Docker health checks | No | Defaults to first `TRUSTED_HOSTS` entry or localhost |
 | `OPENROUTER_API_KEY` | AI summary & chat via OpenRouter (preferred LLM provider) | No | OpenRouter dashboard|
 | `GROQ_API_KEY`       | AI summary & chat via Groq (fallback LLM provider) | No | Groq Console |
 | `MAX_STORED_SCANS`   |Max scans kept in memory before old ones are evicted (default 200) | No | Set An Integer Value |
@@ -351,9 +421,10 @@ The backend exposes a REST + WebSocket API. All requests require an `X-API-Key` 
 | `GET`  | `/api/scan/{id}/report` | HTML report |
 | `GET`  | `/api/scan/{id}/report/pdf` | PDF report |
 | `GET`  | `/api/scans` | List past scans (per-principal) |
+| `GET`  | `/healthz` | Unauthenticated health check |
 | `WS`   | `/ws/{scan_id}` | Live scan progress stream |
 | `POST` | `/api/ai/summary`, `/api/ai/chat` | AI summary and Q&A |
-| `POST` | `/api/url-scan`, `/api/mac-lookup`, `/api/darkweb`, `/api/qr-decode`, `/api/email-headers`, `/api/metadata` | Standalone tools |
+| `POST` | `/api/url-scan`, `/api/mac-lookup`, `/api/crypto`, `/api/darkweb`, `/api/qr-decode`, `/api/email-headers`, `/api/metadata` | Standalone tools |
 
 ```bash
 curl -X POST http://localhost:8080/api/scan \

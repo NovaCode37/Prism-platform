@@ -12,7 +12,7 @@ services:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/')"]
+      test: ["CMD-SHELL", "host=\"$${HEALTHCHECK_HOST:-$${TRUSTED_HOSTS%%,*}}\"; if [ -z \"$$host\" ] || [ \"$$host\" = \"*\" ]; then host=localhost; fi; curl -f -H \"Host: $$host\" http://localhost:8080/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3

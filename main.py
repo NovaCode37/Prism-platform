@@ -109,7 +109,7 @@ class OSINTToolkit:
                     import subprocess
                     subprocess.Popen(
                         [sys.executable, "-m", "uvicorn", "web.app:app",
-                         "--host", "0.0.0.0", "--port", "8080"],
+                         "--host", "0.0.0.0", "--port", "8080", "--no-proxy-headers"],
                         cwd=os.path.dirname(os.path.abspath(__file__))
                     )
                     import time
@@ -118,7 +118,7 @@ class OSINTToolkit:
                     webbrowser.open("http://localhost:8080")
                 except Exception as e:
                     print(f"{Colors.RED}Failed to start web dashboard: {e}{Colors.RESET}")
-                    print(f"Run manually: python -m uvicorn web.app:app --port 8080")
+                    print(f"Run manually: python -m uvicorn web.app:app --port 8080 --no-proxy-headers")
             elif choice == "16":
                 self._run_opsec_score()
             elif choice in self.MENU_OPTIONS:

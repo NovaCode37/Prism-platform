@@ -10,7 +10,7 @@ services:
       - ./demo/scan_data:/app/scan_data:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      test: ["CMD-SHELL", "host=\"$${HEALTHCHECK_HOST:-$${TRUSTED_HOSTS%%,*}}\"; if [ -z \"$$host\" ] || [ \"$$host\" = \"*\" ]; then host=localhost; fi; curl -f -H \"Host: $$host\" http://localhost:8080/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
