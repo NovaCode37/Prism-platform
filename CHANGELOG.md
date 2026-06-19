@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Nothing yet — see the [Roadmap](README.md#roadmap) for what's planned in v2.5._
+### Changed
+- **Readability** — the UI now uses the Inter sans-serif font instead of the Silkscreen pixel font (kept only for the PRISM logo wordmark), and the low-contrast dark-theme secondary text color was raised to meet readable contrast for field labels, inactive tabs, and placeholders (#130).
 
 ---
 

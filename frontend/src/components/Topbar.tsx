@@ -42,7 +42,7 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
 
       <button onClick={onHome} className="flex items-center gap-2.5 cursor-pointer group shrink-0">
         <Logo size={26} />
-        <span className="font-bold text-[15px] tracking-tight text-text-1 group-hover:text-white transition-colors">
+        <span className="font-brand text-[15px] tracking-tight text-text-1 group-hover:text-white transition-colors">
           PRISM
         </span>
         <span
@@ -54,14 +54,14 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
       </button>
 
       <div className="flex-1 flex items-center justify-center gap-4">
-        <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-text-3 uppercase tracking-widest opacity-40">
-          <Terminal size={9} />
+        <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-text-2 uppercase tracking-widest">
+          <Terminal size={10} />
           {t('topbar.tagline')}
         </div>
         <div className="w-px h-4 bg-border-1 hidden sm:block" />
-        <div className="flex items-center gap-2 font-mono text-[10px] text-text-3">
-          <span className="hidden md:block opacity-50">{date}</span>
-          <span className="opacity-70">{time}</span>
+        <div className="flex items-center gap-2 font-mono text-[10px] text-text-2">
+          <span className="hidden md:block">{date}</span>
+          <span className="text-text-1">{time}</span>
         </div>
       </div>
 

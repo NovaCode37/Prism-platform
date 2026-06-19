@@ -234,7 +234,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
           </div>
 
           {recents.length === 0 ? (
-            <div className="text-[10px] text-text-3 opacity-40 italic">{t('sidebar.noRecent')}</div>
+            <div className="text-[10px] text-text-3 italic text-center py-1">{t('sidebar.noRecent')}</div>
           ) : (
             <div className="flex flex-col gap-1">
               {recents.map((r, i) => (
@@ -354,11 +354,11 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
       </div>
 
       <div className="border-t border-border-1 px-3 py-2.5">
-        <div className="flex items-start gap-1.5">
-          <Lightbulb size={9} className="text-yellow opacity-60 mt-0.5 shrink-0" />
+        <div className="flex items-center justify-center gap-1.5">
+          <Lightbulb size={10} className="text-yellow mt-0.5 shrink-0" />
           <span
-            className="text-[9px] text-text-3 leading-relaxed"
-            style={{ opacity: tipVisible ? 0.6 : 0, transition: 'opacity 0.3s ease' }}
+            className="text-[10px] text-text-2 leading-relaxed text-center"
+            style={{ opacity: tipVisible ? 1 : 0, transition: 'opacity 0.3s ease' }}
           >
             {tip}
           </span>

@@ -74,7 +74,7 @@ export function IdleView({ onTool }: Props) {
       </div>
 
       <h1 className="text-xl font-bold tracking-widest text-text-1 mb-1">{t('idle.title')}</h1>
-      <div className="text-[10px] text-text-3 uppercase tracking-widest mb-5 opacity-50">{t('idle.subtitle')}</div>
+      <div className="text-[10px] text-text-2 uppercase tracking-widest mb-5">{t('idle.subtitle')}</div>
 
       <div className="flex items-center gap-2 mb-7 font-mono text-[12px] px-4 py-2 rounded border border-border-1 bg-surface-2">
         <span className="text-text-3">target://</span>

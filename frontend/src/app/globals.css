@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -161,7 +161,7 @@
   --border-3: 68 76 86;
   --text-1: 230 237 243;
   --text-2: 139 148 158;
-  --text-3: 72 79 88;
+  --text-3: 110 118 129;
   --blue: 79 142 247;
   --purple: 124 92 252;
   --green: 63 185 80;
@@ -195,7 +195,7 @@
   --border-3: 68 76 86;
   --text-1: 230 237 243;
   --text-2: 139 148 158;
-  --text-3: 72 79 88;
+  --text-3: 110 118 129;
   --blue: 79 142 247;
   --purple: 124 92 252;
   --green: 63 185 80;
@@ -211,7 +211,7 @@ html { scroll-behavior: smooth; }
 body {
   background: rgb(var(--background));
   color: rgb(var(--text-1));
-  font-family: 'Silkscreen', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   transition: background-color 0.2s ease, color 0.2s ease;
   -webkit-font-smoothing: antialiased;
 }

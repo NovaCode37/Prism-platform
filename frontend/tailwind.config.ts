@@ -7,6 +7,7 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        brand: ['Silkscreen', 'monospace'],
       },
       colors: {
         bg: 'rgb(var(--background) / <alpha-value>)',
