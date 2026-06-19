@@ -50,5 +50,8 @@ assert.equal(config.getPrismApiUrl({ apiUrl: '' }, 'http://localhost:8080'), '')
 assert.equal(config.getPrismApiUrl({ apiUrl: 'https://api.example.com' }, ''), 'https://api.example.com');
 assert.equal(config.getPrismApiKey({ apiKey: 'runtime-key' }, 'build-key'), 'runtime-key');
 assert.equal(config.getPrismBasePath({ basePath: '/prism' }, ''), '/prism');
+assert.equal(config.getPrismDemoMode({ demoMode: true }, ''), true);
+assert.equal(config.getPrismDemoMode({ demoMode: false }, 'true'), false);
+assert.equal(config.getPrismDemoMode({}, 'yes'), true);
 
 console.log('api url tests passed');

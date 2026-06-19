@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { FileText, Mail, Bitcoin, QrCode, ChevronRight, Globe, User, Phone, Shield, Database, Zap, Eye, Activity, Network, Hash, Binary, KeyRound } from 'lucide-react';
 import { useTranslations } from '@/lib/i18n';
+import { getPrismDemoMode } from '@/lib/prism-config';
 import { Logo } from '../Logo';
 import type { ToolMode } from '@/lib/types';
 
@@ -27,6 +28,7 @@ interface Props { onTool: (mode: ToolMode) => void; }
 
 export function IdleView({ onTool }: Props) {
   const { t } = useTranslations();
+  const demoMode = getPrismDemoMode();
   const [targetIdx, setTargetIdx] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -144,16 +146,18 @@ export function IdleView({ onTool }: Props) {
         </div>
       </div>
 
-      <div className="w-full max-w-2xl mt-6 px-4 py-3 rounded border border-border-1 bg-surface-2 text-center">
-        <p className="text-[11px] text-text-3">{t('idle.demo.line1')}</p>
-        <p className="text-[11px] text-text-3 mt-1">
-          {t('idle.demo.line2Prefix')}{' '}
-          <a href="https://github.com/NovaCode37/Prism-platform" target="_blank" rel="noopener noreferrer" className="text-blue hover:underline">
-            {t('idle.demo.selfHost')}
-          </a>
-          {' '}{t('idle.demo.line2Suffix')}
-        </p>
-      </div>
+      {demoMode && (
+        <div className="w-full max-w-2xl mt-6 px-4 py-3 rounded border border-border-1 bg-surface-2 text-center">
+          <p className="text-[11px] text-text-3">{t('idle.demo.line1')}</p>
+          <p className="text-[11px] text-text-3 mt-1">
+            {t('idle.demo.line2Prefix')}{' '}
+            <a href="https://github.com/NovaCode37/Prism-platform" target="_blank" rel="noopener noreferrer" className="text-blue hover:underline">
+              {t('idle.demo.selfHost')}
+            </a>
+            {' '}{t('idle.demo.line2Suffix')}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

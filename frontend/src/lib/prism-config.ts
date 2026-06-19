@@ -2,6 +2,7 @@ export type PrismRuntimeConfig = {
   apiUrl?: string;
   apiKey?: string;
   basePath?: string;
+  demoMode?: boolean;
 };
 
 declare global {
@@ -38,4 +39,12 @@ export function getPrismBasePath(
   buildValue = process.env.NEXT_PUBLIC_BASE_PATH || '',
 ): string {
   return hasOwnConfigValue(config, 'basePath') ? config.basePath || '' : buildValue;
+}
+
+export function getPrismDemoMode(
+  config: PrismRuntimeConfig = readPrismRuntimeConfig(),
+  buildValue = process.env.NEXT_PUBLIC_DEMO_MODE || '',
+): boolean {
+  if (hasOwnConfigValue(config, 'demoMode')) return config.demoMode === true;
+  return ['1', 'true', 'yes', 'on'].includes(buildValue.trim().toLowerCase());
 }

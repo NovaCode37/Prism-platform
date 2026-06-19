@@ -1202,6 +1202,7 @@ def _frontend_config_script() -> str:
         "apiUrl": os.getenv("NEXT_PUBLIC_API_URL", ""),
         "apiKey": os.getenv("PRISM_UI_API_KEY", os.getenv("NEXT_PUBLIC_API_KEY", "")),
         "basePath": _BASE_PATH,
+        "demoMode": env_flag("PRISM_DEMO_MODE"),
     }
     payload = json.dumps(config, separators=(",", ":")).replace("</", "<\\/")
     return f'<script id="prism-runtime-config">window.__PRISM_CONFIG__={payload};</script>'

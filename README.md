@@ -325,6 +325,7 @@ docker compose up -d --force-recreate
 | `API_KEYS`           | Comma-separated accepted API keys; preferred for API-key mode           |
 | `API_KEY`            | Single accepted API key; legacy option                                  |
 | `ALLOW_ANON_API`     | `true` to allow unauthenticated API access; local/demo only             |
+| `PRISM_DEMO_MODE`    | `true` to show the public demo notice in the UI                         |
 | `ALLOWED_ORIGINS`    | Comma-separated CORS origins; empty/unset = no cross-origin             |
 | `PRISM_BASE_PATH`    | Public API/WS path prefix when mounted under a subpath, e.g. `/prism`   |
 | `PRISM_UI_API_KEY`   | Public browser UI key injected into the Docker-served UI                |
@@ -434,6 +435,7 @@ prism.example.com {
 | `API_KEYS`           | Preferred comma-separated accepted API keys for API-key mode | Auth mode only | Generate long random strings |
 | `API_KEY`            | Legacy single accepted API key for API-key mode | Auth mode only | Generate a long random string |
 | `ALLOW_ANON_API`     | Allows unauthenticated local/demo API requests without a key | No | `true` for local/demo, `false` for production |
+| `PRISM_DEMO_MODE`    | Shows the public demo notice in the UI | No | `true` only for the demo compose setup |
 | `NUMVERIFY_API_KEY`  | Validates phone numbers                           | No   | Numverify dashboard             |
 | `LEAK_LOOKUP_API_KEY`| Searches Data Breaches for Leaked Credentials     | No   | LeakLookup API dashboard        |
 | `HIBP_API_KEY`       | Checks if Email/Passwords have been compromised   | No   | HIBP Developer Portal           |

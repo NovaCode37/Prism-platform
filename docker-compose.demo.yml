@@ -10,6 +10,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - ALLOW_ANON_API=true
+      - PRISM_DEMO_MODE=true
     volumes:
       - ./demo/scan_data:/app/scan_data:ro
     restart: unless-stopped
