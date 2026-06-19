@@ -1,10 +1,9 @@
-import asyncio
 import importlib
-import json
 import os
 import sys
 
 from fastapi import Request
+from fastapi.testclient import TestClient
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -33,50 +32,14 @@ def _load_app(monkeypatch, **env):
     return importlib.import_module("web.app")
 
 
-async def _asgi_get(app, path, headers=None):
-    sent = []
-    request_sent = False
-    encoded_headers = [
-        (name.lower().encode("latin-1"), value.encode("latin-1"))
-        for name, value in (headers or {}).items()
-    ]
-    if not any(name == b"host" for name, _ in encoded_headers):
-        encoded_headers.append((b"host", b"testserver"))
-
-    scope = {
-        "type": "http",
-        "asgi": {"version": "3.0"},
-        "http_version": "1.1",
-        "method": "GET",
-        "scheme": "http",
-        "path": path,
-        "raw_path": path.encode("ascii"),
-        "query_string": b"",
-        "headers": encoded_headers,
-        "client": ("testclient", 50000),
-        "server": ("testserver", 80),
-        "root_path": "",
-    }
-
-    async def receive():
-        nonlocal request_sent
-        if not request_sent:
-            request_sent = True
-            return {"type": "http.request", "body": b"", "more_body": False}
-        return {"type": "http.disconnect"}
-
-    async def send(message):
-        sent.append(message)
-
-    await app(scope, receive, send)
-    status = next(message["status"] for message in sent if message["type"] == "http.response.start")
-    body = b"".join(message.get("body", b"") for message in sent if message["type"] == "http.response.body")
-    return status, body
+def _get(app, path, headers=None):
+    with TestClient(app) as client:
+        return client.get(path, headers=headers or {})
 
 
 def _get_json(app, path, headers=None):
-    status, body = asyncio.run(_asgi_get(app, path, headers=headers))
-    return status, json.loads(body.decode("utf-8"))
+    response = _get(app, path, headers=headers)
+    return response.status_code, response.json()
 
 
 def _move_latest_route_before_frontend_fallback(app):
@@ -135,10 +98,10 @@ def test_serves_next_index_with_runtime_config(monkeypatch, tmp_path):
         NEXT_PUBLIC_API_URL="https://api.example.com",
     )
 
-    status, body = asyncio.run(_asgi_get(app_mod.app, "/"))
-    text = body.decode("utf-8")
+    response = _get(app_mod.app, "/")
+    text = response.text
 
-    assert status == 200
+    assert response.status_code == 200
     assert "PRISM Next" in text
     assert 'window.__PRISM_CONFIG__={"apiUrl":"https://api.example.com","apiKey":"public-browser-key","basePath":"/prism"}' in text
 
@@ -151,10 +114,10 @@ def test_serves_next_static_asset(monkeypatch, tmp_path):
     (asset_dir / "app.js").write_text("console.log('ok');", encoding="utf-8")
     app_mod = _load_app(monkeypatch, PRISM_FRONTEND_DIR=str(frontend_dir))
 
-    status, body = asyncio.run(_asgi_get(app_mod.app, "/_next/static/app.js"))
+    response = _get(app_mod.app, "/_next/static/app.js")
 
-    assert status == 200
-    assert body == b"console.log('ok');"
+    assert response.status_code == 200
+    assert response.content == b"console.log('ok');"
 
 
 def test_reserved_paths_are_not_spa_fallback(monkeypatch, tmp_path):
@@ -163,10 +126,10 @@ def test_reserved_paths_are_not_spa_fallback(monkeypatch, tmp_path):
     (frontend_dir / "index.html").write_text("<html><head></head><body>PRISM Next</body></html>", encoding="utf-8")
     app_mod = _load_app(monkeypatch, PRISM_FRONTEND_DIR=str(frontend_dir))
 
-    status, body = asyncio.run(_asgi_get(app_mod.app, "/api/not-real"))
+    response = _get(app_mod.app, "/api/not-real")
 
-    assert status == 404
-    assert "PRISM Next" not in body.decode("utf-8")
+    assert response.status_code == 404
+    assert "PRISM Next" not in response.text
 
 
 def test_forwarded_headers_are_ignored_by_default(monkeypatch):

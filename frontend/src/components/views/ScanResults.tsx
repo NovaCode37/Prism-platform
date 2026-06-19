@@ -726,7 +726,7 @@ export function ScanResults({ scan }: Props) {
     if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
     if (t.id === 'github') return r.github && modStatus(r.github) === 'ok';
     if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(m => m && modStatus(m) !== 'error');
-    if (t.id === 'censys') return r.censys && modStatus(r.censys) !== 'error';
+    if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
     if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
     if (t.id === 'wayback') return r.wayback;
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches;

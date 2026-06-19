@@ -105,6 +105,7 @@ class OSINTToolkit:
             if choice == "w":
                 print(f"\n{Colors.CYAN}Starting web dashboard...{Colors.RESET}")
                 print(f"{Colors.GREEN}Open your browser at: http://localhost:8080{Colors.RESET}")
+                print(f"{Colors.YELLOW}If / shows 'Frontend build not found', run the frontend dev server or build frontend/out first.{Colors.RESET}")
                 try:
                     import subprocess
                     subprocess.Popen(

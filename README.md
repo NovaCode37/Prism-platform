@@ -271,6 +271,8 @@ npm run dev
 
 Open **http://localhost:3000**.
 
+When you run only `uvicorn` from source, FastAPI serves `/api/*`, `/ws/*`, and `/healthz`. The root page `/` needs a built Next.js export in `frontend/out`; on a fresh checkout without that build it returns `{"detail":"Frontend build not found"}`. Use `npm run dev` as shown above, or run `npm run build` before serving the single-container style UI from FastAPI.
+
 > For local experimentation, `.env.example` uses `ALLOW_ANON_API=true`. For any shared or public deployment, set `ALLOW_ANON_API=false`, configure `API_KEYS`, and give the UI one accepted key.
 
 ---
