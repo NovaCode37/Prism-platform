@@ -13,7 +13,7 @@
     "test:encoder": "node scripts/test-encoder.mjs"
   },
   "dependencies": {
-    "next": "^14.2.0",
+    "next": "^16.2.12",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "lucide-react": "^0.468.0",
