@@ -1542,10 +1542,21 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'json' && (
           <Card title="Raw JSON Results">
-            <button onClick={() => setShowJson(v => !v)} className="flex items-center gap-1.5 text-[11px] text-text-3 hover:text-text-2 mb-3">
-              {showJson ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-              {showJson ? 'Hide' : 'Show'} raw data
-            </button>
+            <div className="flex items-center justify-between mb-3">
+              <button onClick={() => setShowJson(v => !v)} className="flex items-center gap-1.5 text-[11px] text-text-3 hover:text-text-2">
+                {showJson ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                {showJson ? 'Hide' : 'Show'} raw data
+              </button>
+              <button
+                type="button"
+                onClick={() => copyValue(JSON.stringify(r, null, 2))}
+                className="flex items-center gap-1 text-[11px] text-text-3 hover:text-text-1 transition-colors p-1 rounded-sm hover:bg-surface-2"
+                title="Copy raw JSON"
+                aria-label="Copy raw JSON"
+              >
+                <Copy size={12} /> Copy
+              </button>
+            </div>
             {showJson && (
               <pre className="font-mono text-[10px] text-text-2 overflow-auto max-h-[60vh] bg-surface-1 rounded p-3">
                 {JSON.stringify(r, null, 2)}

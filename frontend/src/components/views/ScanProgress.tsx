@@ -68,7 +68,7 @@ export function ScanProgress({ log, target, moduleStatuses = {}, totalModules = 
           <Terminal size={11} />
           {t('progress.log')}
         </div>
-        <div className="p-3 font-mono text-[11px] min-h-[200px] max-h-[60vh] overflow-y-auto space-y-0.5">
+        <div role="log" aria-live="polite" aria-relevant="additions" aria-label={t('progress.log')} className="p-3 font-mono text-[11px] min-h-[200px] max-h-[60vh] overflow-y-auto space-y-0.5">
           {log.length === 0 ? (
             <div className="text-text-3">{t('progress.initializing')}</div>
           ) : (

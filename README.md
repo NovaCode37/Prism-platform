@@ -356,6 +356,9 @@ docker compose up -d --force-recreate
 | `WEBHOOK_SECRET`     | If set, signs webhook callbacks with `X-Prism-Secret`                   |
 | `DISABLE_DOCS`       | `true` to disable `/docs`, `/redoc`, `/openapi.json` in production      |
 | `SCAN_QUOTA_PER_DAY` | Daily scans per caller; `0`/unset = unlimited                            |
+| `ALLOW_PRIVATE_TARGETS` | `true` to allow scanning private/internal addresses (default `false`) |
+| `WATCHLIST_SCHEDULER` | `true` to enable the watchlist background scheduler                     |
+| `WATCHLIST_POLL_SECONDS` | How often the scheduler checks for due watchlists (default `60`)     |
 | `LLM_BASE_URL`       | OpenAI-compatible chat-completions URL; overrides the provider default   |
 | `LLM_API_KEY`        | Key for `LLM_BASE_URL`; falls back to `OPENROUTER_API_KEY`/`GROQ_API_KEY`|
 | `LLM_MODEL`          | Model name for AI summary and chat; overrides the provider default       |

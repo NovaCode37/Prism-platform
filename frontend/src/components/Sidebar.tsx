@@ -113,6 +113,20 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
   };
 
   const prevRunning = useRef(isRunning);
+  const targetInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = document.activeElement;
+      const tag = el?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (el as HTMLElement)?.isContentEditable) return;
+      e.preventDefault();
+      targetInputRef.current?.focus();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
   useEffect(() => {
     if (prevRunning.current && !isRunning && showHistory) fetchHistory();
     prevRunning.current = isRunning;
@@ -156,9 +170,11 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.target')}</label>
           <div className="relative">
             <input
+              ref={targetInputRef}
               value={target}
               onChange={e => setTarget(e.target.value)}
               placeholder={t('sidebar.targetPlaceholder')}
+              aria-label={t('sidebar.target')}
               className={`input-field ${target ? 'pr-7' : ''}`}
               disabled={isRunning}
             />
@@ -183,6 +199,8 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
                 key={type}
                 type="button"
                 onClick={() => handleTypeChange(type)}
+                aria-label={t(`sidebar.scanTypes.${type}`)}
+                aria-pressed={scanType === type}
                 className={`text-[10px] font-semibold py-1.5 rounded transition-all ${
                   scanType === type ? 'text-white' : 'bg-surface-3 text-text-3 hover:text-text-2'
                 }`}
