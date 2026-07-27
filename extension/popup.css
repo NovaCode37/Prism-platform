@@ -56,3 +56,86 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 .full { display: block; text-align: center; margin-top: 14px; padding: 8px; background: #21262d; color: #adbac7; border-radius: 6px; text-decoration: none; font-size: 12px; }
 .full:hover { background: #2d333b; color: #fff; }
 .error { color: #f85149; background: #161b22; border: 1px solid #3d1518; border-radius: 8px; padding: 12px; font-size: 12px; }
+@media (prefers-color-scheme: light) {
+
+  body {
+    background: #ffffff;
+    color: #24292f;
+  }
+
+  label,
+  .note,
+  .status,
+  .section-title,
+  .row .k,
+  .opsec .meta {
+    color: #424a53;
+  }
+
+  input {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+    color: #24292f;
+  }
+
+  input::placeholder {
+    color: #656d76;
+  }
+
+  .ghost {
+    border-color: #d0d7de;
+    color: #424a53;
+  }
+
+  .ghost:hover {
+    border-color: #b1bac4;
+  }
+
+  hr {
+    border-top-color: #d8dee4;
+  }
+
+  .bar-wrap,
+  .card,
+  .opsec,
+  .error {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+  }
+
+  .finding {
+    border-bottom-color: #d8dee4;
+  }
+
+  .tag {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .row .v,
+  .scan-target {
+    color: #24292f;
+  }
+
+  .back {
+    color: #656d76;
+  }
+
+  .back:hover {
+    color: #24292f;
+  }
+
+  .full {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .full:hover {
+    background: #d8dee4;
+  }
+
+  .empty {
+    color: #656d76;
+  }
+
+}
