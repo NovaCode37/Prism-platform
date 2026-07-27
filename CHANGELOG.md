@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.6.0] — 2026-07-27
+
+### Added
+- **Browser extension (Manifest V3)** — highlight or right-click any domain, IP, email, phone, or username and a full scan runs inside the extension popup, with live progress and result cards, no tab-switching. Points at your own PRISM instance or the public demo, optional API key, localized into all 9 languages. [Live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/).
+- **Configurable LLM provider** — `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, and `LLM_PROXY` env vars let the AI summary/chat target any OpenAI-compatible endpoint (OpenRouter, Groq, Gemini, local Ollama, …) or route through a proxy, without touching code.
+- **Watchlists** — pause/resume for individual watchlists, a "Send test webhook" button, JSON/CSV export of watchlist alerts, and human-readable alert labels (with the raw fingerprint kept as a fallback).
+- **Results quality-of-life** — a Copy button on the raw JSON tab (#195), `/` keyboard shortcut to focus the target input (#196), a clear button on the target field (#197), a legend on the entity graph (#205), and a "Report an issue" link in the topbar (#202).
+- **Donations** — DonationAlerts and crypto (USDT/TON/BTC/ETH) options with QR codes.
+
+### Accessibility
+- `aria-label` + `aria-pressed` on the scan-type toggle buttons (#198).
+- `aria-live` region so screen readers announce scan progress as modules finish (#182).
+- Respect `prefers-reduced-motion` — animations and transitions are neutralized when the OS/browser requests reduced motion (#136).
+
+### Fixed
+- **Rate limiting behind a proxy** — the limiter now keys on the real client IP (`X-Forwarded-For`) instead of collapsing every visitor to the proxy address, which was tripping shared 429s on the demo.
+- **LLM error handling** — provider errors returned as a plain string no longer crash with `'str' object has no attribute 'get'`; non-JSON provider responses now surface a readable message. The AI panel also raises its per-user limit to 10/minute.
+- A clearer message when a PRISM instance requires an API key, a spinner on the Run Scan button while the request is in flight, and the Watchlists screen fully localized into all languages.
+
+### Changed
+- The public demo now explains, in the UI, why some third-party modules (crt.sh, Wayback) can return 5xx and why AI analysis may be blocked from certain hosting regions.
+- Documented the 2.5.0 and new `LLM_*` environment variables in the README (#194).
+
+### Tests
+- Unit tests for the OPSEC score calculator.
+
+---
+
 ## [2.5.0] — 2026-07-04
 
 ### Added

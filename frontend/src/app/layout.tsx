@@ -63,7 +63,7 @@ const JSON_LD = {
   description: DESCRIPTION,
   applicationCategory: 'SecurityApplication',
   operatingSystem: 'Web, Docker, Linux',
-  softwareVersion: '2.5.0',
+  softwareVersion: '2.6.0',
   license: 'https://opensource.org/licenses/MIT',
   sameAs: ['https://github.com/NovaCode37/Prism-platform'],
   author: {

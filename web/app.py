@@ -57,7 +57,7 @@ _RESERVED_FRONTEND_PATHS = {"api", "ws", "healthz", "docs", "redoc", "openapi.js
 
 app = FastAPI(
     title="OSINT Toolkit",
-    version="2.5.0",
+    version="2.6.0",
     root_path=_BASE_PATH,
     docs_url=None if _disable_docs else "/docs",
     redoc_url=None if _disable_docs else "/redoc",

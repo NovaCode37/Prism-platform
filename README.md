@@ -9,7 +9,7 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 **[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)** · **[FAQ](#faq)**
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.4.0-7c5cfc?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.6.0-7c5cfc?style=flat-square)](CHANGELOG.md)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
 [![Firefox Add-on](https://img.shields.io/amo/v/prism-osint?style=flat-square&logo=firefoxbrowser&logoColor=white&label=Firefox%20Add-on&color=ff7139)](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
@@ -644,8 +644,12 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 - [x] Additional locale (ZH) — 9 languages, with dark / light theme toggle
 - [x] SSRF hardening for scan/watchlist targets + maigret path-traversal fix
 
-### v2.6 — in progress
+### v2.6 — released
 - [x] Browser extension for one-click scans — **[live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)** ([source](extension/))
+- [x] Configurable LLM provider (`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` / `LLM_PROXY`) — any OpenAI-compatible endpoint
+- [x] Accessibility pass — reduced-motion, aria-live progress, scan-type ARIA labels
+
+### v2.7 — in progress
 - [ ] *(exploring)* AI OSINT agent — autonomous multi-module investigation
 
 > Want to contribute? Pick an open issue tagged `good first issue` or open a new one.
