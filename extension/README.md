@@ -15,28 +15,37 @@ Available in all 9 PRISM languages; it follows your browser's language.
 - Points at your own self-hosted PRISM (or the public demo)
 - Optional API key for instances behind auth
 
-## Install (Firefox)
+## Install
 
-1. Go to `about:debugging` → **This Firefox** → **Load Temporary Add-on**.
-2. Pick `manifest.json` in this folder.
-3. Open the popup and set **Server** to your PRISM URL (e.g. `http://localhost:8080`).
+**Firefox** — install it from
+[Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/).
 
-For a permanent install, load the signed `.xpi` from Firefox Add-ons once published.
+**Chrome / Edge / Opera / Brave** — grab `prism-extension-chromium-*.zip` from the
+[latest release](https://github.com/NovaCode37/Prism-platform/releases), unzip it,
+then go to `chrome://extensions`, enable **Developer mode**, and use **Load unpacked**
+on the unzipped folder.
 
-## Install (Chrome / Edge, unpacked)
+Either way, open the popup afterwards and set **Server** to your PRISM URL
+(e.g. `http://localhost:8080`). Leave it at the default to use the public demo.
 
-1. Go to `chrome://extensions`, enable **Developer mode**.
-2. **Load unpacked** → select this folder.
-3. Set your **Server** in the popup.
+### Running from source
+
+Firefox: `about:debugging` → **This Firefox** → **Load Temporary Add-on** → pick
+`manifest.json` in this folder. Chromium: **Load unpacked** on this folder directly.
 
 ## Build a package
 
-Zip the contents of this folder (not the folder itself) and upload the zip to
-Firefox Add-ons or the Chrome Web Store:
+`scripts/build_extension.py` builds a store-ready zip for each target into `dist/`:
 
 ```bash
-cd extension && zip -r ../prism-extension.zip . -x "*.DS_Store"
+python scripts/build_extension.py            # both
+python scripts/build_extension.py chromium   # just one
 ```
+
+The two builds share this folder as their source; the script only adjusts the
+manifest per target. The Chromium build drops `browser_specific_settings` (Firefox
+only) and the `background.scripts` fallback, since Chromium uses `service_worker`
+and warns on keys it doesn't know.
 
 ## Notes
 

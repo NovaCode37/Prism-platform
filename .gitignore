@@ -9,6 +9,7 @@ watchlist_data/
 scan_data/
 module_cache/
 prism-extension.zip
+dist/
 
 __pycache__/
 *.py[cod]
