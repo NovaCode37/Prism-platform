@@ -16,7 +16,7 @@
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^0.577.0",
     "clsx": "^2.1.1"
   },
   "devDependencies": {
