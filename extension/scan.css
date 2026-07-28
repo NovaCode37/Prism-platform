@@ -52,3 +52,53 @@ body {
 .full { display: inline-block; margin-top: 26px; padding: 9px 16px; background: #21262d; color: #adbac7; border-radius: 6px; text-decoration: none; font-size: 13px; }
 .full:hover { background: #2d333b; color: #fff; }
 .error { color: #f85149; background: #161b22; border: 1px solid #3d1518; border-radius: 8px; padding: 14px; font-size: 13px; }
+@media (prefers-color-scheme: light) {
+
+  body {
+    background: #ffffff;
+    color: #24292f;
+  }
+
+  .brand,
+  .section-title,
+  .status,
+  .row .k,
+  .opsec .meta,
+  .log,
+  .empty {
+    color: #656d76;
+  }
+
+  .target,
+  .card h3,
+  .row .v {
+    color: #24292f;
+  }
+
+  .bar-wrap,
+  .card,
+  .opsec,
+  .error {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+  }
+
+  .finding {
+    border-bottom-color: #d8dee4;
+  }
+
+  .tag {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .full {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .full:hover {
+    background: #d8dee4;
+    color: #24292f;
+  }
+}
