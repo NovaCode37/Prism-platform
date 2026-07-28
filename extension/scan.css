@@ -87,6 +87,23 @@ body {
     border-bottom-color: #d8dee4;
   }
 
+  .sev.CRITICAL,
+  .sev.HIGH {
+    background: #ffebe9;
+    color: #cf222e;
+  }
+
+  .sev.MEDIUM {
+    background: #fff8c5;
+    color: #9a6700;
+  }
+
+  .sev.LOW,
+  .sev.INFO {
+    background: #ddf4ff;
+    color: #0969da;
+  }
+
   .tag {
     background: #eaeef2;
     color: #24292f;
