@@ -296,7 +296,97 @@ def build_parser() -> argparse.ArgumentParser:
     scan_p.add_argument("--verbose", "-v", action="store_true", default=False, help="Print progress to stderr")
     scan_p.add_argument("--quiet", "-q", action="store_true", default=False, help="Print only the result (suppress banners and progress)")
 
+    watch_p = sub.add_parser("watchlist", help="Manage scheduled re-scans")
+    watch_p.set_defaults(watch_parser=watch_p)
+    watch_sub = watch_p.add_subparsers(dest="watch_command")
+
+    watch_list = watch_sub.add_parser("list", help="List watchlist entries")
+    watch_list.add_argument("--json", dest="fmt_json", action="store_true", default=False, help="Output JSON")
+
+    watch_add = watch_sub.add_parser("add", help="Add a target to the watchlist")
+    watch_add.add_argument("target", help="Target to re-scan on a schedule")
+    watch_add.add_argument(
+        "--type", "-t",
+        dest="scan_type",
+        choices=["domain", "ip", "email", "phone", "username", "telegram"],
+        default=None,
+        help="Target type (auto-detected if omitted)",
+    )
+    watch_add.add_argument("--modules", "-m", default=None, help="Comma-separated list of modules (default: all applicable)")
+    watch_add.add_argument("--interval", type=float, default=24.0, help="Hours between runs (default: 24)")
+    watch_add.add_argument("--webhook", default=None, help="Webhook URL to notify on changes")
+
+    watch_rm = watch_sub.add_parser("rm", help="Remove a watchlist entry")
+    watch_rm.add_argument("id", help="Watchlist entry id")
+
+    watch_pause = watch_sub.add_parser("pause", help="Pause a watchlist entry")
+    watch_pause.add_argument("id", help="Watchlist entry id")
+
+    watch_resume = watch_sub.add_parser("resume", help="Resume a paused watchlist entry")
+    watch_resume.add_argument("id", help="Watchlist entry id")
+
     return parser
+
+
+def _fmt_ts(ts: Optional[float]) -> str:
+    if not ts:
+        return "-"
+    return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
+
+
+def run_watchlist(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from web import watchlist as wl
+
+    command = getattr(args, "watch_command", None)
+    if command is None:
+        args.watch_parser.print_help()
+        return 1
+
+    if command == "list":
+        entries = wl.list_watchlists(wl.ANONYMOUS)
+        if getattr(args, "fmt_json", False):
+            print(json.dumps(entries, indent=2, default=str))
+            return 0
+        if not entries:
+            print("No watchlist entries. Add one with: prism watchlist add <target>")
+            return 0
+        print(f"{'ID':<38} {'TARGET':<28} {'TYPE':<9} {'EVERY':<7} {'STATUS':<10} NEXT RUN")
+        for e in entries:
+            status = "paused" if e.get("paused") else (e.get("last_status") or "pending")
+            interval = f"{e.get('interval_hours', 0):g}h"
+            print(
+                f"{e['id']:<38} {e['target'][:27]:<28} {e['scan_type']:<9} "
+                f"{interval:<7} {status:<10} {_fmt_ts(e.get('next_run'))}"
+            )
+        return 0
+
+    if command == "add":
+        target = normalize_target(args.target)
+        scan_type = args.scan_type or detect_type(target)
+        modules = [m.strip() for m in args.modules.split(",") if m.strip()] if args.modules else None
+        interval = max(1.0, min(float(args.interval), 24 * 30))
+        entry = wl.create_watchlist(wl.ANONYMOUS, target, scan_type, modules, interval, args.webhook)
+        print(f"Watching {entry['target']} ({entry['scan_type']}) every {interval:g}h")
+        print(f"id: {entry['id']}")
+        return 0
+
+    if command == "rm":
+        if wl.delete_watchlist(args.id, wl.ANONYMOUS):
+            print(f"Removed {args.id}")
+            return 0
+        print(f"No watchlist entry with id {args.id}", file=sys.stderr)
+        return 1
+
+    if command in ("pause", "resume"):
+        entry = wl.set_paused(args.id, wl.ANONYMOUS, command == "pause")
+        if entry is None:
+            print(f"No watchlist entry with id {args.id}", file=sys.stderr)
+            return 1
+        print(f"{'Paused' if entry['paused'] else 'Resumed'} {entry['target']}")
+        return 0
+
+    args.watch_parser.print_help()
+    return 1
 
 
 def main(argv: Optional[List[str]] = None) -> None:
@@ -306,6 +396,9 @@ def main(argv: Optional[List[str]] = None) -> None:
     if args.command is None:
         parser.print_help()
         sys.exit(1)
+
+    if args.command == "watchlist":
+        sys.exit(run_watchlist(args, parser))
 
     if args.command == "scan":
         target = normalize_target(args.target)

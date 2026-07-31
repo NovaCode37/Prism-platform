@@ -44,7 +44,7 @@ and how to extend it with new modules.
 | `modules/graph_builder.py` | Entity → relationship graph data |
 | `modules/report_generator.py` | Jinja2 HTML + xhtml2pdf PDF reports |
 | `modules/webhook_formatters.py` | Slack Block Kit / Discord embed formatters |
-| `cli.py` | Standalone CLI for headless scans |
+| `cli.py` | Standalone CLI for headless scans and watchlist management |
 | `__main__.py` | `python -m prism` entry point |
 | `frontend/src/components` | UI: Sidebar, Topbar, ScanProgress, ScanResults, ScanComparison |
 | `frontend/src/lib/i18n.tsx` | Lightweight i18n provider (en + ru + de + fr + es) |

@@ -15,13 +15,36 @@ function fmtTime(ts: number | null): string {
   });
 }
 
+const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ['year', 31536000],
+  ['month', 2592000],
+  ['day', 86400],
+  ['hour', 3600],
+  ['minute', 60],
+  ['second', 1],
+];
+
+function fmtRelative(ts: number | null, locale: string): string {
+  if (!ts) return '—';
+  const diff = ts - Date.now() / 1000;
+  const abs = Math.abs(diff);
+  try {
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+    for (const [unit, secs] of RELATIVE_UNITS) {
+      if (abs >= secs || unit === 'second') return rtf.format(Math.round(diff / secs), unit);
+    }
+  } catch {}
+  return fmtTime(ts);
+}
+
 function StatusDot({ status, paused }: { status: string; paused?: boolean }) {
   const color = paused ? 'bg-text-3' : status === 'completed' ? 'bg-green' : status === 'error' ? 'bg-red' : 'bg-text-3';
   return <span className={`inline-block w-2 h-2 rounded-full ${color}`} />;
 }
 
 export function WatchlistView({ onBack }: { onBack: () => void }) {
-  const { t } = useTranslations();
+  const { t, locale } = useTranslations();
+  const [, setTick] = useState(0);
   const [items, setItems] = useState<Watchlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +72,11 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
   }, [t]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const id = setInterval(() => setTick(n => n + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,11 +275,11 @@ const exportAlertsCsv = (w: Watchlist) => {
                     <span className="uppercase">{w.scan_type}</span>
                     <span className="flex items-center gap-1"><Clock size={10} /> {t('watchlist.everyNHours').replace('{n}', String(w.interval_hours))}</span>
                     <span>· {w.run_count === 1 ? t('watchlist.runCountOne').replace('{n}', String(w.run_count)) : t('watchlist.runCount').replace('{n}', String(w.run_count))}</span>
-                    <span>· {t('watchlist.lastRun')} {fmtTime(w.last_run)}</span>
+                    <span title={fmtTime(w.last_run)}>· {t('watchlist.lastRun')} {fmtRelative(w.last_run, locale)}</span>
                     {w.paused ? (
                       <span className="text-text-2">· {t('watchlist.paused')}</span>
                     ) : (
-                      <span>· {t('watchlist.nextRun')} {fmtTime(w.next_run)}</span>
+                      <span title={fmtTime(w.next_run)}>· {t('watchlist.nextRun')} {fmtRelative(w.next_run, locale)}</span>
                     )}
                   </div>
                 </div>
@@ -302,7 +330,7 @@ const exportAlertsCsv = (w: Watchlist) => {
                       {w.alerts.map((a, i) => (
                         <div key={i} className="text-[11px]">
                           <div className="text-text-3 mb-1">
-                            {fmtTime(a.at)} · <span className="text-green">+{a.added_count}</span> / <span className="text-red">−{a.removed_count}</span> {t('watchlist.changes')}
+                            <span title={fmtTime(a.at)}>{fmtRelative(a.at, locale)}</span> · <span className="text-green">+{a.added_count}</span> / <span className="text-red">−{a.removed_count}</span> {t('watchlist.changes')}
                           </div>
                           <div className="font-mono space-y-0.5">
                             {a.added.map((c, j) => <div key={`a${j}`} className="text-green break-all">+ {formatWatchlistChange(c)}</div>)}
