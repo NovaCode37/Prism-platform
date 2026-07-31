@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 
 const sourcePath = path.resolve('src/lib/scan-target.ts');
@@ -21,7 +22,7 @@ const tmp = await mkdtemp(path.join(tmpdir(), 'prism-scan-target-test-'));
 try {
   const modulePath = path.join(tmp, 'scan-target.mjs');
   await writeFile(modulePath, compiled, 'utf8');
-  const { detectScanType, normalizeScanTarget } = await import(modulePath);
+  const { detectScanType, normalizeScanTarget } = await import(pathToFileURL(modulePath).href);
 
   assert.equal(normalizeScanTarget(' Example.COM '), 'example.com');
   assert.equal(normalizeScanTarget('https://Example.COM/'), 'example.com');
