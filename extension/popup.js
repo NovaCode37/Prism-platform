@@ -28,6 +28,40 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const formView = $("formView"), scanView = $("scanView");
 const urlInput = $("url"), keyInput = $("apikey"), targetInput = $("target"), saved = $("saved");
 const bar = $("bar"), barWrap = $("barWrap"), logEl = $("log"), statusEl = $("status");
+const recentEl = $("recentTargets");
+
+const RECENT_KEY = "recentTargets";
+const MAX_RECENT = 5;
+
+function renderRecentTargets(list) {
+  clear(recentEl);
+  recentEl.hidden = !list.length;
+  list.forEach((target) => {
+    const chip = mk("button", "chip", target);
+    chip.type = "button";
+    chip.addEventListener("click", () => {
+      targetInput.value = target;
+      targetInput.focus();
+    });
+    recentEl.appendChild(chip);
+  });
+}
+
+function loadRecentTargets() {
+  chrome.storage.local.get({ [RECENT_KEY]: [] }, (data) => renderRecentTargets(data[RECENT_KEY]));
+}
+
+function saveRecentTarget(target) {
+  chrome.storage.local.get({ [RECENT_KEY]: [] }, (data) => {
+    const list = data[RECENT_KEY].filter((t) => t.toLowerCase() !== target.toLowerCase());
+    list.unshift(target);
+    const trimmed = list.slice(0, MAX_RECENT);
+    chrome.storage.local.set({ [RECENT_KEY]: trimmed });
+    renderRecentTargets(trimmed);
+  });
+}
+
+loadRecentTargets();
 
 function showForm() { formView.hidden = false; scanView.hidden = true; }
 function showScan() { formView.hidden = true; scanView.hidden = false; }
@@ -65,6 +99,7 @@ function runScan() {
   const server = baseUrl(urlInput.value);
   const apiKey = keyInput.value.trim();
   chrome.storage.sync.set({ instanceUrl: urlInput.value.trim(), apiKey });
+  saveRecentTarget(target);
   start(target, server, apiKey);
 }
 $("scan").addEventListener("click", runScan);
