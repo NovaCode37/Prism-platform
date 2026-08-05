@@ -47,7 +47,11 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 .empty { color: #6e7681; font-size: 12px; padding: 8px 0; }
 
 .card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
-.card h3 { margin: 0 0 8px; font-size: 12px; }
+.card h3 { margin: 0; font-size: 12px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
+.copy-btn { width: auto; margin: 0; padding: 3px 8px; font-size: 10px; font-weight: 600; border-radius: 4px; border: 1px solid #30363d; background: none; color: #8b949e; cursor: pointer; flex-shrink: 0; }
+.copy-btn:hover { border-color: #484f58; color: #fff; }
+.copy-btn:disabled { color: #3fb950; border-color: #3fb950; cursor: default; }
 .row { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; font-size: 11px; }
 .row .k { color: #8b949e; flex-shrink: 0; }
 .row .v { color: #e6edf3; text-align: right; font-family: ui-monospace, monospace; word-break: break-word; }
@@ -153,6 +157,21 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 
   .empty {
     color: #656d76;
+  }
+
+  .copy-btn {
+    border-color: #d0d7de;
+    color: #424a53;
+  }
+
+  .copy-btn:hover {
+    border-color: #b1bac4;
+    color: #24292f;
+  }
+
+  .copy-btn:disabled {
+    color: #1a7f37;
+    border-color: #1a7f37;
   }
 
 }
