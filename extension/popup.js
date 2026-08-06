@@ -204,7 +204,10 @@ function moduleCard(name, obj) {
   if (!rows.length) return null;
 
   const card = mk("div", "card");
-  card.appendChild(mk("h3", null, TITLES[name] || name));
+  const head = mk("div", "card-head");
+  head.appendChild(mk("h3", null, TITLES[name] || name));
+  head.appendChild(copyButton(TITLES[name] || name, rows));
+  card.appendChild(head);
   rows.forEach(([k, v]) => {
     const row = mk("div", "row");
     row.appendChild(mk("span", "k", k));
@@ -215,4 +218,18 @@ function moduleCard(name, obj) {
     card.appendChild(row);
   });
   return card;
+}
+
+function copyButton(title, rows) {
+  const btn = mk("button", "copy-btn", t("copy", "Copy"));
+  btn.type = "button";
+  btn.addEventListener("click", () => {
+    const lines = rows.map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`);
+    navigator.clipboard.writeText([title, ...lines].join("\n")).then(() => {
+      btn.textContent = t("copied", "Copied ✓");
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = t("copy", "Copy"); btn.disabled = false; }, 1200);
+    });
+  });
+  return btn;
 }
