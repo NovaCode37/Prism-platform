@@ -12,6 +12,10 @@ button { width: 100%; margin-top: 10px; padding: 9px; font-size: 13px; font-weig
 .primary:hover { background: #3b7de0; }
 .ghost { background: none; border: 1px solid #30363d; color: #adbac7; font-weight: 500; margin-top: 8px; }
 .ghost:hover { border-color: #484f58; }
+.recent-targets { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.chip { width: auto; margin: 0; padding: 4px 9px; font-size: 11px; font-weight: 500; border-radius: 999px; border: 1px solid #30363d; background: #161b22; color: #adbac7; cursor: pointer; font-family: ui-monospace, monospace; }
+.chip:hover { border-color: #4f8ef7; color: #fff; }
+
 hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 .note { font-size: 11px; color: #6e7681; margin: 6px 0 0; }
 .ok { font-size: 11px; color: #3fb950; margin-top: 6px; min-height: 14px; }
@@ -174,4 +178,14 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
     border-color: #1a7f37;
   }
 
+  .chip {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+    color: #424a53;
+  }
+
+  .chip:hover {
+    border-color: #4f8ef7;
+    color: #24292f;
+  }
 }
