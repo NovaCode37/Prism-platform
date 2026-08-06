@@ -52,5 +52,11 @@
   },
   "openFull": {
     "message": "打开完整报告"
+  },
+  "copy": {
+    "message": "复制"
+  },
+  "copied": {
+    "message": "已复制 ✓"
   }
 }

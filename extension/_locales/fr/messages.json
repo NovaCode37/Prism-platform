@@ -52,5 +52,11 @@
   },
   "openFull": {
     "message": "Ouvrir le rapport complet"
+  },
+  "copy": {
+    "message": "Copier"
+  },
+  "copied": {
+    "message": "Copié ✓"
   }
 }
