@@ -183,6 +183,24 @@ export interface GravatarAccount {
   url?: string;
 }
 
+export interface HudsonRockData extends ModuleStatusFields {
+  target?: string;
+  target_type?: 'domain' | 'email' | 'username';
+  total_compromised?: number | null;
+  employees?: number | null;
+  users?: number | null;
+  third_parties?: number | null;
+  employee_urls?: { url: string; occurrence?: number }[];
+  stealer_families?: Record<string, number>;
+  employee_password_stats?: Record<string, number | null>;
+  user_password_stats?: Record<string, number | null>;
+  stealers_found?: number | null;
+  compromised?: boolean;
+  corporate_services?: number | null;
+  user_services?: number | null;
+  error?: string;
+}
+
 export interface GravatarData extends ModuleStatusFields {
   avatar_url?: string;
   display_name?: string;
@@ -207,6 +225,7 @@ export interface ScanResults {
   smtp?: SmtpData;
   breaches?: BreachData;
   gravatar?: GravatarData;
+  hudsonrock?: HudsonRockData;
   website?: Record<string, unknown>;
   dorks?: string[];
   censys?: CensysData;

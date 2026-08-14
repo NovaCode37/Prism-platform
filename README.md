@@ -356,6 +356,8 @@ docker compose up -d --force-recreate
 | `WEBHOOK_SECRET`     | If set, signs webhook callbacks with `X-Prism-Secret`                   |
 | `DISABLE_DOCS`       | `true` to disable `/docs`, `/redoc`, `/openapi.json` in production      |
 | `SCAN_QUOTA_PER_DAY` | Daily scans per caller; `0`/unset = unlimited                            |
+| `HUDSONROCK_ENABLED` | `true` to enable the infostealer-exposure module (queries Hudson Rock) |
+| `MODULE_PROXY`       | Optional proxy for outbound module requests                             |
 | `ALLOW_PRIVATE_TARGETS` | `true` to allow scanning private/internal addresses (default `false`) |
 | `WATCHLIST_SCHEDULER` | `true` to enable the watchlist background scheduler                     |
 | `WATCHLIST_POLL_SECONDS` | How often the scheduler checks for due watchlists (default `60`)     |

@@ -18,11 +18,11 @@ interface RecentScan { target: string; type: ScanType; ts: number; }
 const SCAN_TYPES: ScanType[] = ['domain', 'ip', 'email', 'phone', 'username'];
 
 export const MODULE_MAP: Record<ScanType, string[]> = {
-  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion'],
+  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion', 'hudsonrock'],
   ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
-  email:    ['emailrep', 'smtp', 'leaks', 'gravatar'],
+  email:    ['emailrep', 'smtp', 'leaks', 'gravatar', 'hudsonrock'],
   phone:    ['hlr'],
-  username: ['blackbird', 'maigret', 'github'],
+  username: ['blackbird', 'maigret', 'github', 'hudsonrock'],
 };
 
 interface Props {

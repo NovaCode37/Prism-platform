@@ -443,6 +443,7 @@ const TABS = [
   { id: 'wayback', label: 'Wayback', icon: Clock },
   { id: 'email', label: 'Email', icon: Mail },
   { id: 'gravatar', label: 'Gravatar', icon: UserCircle },
+  { id: 'hudsonrock', label: 'Infostealers', icon: ShieldAlert },
   { id: 'dorks', label: 'Dorks', icon: Zap },
   { id: 'phone', label: 'Phone', icon: Phone },
   { id: 'telegram', label: 'Telegram', icon: MessageCircle },
@@ -799,6 +800,7 @@ export function ScanResults({ scan, onHome }: Props) {
     if (t.id === 'wayback') return r.wayback;
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches || r.gravatar;
     if (t.id === 'gravatar') return r.gravatar && modStatus(r.gravatar) === 'ok';
+    if (t.id === 'hudsonrock') return r.hudsonrock && modStatus(r.hudsonrock) === 'ok';
     if (t.id === 'dorks') return r.dorks?.length;
     if (t.id === 'phone') return r.phone;
     if (t.id === 'telegram') return r.telegram;
@@ -1449,6 +1451,86 @@ export function ScanResults({ scan, onHome }: Props) {
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          </KeyModuleCard>
+        )}
+
+        {tab === 'hudsonrock' && (
+          <KeyModuleCard
+            title="Infostealer Exposure"
+            mod={r.hudsonrock}
+            onRefresh={() => refreshModule('hudsonrock')}
+            refreshing={isRefreshing('hudsonrock')}
+          >
+            <div className="space-y-3">
+              <div className="text-[11px] text-text-3 leading-relaxed pb-2 border-b border-border-1">
+                Credentials found on machines infected by infostealer malware. This is separate
+                from breach data: a breach comes from a compromised service, these records come
+                from infected endpoints. Queries are sent to Hudson Rock.
+              </div>
+
+              {r.hudsonrock?.target_type === 'domain' ? (
+                <>
+                  <div className="space-y-1.5">
+                    <DtRow label="Total compromised" value={r.hudsonrock?.total_compromised} />
+                    <DtRow label="Employees" value={r.hudsonrock?.employees} />
+                    <DtRow label="Users" value={r.hudsonrock?.users} />
+                    <DtRow label="Third parties" value={r.hudsonrock?.third_parties} />
+                  </div>
+
+                  {(r.hudsonrock?.employee_urls?.length ?? 0) > 0 && (
+                    <div>
+                      <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                        Most affected employee URLs
+                      </div>
+                      <div className="space-y-1.5">
+                        {r.hudsonrock?.employee_urls?.map(entry => (
+                          <div key={entry.url} className="dt-row">
+                            <span className="dt-label break-all">{entry.url}</span>
+                            <span>{entry.occurrence}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {Object.keys(r.hudsonrock?.stealer_families ?? {}).length > 0 && (
+                    <div>
+                      <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                        Stealer families
+                      </div>
+                      <div className="space-y-1.5">
+                        {Object.entries(r.hudsonrock?.stealer_families ?? {}).map(([name, count]) => (
+                          <div key={name} className="dt-row">
+                            <span className="dt-label">{name}</span>
+                            <span>{count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {r.hudsonrock?.employee_password_stats && (
+                    <div>
+                      <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                        Employee password strength
+                      </div>
+                      <div className="space-y-1.5">
+                        <DtRow label="Passwords analysed" value={r.hudsonrock.employee_password_stats.total} />
+                        <DtRow label="Too weak %" value={r.hudsonrock.employee_password_stats.too_weak} />
+                        <DtRow label="Weak %" value={r.hudsonrock.employee_password_stats.weak} />
+                        <DtRow label="Strong %" value={r.hudsonrock.employee_password_stats.strong} />
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="space-y-1.5">
+                  <DtRow label="Records found" value={r.hudsonrock?.stealers_found} />
+                  <DtRow label="Corporate services" value={r.hudsonrock?.corporate_services} />
+                  <DtRow label="User services" value={r.hudsonrock?.user_services} />
                 </div>
               )}
             </div>

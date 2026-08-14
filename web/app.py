@@ -544,6 +544,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 else:
                     results["censys"] = await _run_module(scan_id, "censys", cl.search_ip, target)
 
+            if want("hudsonrock") and scan_type == "domain":
+                from modules.hudsonrock import HudsonRockLookup
+                results["hudsonrock"] = await _run_module(
+                    scan_id, "hudsonrock", HudsonRockLookup().search_domain, target
+                )
+
         elif scan_type == "email":
             if want("smtp"):
                 from modules.smtp_verify import SMTPVerifier
@@ -565,6 +571,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 from modules.gravatar import GravatarRecon
                 results["gravatar"] = await _run_module(
                     scan_id, "gravatar", GravatarRecon().lookup, target
+                )
+
+            if want("hudsonrock"):
+                from modules.hudsonrock import HudsonRockLookup
+                results["hudsonrock"] = await _run_module(
+                    scan_id, "hudsonrock", HudsonRockLookup().search_email, target
                 )
 
         elif scan_type == "phone":
@@ -622,6 +634,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 from modules.github_recon import GitHubRecon
                 results["github"] = await _run_module(
                     scan_id, "github", GitHubRecon().lookup, target
+                )
+
+            if want("hudsonrock"):
+                from modules.hudsonrock import HudsonRockLookup
+                results["hudsonrock"] = await _run_module(
+                    scan_id, "hudsonrock", HudsonRockLookup().search_username, target
                 )
 
         await _push(scan_id, {"type": "module_start", "module": "opsec_score"})

@@ -45,6 +45,7 @@
       "smtp": "SMTP Verify",
       "leaks": "Breach Check",
       "gravatar": "Gravatar",
+      "hudsonrock": "Infostealer exposure",
       "hlr": "Phone Lookup",
       "blackbird": "Blackbird",
       "maigret": "Maigret",

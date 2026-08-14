@@ -146,6 +146,11 @@ async def run_scan(
             else:
                 results["censys"] = await _invoke(cl.search_ip, target)
 
+        if want("hudsonrock") and scan_type == "domain":
+            _log("Running hudsonrock ...")
+            from modules.hudsonrock import HudsonRockLookup
+            results["hudsonrock"] = await _invoke(HudsonRockLookup().search_domain, target)
+
     elif scan_type == "email":
         if want("smtp"):
             _log("Running smtp ...")
@@ -161,6 +166,11 @@ async def run_scan(
             _log("Running emailrep ...")
             from modules.hunter import EmailRepLookup
             results["emailrep"] = await _invoke(EmailRepLookup().lookup, target)
+
+        if want("hudsonrock"):
+            _log("Running hudsonrock ...")
+            from modules.hudsonrock import HudsonRockLookup
+            results["hudsonrock"] = await _invoke(HudsonRockLookup().search_email, target)
 
     elif scan_type == "phone":
         if want("hlr"):
@@ -209,6 +219,11 @@ async def run_scan(
             _log("Running maigret ...")
             from modules.maigret_wrapper import MaigretWrapper
             results["maigret"] = await _invoke(MaigretWrapper().search, target)
+
+        if want("hudsonrock"):
+            _log("Running hudsonrock ...")
+            from modules.hudsonrock import HudsonRockLookup
+            results["hudsonrock"] = await _invoke(HudsonRockLookup().search_username, target)
 
     _log("Computing opsec score ...")
     from modules.opsec_score import score_from_results

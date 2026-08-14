@@ -45,6 +45,7 @@
       "smtp": "SMTP-Prüfung",
       "leaks": "Leak-Check",
       "gravatar": "Gravatar",
+      "hudsonrock": "Infostealer-Exposition",
       "hlr": "Telefon-Suche",
       "blackbird": "Blackbird",
       "maigret": "Maigret",

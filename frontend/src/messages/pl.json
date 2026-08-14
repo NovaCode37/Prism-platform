@@ -45,6 +45,7 @@
       "smtp": "Weryfikacja SMTP",
       "leaks": "Wycieki Danych",
       "gravatar": "Gravatar",
+      "hudsonrock": "Ekspozycja na infostealery",
       "hlr": "Informacje o Telefonie",
       "blackbird": "Blackbird",
       "maigret": "Maigret",
