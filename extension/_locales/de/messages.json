@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "Gespeichert"
   },
+  "clearRecent": {
+    "message": "Letzte Ziele löschen"
+  },
   "apiKeyLabel": {
     "message": "API-Schlüssel (optional)"
   },

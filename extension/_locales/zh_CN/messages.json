@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "已保存"
   },
+  "clearRecent": {
+    "message": "清除最近目标"
+  },
   "apiKeyLabel": {
     "message": "API 密钥（可选）"
   },

@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "Guardado"
   },
+  "clearRecent": {
+    "message": "Borrar objetivos recientes"
+  },
   "apiKeyLabel": {
     "message": "Clave API (opcional)"
   },
