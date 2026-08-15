@@ -118,6 +118,7 @@ function resetScanUi(target) {
   clear(logEl); clear($("results")); $("error").hidden = true;
   barWrap.classList.remove("done"); bar.style.width = "0";
   $("scanTarget").textContent = target;
+  $("scanTarget").title = target;
 }
 function pushLog(msg) {
   const key = `${msg.type}:${msg.module}`;

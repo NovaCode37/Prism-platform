@@ -24,7 +24,7 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 .scan-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .back { width: auto; margin: 0; padding: 2px 8px; background: none; border: none; color: #8b949e; font-size: 16px; cursor: pointer; }
 .back:hover { color: #fff; }
-.scan-target { font-family: ui-monospace, monospace; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.scan-target { font-family: ui-monospace, monospace; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
 .status { font-size: 11px; color: #8b949e; }
 .status.ok { color: #3fb950; }
 .status.err { color: #f85149; }
