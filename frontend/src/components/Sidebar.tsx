@@ -25,6 +25,29 @@ export const MODULE_MAP: Record<ScanType, string[]> = {
   username: ['blackbird', 'maigret', 'github', 'hudsonrock'],
 };
 
+const MODULE_DESCRIPTIONS: Record<string, string> = {
+  whois: 'Look up domain registration and ownership details',
+  dns: 'Check DNS records and domain configuration',
+  geoip: 'Find approximate geographic information for an IP address',
+  cert_transparency: 'Search certificate transparency records and subdomains',
+  website: 'Analyze publicly available website information',
+  wayback: 'Search historical snapshots from the Wayback Machine',
+  shodan: 'Search Shodan for exposed services and ports',
+  virustotal: 'Check reputation and threat intelligence with VirusTotal',
+  censys: 'Search internet hosts, services, and certificates with Censys',
+  onion: 'Search for related information on dark web sources',
+  hudsonrock: 'Check infostealer exposure using Hudson Rock',
+  abuseipdb: 'Check IP reputation and abuse reports with AbuseIPDB',
+  emailrep: 'Check email reputation and risk indicators',
+  smtp: 'Verify email server and SMTP availability',
+  leaks: 'Check whether an email appears in known data breaches',
+  gravatar: 'Look up a public Gravatar profile associated with an email',
+  hlr: 'Look up phone number carrier and network information',
+  blackbird: 'Search for a username across online platforms with Blackbird',
+  maigret: 'Search for a username across websites with Maigret',
+  github: 'Search GitHub for information associated with a username',
+};
+
 interface Props {
   onScan: (target: string, type: ScanType, modules: string[]) => void;
   onLoadScan?: (scanId: string) => void;
@@ -228,6 +251,8 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
                 key={moduleId}
                 type="button"
                 onClick={() => toggleModule(moduleId)}
+                aria-pressed={modules.includes(moduleId)}
+                title={MODULE_DESCRIPTIONS[moduleId] || t(`sidebar.modules.${moduleId}`)}
                 className={`text-[10px] px-2 py-1 rounded transition-all font-medium ${
                   modules.includes(moduleId)
                     ? 'bg-blue/20 text-blue border border-blue/30'
