@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "Salvato"
   },
+  "clearRecent": {
+    "message": "Cancella destinazioni recenti"
+  },
   "apiKeyLabel": {
     "message": "Chiave API (opzionale)"
   },

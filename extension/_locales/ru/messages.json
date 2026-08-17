@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "Сохранено"
   },
+  "clearRecent": {
+    "message": "Очистить недавние цели"
+  },
   "apiKeyLabel": {
     "message": "API-ключ (необязательно)"
   },

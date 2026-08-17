@@ -45,6 +45,18 @@ function renderRecentTargets(list) {
     });
     recentEl.appendChild(chip);
   });
+  if (list.length) {
+    const clearButton = mk("button", "clear-recent", t("clearRecent", "Clear recent targets"));
+    clearButton.type = "button";
+    clearButton.addEventListener("click", () => {
+      chrome.storage.local.set({ [RECENT_KEY]: [] }, () => {
+        if (chrome.runtime.lastError) return;
+        renderRecentTargets([]);
+        targetInput.focus();
+      });
+    });
+    recentEl.appendChild(clearButton);
+  }
 }
 
 function loadRecentTargets() {

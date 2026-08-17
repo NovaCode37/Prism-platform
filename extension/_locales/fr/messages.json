@@ -29,6 +29,9 @@
   "savedOk": {
     "message": "Enregistré"
   },
+  "clearRecent": {
+    "message": "Effacer les cibles récentes"
+  },
   "apiKeyLabel": {
     "message": "Clé API (facultatif)"
   },
