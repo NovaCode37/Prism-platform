@@ -7,7 +7,8 @@
     "toggleTheme": "Alternar tema",
     "github": "GitHub",
     "apiDocs": "Documentação da API",
-    "remainingScans": "Verificações restantes"
+    "remainingScans": "Verificações restantes",
+    "themeTooltip": "Switch to {mode} theme (Alt+T)"
   },
   "sidebar": {
     "target": "Alvo",
@@ -74,22 +75,68 @@
       "online": "ONLINE"
     },
     "caps": {
-      "domain":   { "title": "Domínio / IP", "item1": "WHOIS · DNS · GeoIP", "item2": "Subdomínios · Shodan", "item3": "VirusTotal · Wayback" },
-      "email":    { "title": "E-mail",       "item1": "Reputação DNS · SMTP", "item2": "Vazamentos · Descartável", "item3": "SPF · DKIM · DMARC" },
-      "phone":    { "title": "Telefone",     "item1": "Validação · Operadora", "item2": "País · Busca reversa" },
-      "username": { "title": "Usuário",      "item1": "Blackbird · Maigret",  "item2": "50+ / 3000+ plataformas", "item3": "Pontuação OPSEC" }
+      "domain": {
+        "title": "Domínio / IP",
+        "item1": "WHOIS · DNS · GeoIP",
+        "item2": "Subdomínios · Shodan",
+        "item3": "VirusTotal · Wayback"
+      },
+      "email": {
+        "title": "E-mail",
+        "item1": "Reputação DNS · SMTP",
+        "item2": "Vazamentos · Descartável",
+        "item3": "SPF · DKIM · DMARC"
+      },
+      "phone": {
+        "title": "Telefone",
+        "item1": "Validação · Operadora",
+        "item2": "País · Busca reversa"
+      },
+      "username": {
+        "title": "Usuário",
+        "item1": "Blackbird · Maigret",
+        "item2": "50+ / 3000+ plataformas",
+        "item3": "Pontuação OPSEC"
+      }
     },
     "standaloneTools": "Ferramentas independentes",
     "tools": {
-      "metadata": { "label": "Metadados de arquivo", "desc": "EXIF, GPS, PDF, DOCX" },
-      "headers":  { "label": "Cabeçalhos de e-mail",  "desc": "SPF, DKIM, saltos de roteamento" },
-      "crypto":   { "label": "Endereço crypto",       "desc": "Bitcoin e Ethereum" },
-      "qr":       { "label": "Decodificar QR",        "desc": "Decodificar e analisar" },
-      "mac":      { "label": "Consulta MAC",          "desc": "Busca de fabricante" },
-      "subnet":   { "label": "IP / Sub-rede",         "desc": "Faixas de rede e CIDR" },
-      "hash":     { "label": "Identificador de hash", "desc": "Identificar tipos de hash" },
-      "encoder":  { "label": "Base64 / URL",          "desc": "Codificar e decodificar" },
-      "jwt":      { "label": "Decodificador JWT",      "desc": "Decodificar tokens JWT" }
+      "metadata": {
+        "label": "Metadados de arquivo",
+        "desc": "EXIF, GPS, PDF, DOCX"
+      },
+      "headers": {
+        "label": "Cabeçalhos de e-mail",
+        "desc": "SPF, DKIM, saltos de roteamento"
+      },
+      "crypto": {
+        "label": "Endereço crypto",
+        "desc": "Bitcoin e Ethereum"
+      },
+      "qr": {
+        "label": "Decodificar QR",
+        "desc": "Decodificar e analisar"
+      },
+      "mac": {
+        "label": "Consulta MAC",
+        "desc": "Busca de fabricante"
+      },
+      "subnet": {
+        "label": "IP / Sub-rede",
+        "desc": "Faixas de rede e CIDR"
+      },
+      "hash": {
+        "label": "Identificador de hash",
+        "desc": "Identificar tipos de hash"
+      },
+      "encoder": {
+        "label": "Base64 / URL",
+        "desc": "Codificar e decodificar"
+      },
+      "jwt": {
+        "label": "Decodificador JWT",
+        "desc": "Decodificar tokens JWT"
+      }
     },
     "demo": {
       "line1": "Esta é uma demo pública com cotas de API limitadas. Alguns módulos (Shodan, VirusTotal) podem ter limite de taxa.",
@@ -243,33 +290,183 @@
     "opsec": {
       "scoreLabel": "Pontuação OPSEC",
       "riskSuffix": "RISCO",
-      "data_exposure": { "label": "Exposição de dados", "tooltip": "Vazamentos de dados sensíveis: credenciais violadas, e-mails expostos, PII público." },
-      "identity_opsec": { "label": "OPSEC de identidade", "tooltip": "Reuso de identificadores entre plataformas: mesmo usuário/e-mail em vários sites." },
-      "infrastructure": { "label": "Infraestrutura", "tooltip": "Serviços expostos, portas abertas, higiene fraca de DNS/WHOIS, alertas de threat-intel." },
-      "web_security": { "label": "Segurança web", "tooltip": "TLS, cabeçalhos de segurança, certificate transparency, caminhos sensíveis arquivados." }
+      "data_exposure": {
+        "label": "Exposição de dados",
+        "tooltip": "Vazamentos de dados sensíveis: credenciais violadas, e-mails expostos, PII público."
+      },
+      "identity_opsec": {
+        "label": "OPSEC de identidade",
+        "tooltip": "Reuso de identificadores entre plataformas: mesmo usuário/e-mail em vários sites."
+      },
+      "infrastructure": {
+        "label": "Infraestrutura",
+        "tooltip": "Serviços expostos, portas abertas, higiene fraca de DNS/WHOIS, alertas de threat-intel."
+      },
+      "web_security": {
+        "label": "Segurança web",
+        "tooltip": "TLS, cabeçalhos de segurança, certificate transparency, caminhos sensíveis arquivados."
+      }
     },
-    "common": { "yes": "Sim", "no": "Não", "unknown": "Desconhecido", "points": "pts" },
-    "findings": { "title": "Resultados de segurança", "none": "Nenhum resultado de segurança" },
-    "whois": { "title": "Registro WHOIS", "registrar": "Registrar", "organization": "Organização", "country": "País", "created": "Criado", "expires": "Expira", "emails": "E-mails", "nameServers": "Servidores de nomes" },
-    "dns": { "title": "Registros DNS" },
-    "subdomains": { "titleFmt": "Certificate Transparency — {n} subdomínios", "certsAnalysed": "{n} certificado(s) analisado(s)" },
-    "accounts": { "title": "Busca de usuário", "platform": "Plataforma", "url": "URL", "time": "Tempo" },
-    "virustotal": { "title": "VirusTotal", "malicious": "Malicioso", "suspicious": "Suspeito", "harmless": "Inofensivo", "undetected": "Não detectado", "country": "País", "asn": "ASN" },
-    "abuseipdb": { "title": "AbuseIPDB", "abuseScore": "Pontuação de abuso", "totalReports": "Total de denúncias", "isp": "ISP", "usageType": "Tipo de uso", "torExit": "⚠ Nó de saída TOR" },
-    "shodan": { "title": "Shodan", "openPorts": "Portas abertas", "cves": "CVEs encontradas" },
-    "censys": { "titleCert": "Censys — Busca de certificados", "titleHost": "Censys — Info do host", "ip": "IP", "asn": "ASN", "location": "Localização", "openPorts": "Portas abertas", "subdomainsFmt": "Subdomínios ({n})", "services": "Serviços", "port": "Porta", "service": "Serviço", "software": "Software" },
-    "darkweb": { "titleFmt": "Espelhos Dark Web — {n} encontrados", "sources": "Fontes" },
-    "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} snapshots · Primeiro: {first} · Último: {last}", "recent": "Snapshots recentes", "sensitive": "URLs sensíveis no arquivo" },
-    "emailrep": { "title": "Reputação de e-mail", "reputation": "Reputação", "suspicious": "Suspeito", "validMx": "MX válido", "deliverable": "Entregável", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Reputação do domínio", "mxRecords": "Registros MX", "disposableWarn": "⚠ E-mail descartável detectado", "spoofableWarn": "⚠ Domínio falsificável (SPF/DMARC ausentes)", "freeProvider": "Provedor de e-mail gratuito" },
-    "smtp": { "title": "Verificação SMTP", "exists": "Existe", "connect": "Conexão SMTP", "catchAllWarn": "⚠ Servidor catch-all (aceita qualquer endereço)", "details": "Detalhes" },
-    "breaches": { "title": "Verificação de vazamentos", "found": "Vazamentos encontrados", "breachedServices": "Serviços vazados", "total": "Total de vazamentos" },
-    "dorks": { "title": "Google Dorks" },
-    "phone": { "title": "Inteligência telefônica", "valid": "Válido", "country": "País", "countryCode": "Código do país", "region": "Região", "carrier": "Operadora", "lineType": "Tipo de linha", "timezones": "Fusos horários", "ownerName": "Nome do dono", "address": "Endereço" },
-    "telegram": { "title": "Perfil do Telegram", "found": "Encontrado", "username": "Usuário", "name": "Nome", "bio": "Bio", "type": "Tipo", "followers": "Seguidores" },
-    "map": { "title": "Mapa de geolocalização IP", "ip": "IP", "location": "Localização", "organization": "Organização", "coordinates": "Coordenadas", "loading": "Carregando mapa…", "noData": "Nenhum dado de geolocalização disponível", "moreFmt": "{n} localizações encontradas", "precision": "Precisão", "approximate": "Aproximada (regional, não exata)" },
-    "graph": { "title": "Grafo de entidades", "loading": "Carregando grafo…", "empty": "Nenhum dado de grafo para esta varredura" },
-    "json": { "title": "Resultados JSON brutos", "show": "Mostrar dados brutos", "hide": "Ocultar dados brutos" },
-    "ai": { "title": "Análise OSINT por IA · Nvidia Nemotron", "chatTitle": "Pergunte à IA", "generate": "Gerar resumo por IA", "generating": "Gerando análise…", "model": "Modelo", "regenerate": "Regenerar", "placeholder": "Pergunte qualquer coisa sobre esta varredura…" },
+    "common": {
+      "yes": "Sim",
+      "no": "Não",
+      "unknown": "Desconhecido",
+      "points": "pts"
+    },
+    "findings": {
+      "title": "Resultados de segurança",
+      "none": "Nenhum resultado de segurança"
+    },
+    "whois": {
+      "title": "Registro WHOIS",
+      "registrar": "Registrar",
+      "organization": "Organização",
+      "country": "País",
+      "created": "Criado",
+      "expires": "Expira",
+      "emails": "E-mails",
+      "nameServers": "Servidores de nomes"
+    },
+    "dns": {
+      "title": "Registros DNS"
+    },
+    "subdomains": {
+      "titleFmt": "Certificate Transparency — {n} subdomínios",
+      "certsAnalysed": "{n} certificado(s) analisado(s)"
+    },
+    "accounts": {
+      "title": "Busca de usuário",
+      "platform": "Plataforma",
+      "url": "URL",
+      "time": "Tempo"
+    },
+    "virustotal": {
+      "title": "VirusTotal",
+      "malicious": "Malicioso",
+      "suspicious": "Suspeito",
+      "harmless": "Inofensivo",
+      "undetected": "Não detectado",
+      "country": "País",
+      "asn": "ASN"
+    },
+    "abuseipdb": {
+      "title": "AbuseIPDB",
+      "abuseScore": "Pontuação de abuso",
+      "totalReports": "Total de denúncias",
+      "isp": "ISP",
+      "usageType": "Tipo de uso",
+      "torExit": "⚠ Nó de saída TOR"
+    },
+    "shodan": {
+      "title": "Shodan",
+      "openPorts": "Portas abertas",
+      "cves": "CVEs encontradas"
+    },
+    "censys": {
+      "titleCert": "Censys — Busca de certificados",
+      "titleHost": "Censys — Info do host",
+      "ip": "IP",
+      "asn": "ASN",
+      "location": "Localização",
+      "openPorts": "Portas abertas",
+      "subdomainsFmt": "Subdomínios ({n})",
+      "services": "Serviços",
+      "port": "Porta",
+      "service": "Serviço",
+      "software": "Software"
+    },
+    "darkweb": {
+      "titleFmt": "Espelhos Dark Web — {n} encontrados",
+      "sources": "Fontes"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "summaryFmt": "{n} snapshots · Primeiro: {first} · Último: {last}",
+      "recent": "Snapshots recentes",
+      "sensitive": "URLs sensíveis no arquivo"
+    },
+    "emailrep": {
+      "title": "Reputação de e-mail",
+      "reputation": "Reputação",
+      "suspicious": "Suspeito",
+      "validMx": "MX válido",
+      "deliverable": "Entregável",
+      "spf": "SPF",
+      "dmarc": "DMARC",
+      "domainRep": "Reputação do domínio",
+      "mxRecords": "Registros MX",
+      "disposableWarn": "⚠ E-mail descartável detectado",
+      "spoofableWarn": "⚠ Domínio falsificável (SPF/DMARC ausentes)",
+      "freeProvider": "Provedor de e-mail gratuito"
+    },
+    "smtp": {
+      "title": "Verificação SMTP",
+      "exists": "Existe",
+      "connect": "Conexão SMTP",
+      "catchAllWarn": "⚠ Servidor catch-all (aceita qualquer endereço)",
+      "details": "Detalhes"
+    },
+    "breaches": {
+      "title": "Verificação de vazamentos",
+      "found": "Vazamentos encontrados",
+      "breachedServices": "Serviços vazados",
+      "total": "Total de vazamentos"
+    },
+    "dorks": {
+      "title": "Google Dorks"
+    },
+    "phone": {
+      "title": "Inteligência telefônica",
+      "valid": "Válido",
+      "country": "País",
+      "countryCode": "Código do país",
+      "region": "Região",
+      "carrier": "Operadora",
+      "lineType": "Tipo de linha",
+      "timezones": "Fusos horários",
+      "ownerName": "Nome do dono",
+      "address": "Endereço"
+    },
+    "telegram": {
+      "title": "Perfil do Telegram",
+      "found": "Encontrado",
+      "username": "Usuário",
+      "name": "Nome",
+      "bio": "Bio",
+      "type": "Tipo",
+      "followers": "Seguidores"
+    },
+    "map": {
+      "title": "Mapa de geolocalização IP",
+      "ip": "IP",
+      "location": "Localização",
+      "organization": "Organização",
+      "coordinates": "Coordenadas",
+      "loading": "Carregando mapa…",
+      "noData": "Nenhum dado de geolocalização disponível",
+      "moreFmt": "{n} localizações encontradas",
+      "precision": "Precisão",
+      "approximate": "Aproximada (regional, não exata)"
+    },
+    "graph": {
+      "title": "Grafo de entidades",
+      "loading": "Carregando grafo…",
+      "empty": "Nenhum dado de grafo para esta varredura"
+    },
+    "json": {
+      "title": "Resultados JSON brutos",
+      "show": "Mostrar dados brutos",
+      "hide": "Ocultar dados brutos"
+    },
+    "ai": {
+      "title": "Análise OSINT por IA · Nvidia Nemotron",
+      "chatTitle": "Pergunte à IA",
+      "generate": "Gerar resumo por IA",
+      "generating": "Gerando análise…",
+      "model": "Modelo",
+      "regenerate": "Regenerar",
+      "placeholder": "Pergunte qualquer coisa sobre esta varredura…"
+    },
     "duration": "Concluído em {duration}",
     "copyAllEmails": "Copiar todos os e-mails",
     "emailsCopied": "E-mails copiados!",
@@ -324,5 +521,17 @@
     "it": "IT",
     "pt": "PT",
     "pl": "PL"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
   }
 }

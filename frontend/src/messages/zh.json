@@ -7,7 +7,8 @@
     "toggleTheme": "切换主题",
     "github": "GitHub",
     "apiDocs": "API 文档",
-    "remainingScans": "剩余扫描次数"
+    "remainingScans": "剩余扫描次数",
+    "themeTooltip": "Switch to {mode} theme (Alt+T)"
   },
   "sidebar": {
     "target": "目标",
@@ -74,22 +75,68 @@
       "online": "在线"
     },
     "caps": {
-      "domain":   { "title": "域名 / IP", "item1": "WHOIS · DNS · GeoIP", "item2": "子域名 · Shodan", "item3": "VirusTotal · Wayback" },
-      "email":    { "title": "邮箱",       "item1": "DNS 信誉 · SMTP", "item2": "泄露检查 · 一次性邮箱", "item3": "SPF · DKIM · DMARC" },
-      "phone":    { "title": "电话",       "item1": "验证 · 运营商", "item2": "国家 · 反查" },
-      "username": { "title": "用户名",     "item1": "Blackbird · Maigret",  "item2": "50+ / 3000+ 平台", "item3": "OPSEC 评分" }
+      "domain": {
+        "title": "域名 / IP",
+        "item1": "WHOIS · DNS · GeoIP",
+        "item2": "子域名 · Shodan",
+        "item3": "VirusTotal · Wayback"
+      },
+      "email": {
+        "title": "邮箱",
+        "item1": "DNS 信誉 · SMTP",
+        "item2": "泄露检查 · 一次性邮箱",
+        "item3": "SPF · DKIM · DMARC"
+      },
+      "phone": {
+        "title": "电话",
+        "item1": "验证 · 运营商",
+        "item2": "国家 · 反查"
+      },
+      "username": {
+        "title": "用户名",
+        "item1": "Blackbird · Maigret",
+        "item2": "50+ / 3000+ 平台",
+        "item3": "OPSEC 评分"
+      }
     },
     "standaloneTools": "独立工具",
     "tools": {
-      "metadata": { "label": "文件元数据",  "desc": "EXIF、GPS、PDF、DOCX" },
-      "headers":  { "label": "邮件头",   "desc": "SPF、DKIM、路由跳数" },
-      "crypto":   { "label": "加密地址", "desc": "比特币和以太坊" },
-      "qr":       { "label": "二维码解码",       "desc": "解码与分析" },
-      "mac":      { "label": "MAC 查询",      "desc": "厂商查询" },
-      "subnet":   { "label": "IP / 子网",     "desc": "网络范围与 CIDR" },
-      "hash":     { "label": "哈希识别", "desc": "识别哈希类型" },
-      "encoder":  { "label": "Base64 / URL", "desc": "编码与解码" },
-      "jwt": { "label": "JWT 解码", "desc": "解码 JWT 令牌" }
+      "metadata": {
+        "label": "文件元数据",
+        "desc": "EXIF、GPS、PDF、DOCX"
+      },
+      "headers": {
+        "label": "邮件头",
+        "desc": "SPF、DKIM、路由跳数"
+      },
+      "crypto": {
+        "label": "加密地址",
+        "desc": "比特币和以太坊"
+      },
+      "qr": {
+        "label": "二维码解码",
+        "desc": "解码与分析"
+      },
+      "mac": {
+        "label": "MAC 查询",
+        "desc": "厂商查询"
+      },
+      "subnet": {
+        "label": "IP / 子网",
+        "desc": "网络范围与 CIDR"
+      },
+      "hash": {
+        "label": "哈希识别",
+        "desc": "识别哈希类型"
+      },
+      "encoder": {
+        "label": "Base64 / URL",
+        "desc": "编码与解码"
+      },
+      "jwt": {
+        "label": "JWT 解码",
+        "desc": "解码 JWT 令牌"
+      }
     },
     "demo": {
       "line1": "这是一个 API 配额有限的公开演示。部分模块（Shodan、VirusTotal）可能受到速率限制。",
@@ -243,33 +290,183 @@
     "opsec": {
       "scoreLabel": "OPSEC 评分",
       "riskSuffix": "风险",
-      "data_exposure": { "label": "数据暴露", "tooltip": "敏感数据泄露：被泄露的凭据、暴露的邮箱、公开的个人信息。" },
-      "identity_opsec": { "label": "身份 OPSEC", "tooltip": "跨平台重复使用标识：在多个站点使用相同用户名/邮箱。" },
-      "infrastructure": { "label": "基础设施", "tooltip": "暴露的服务、开放端口、薄弱的 DNS/WHOIS 卫生、威胁情报命中。" },
-      "web_security": { "label": "Web 安全", "tooltip": "TLS、安全头、证书透明度、归档的敏感路径。" }
+      "data_exposure": {
+        "label": "数据暴露",
+        "tooltip": "敏感数据泄露：被泄露的凭据、暴露的邮箱、公开的个人信息。"
+      },
+      "identity_opsec": {
+        "label": "身份 OPSEC",
+        "tooltip": "跨平台重复使用标识：在多个站点使用相同用户名/邮箱。"
+      },
+      "infrastructure": {
+        "label": "基础设施",
+        "tooltip": "暴露的服务、开放端口、薄弱的 DNS/WHOIS 卫生、威胁情报命中。"
+      },
+      "web_security": {
+        "label": "Web 安全",
+        "tooltip": "TLS、安全头、证书透明度、归档的敏感路径。"
+      }
     },
-    "common": { "yes": "是", "no": "否", "unknown": "未知", "points": "分" },
-    "findings": { "title": "安全发现", "none": "无安全发现" },
-    "whois": { "title": "WHOIS 注册信息", "registrar": "注册商", "organization": "组织", "country": "国家", "created": "创建时间", "expires": "到期时间", "emails": "邮箱", "nameServers": "域名服务器" },
-    "dns": { "title": "DNS 记录" },
-    "subdomains": { "titleFmt": "证书透明度 — {n} 个子域名", "certsAnalysed": "已分析 {n} 个证书" },
-    "accounts": { "title": "用户名搜索", "platform": "平台", "url": "链接", "time": "耗时" },
-    "virustotal": { "title": "VirusTotal", "malicious": "恶意", "suspicious": "可疑", "harmless": "无害", "undetected": "未检出", "country": "国家", "asn": "ASN" },
-    "abuseipdb": { "title": "AbuseIPDB", "abuseScore": "滥用评分", "totalReports": "举报总数", "isp": "ISP", "usageType": "用途类型", "torExit": "⚠ TOR 出口节点" },
-    "shodan": { "title": "Shodan", "openPorts": "开放端口", "cves": "发现的 CVE" },
-    "censys": { "titleCert": "Censys — 证书搜索", "titleHost": "Censys — 主机信息", "ip": "IP", "asn": "ASN", "location": "位置", "openPorts": "开放端口", "subdomainsFmt": "子域名（{n}）", "services": "服务", "port": "端口", "service": "服务", "software": "软件" },
-    "darkweb": { "titleFmt": "暗网镜像 — 发现 {n} 个", "sources": "来源" },
-    "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} 个快照 · 最早：{first} · 最近：{last}", "recent": "最近快照", "sensitive": "归档中的敏感链接" },
-    "emailrep": { "title": "邮箱信誉", "reputation": "信誉", "suspicious": "可疑", "validMx": "有效 MX", "deliverable": "可投递", "spf": "SPF", "dmarc": "DMARC", "domainRep": "域名信誉", "mxRecords": "MX 记录", "disposableWarn": "⚠ 检测到一次性邮箱", "spoofableWarn": "⚠ 域名可被伪造（缺少 SPF/DMARC）", "freeProvider": "免费邮箱服务商" },
-    "smtp": { "title": "SMTP 验证", "exists": "存在", "connect": "SMTP 连接", "catchAllWarn": "⚠ 全收服务器（接受任意地址）", "details": "详情" },
-    "breaches": { "title": "泄露检查", "found": "发现泄露", "breachedServices": "被泄露的服务", "total": "泄露总数" },
-    "dorks": { "title": "Google Dorks" },
-    "phone": { "title": "电话情报", "valid": "有效", "country": "国家", "countryCode": "国家代码", "region": "地区", "carrier": "运营商", "lineType": "线路类型", "timezones": "时区", "ownerName": "机主姓名", "address": "地址" },
-    "telegram": { "title": "Telegram 资料", "found": "已找到", "username": "用户名", "name": "名称", "bio": "简介", "type": "类型", "followers": "关注者" },
-    "map": { "title": "IP 地理位置地图", "ip": "IP", "location": "位置", "organization": "组织", "coordinates": "坐标", "loading": "正在加载地图…", "noData": "无可用地理位置数据", "moreFmt": "发现 {n} 个位置", "precision": "精度", "approximate": "近似（区域级，非精确）" },
-    "graph": { "title": "实体图谱", "loading": "正在加载图谱…", "empty": "此扫描无可用图谱数据" },
-    "json": { "title": "原始 JSON 结果", "show": "显示原始数据", "hide": "隐藏原始数据" },
-    "ai": { "title": "AI OSINT 分析 · Nvidia Nemotron", "chatTitle": "向 AI 提问", "generate": "生成 AI 摘要", "generating": "正在生成分析…", "model": "模型", "regenerate": "重新生成", "placeholder": "询问关于此扫描的任何问题…" },
+    "common": {
+      "yes": "是",
+      "no": "否",
+      "unknown": "未知",
+      "points": "分"
+    },
+    "findings": {
+      "title": "安全发现",
+      "none": "无安全发现"
+    },
+    "whois": {
+      "title": "WHOIS 注册信息",
+      "registrar": "注册商",
+      "organization": "组织",
+      "country": "国家",
+      "created": "创建时间",
+      "expires": "到期时间",
+      "emails": "邮箱",
+      "nameServers": "域名服务器"
+    },
+    "dns": {
+      "title": "DNS 记录"
+    },
+    "subdomains": {
+      "titleFmt": "证书透明度 — {n} 个子域名",
+      "certsAnalysed": "已分析 {n} 个证书"
+    },
+    "accounts": {
+      "title": "用户名搜索",
+      "platform": "平台",
+      "url": "链接",
+      "time": "耗时"
+    },
+    "virustotal": {
+      "title": "VirusTotal",
+      "malicious": "恶意",
+      "suspicious": "可疑",
+      "harmless": "无害",
+      "undetected": "未检出",
+      "country": "国家",
+      "asn": "ASN"
+    },
+    "abuseipdb": {
+      "title": "AbuseIPDB",
+      "abuseScore": "滥用评分",
+      "totalReports": "举报总数",
+      "isp": "ISP",
+      "usageType": "用途类型",
+      "torExit": "⚠ TOR 出口节点"
+    },
+    "shodan": {
+      "title": "Shodan",
+      "openPorts": "开放端口",
+      "cves": "发现的 CVE"
+    },
+    "censys": {
+      "titleCert": "Censys — 证书搜索",
+      "titleHost": "Censys — 主机信息",
+      "ip": "IP",
+      "asn": "ASN",
+      "location": "位置",
+      "openPorts": "开放端口",
+      "subdomainsFmt": "子域名（{n}）",
+      "services": "服务",
+      "port": "端口",
+      "service": "服务",
+      "software": "软件"
+    },
+    "darkweb": {
+      "titleFmt": "暗网镜像 — 发现 {n} 个",
+      "sources": "来源"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "summaryFmt": "{n} 个快照 · 最早：{first} · 最近：{last}",
+      "recent": "最近快照",
+      "sensitive": "归档中的敏感链接"
+    },
+    "emailrep": {
+      "title": "邮箱信誉",
+      "reputation": "信誉",
+      "suspicious": "可疑",
+      "validMx": "有效 MX",
+      "deliverable": "可投递",
+      "spf": "SPF",
+      "dmarc": "DMARC",
+      "domainRep": "域名信誉",
+      "mxRecords": "MX 记录",
+      "disposableWarn": "⚠ 检测到一次性邮箱",
+      "spoofableWarn": "⚠ 域名可被伪造（缺少 SPF/DMARC）",
+      "freeProvider": "免费邮箱服务商"
+    },
+    "smtp": {
+      "title": "SMTP 验证",
+      "exists": "存在",
+      "connect": "SMTP 连接",
+      "catchAllWarn": "⚠ 全收服务器（接受任意地址）",
+      "details": "详情"
+    },
+    "breaches": {
+      "title": "泄露检查",
+      "found": "发现泄露",
+      "breachedServices": "被泄露的服务",
+      "total": "泄露总数"
+    },
+    "dorks": {
+      "title": "Google Dorks"
+    },
+    "phone": {
+      "title": "电话情报",
+      "valid": "有效",
+      "country": "国家",
+      "countryCode": "国家代码",
+      "region": "地区",
+      "carrier": "运营商",
+      "lineType": "线路类型",
+      "timezones": "时区",
+      "ownerName": "机主姓名",
+      "address": "地址"
+    },
+    "telegram": {
+      "title": "Telegram 资料",
+      "found": "已找到",
+      "username": "用户名",
+      "name": "名称",
+      "bio": "简介",
+      "type": "类型",
+      "followers": "关注者"
+    },
+    "map": {
+      "title": "IP 地理位置地图",
+      "ip": "IP",
+      "location": "位置",
+      "organization": "组织",
+      "coordinates": "坐标",
+      "loading": "正在加载地图…",
+      "noData": "无可用地理位置数据",
+      "moreFmt": "发现 {n} 个位置",
+      "precision": "精度",
+      "approximate": "近似（区域级，非精确）"
+    },
+    "graph": {
+      "title": "实体图谱",
+      "loading": "正在加载图谱…",
+      "empty": "此扫描无可用图谱数据"
+    },
+    "json": {
+      "title": "原始 JSON 结果",
+      "show": "显示原始数据",
+      "hide": "隐藏原始数据"
+    },
+    "ai": {
+      "title": "AI OSINT 分析 · Nvidia Nemotron",
+      "chatTitle": "向 AI 提问",
+      "generate": "生成 AI 摘要",
+      "generating": "正在生成分析…",
+      "model": "模型",
+      "regenerate": "重新生成",
+      "placeholder": "询问关于此扫描的任何问题…"
+    },
     "duration": "耗时 {duration} 完成",
     "copyAllEmails": "复制所有邮箱",
     "emailsCopied": "邮箱已复制！",
@@ -322,5 +519,17 @@
     "fr": "FR",
     "es": "ES",
     "pl": "PL"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
   }
 }

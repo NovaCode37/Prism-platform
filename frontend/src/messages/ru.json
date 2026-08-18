@@ -7,7 +7,8 @@
     "toggleTheme": "Сменить тему",
     "github": "GitHub",
     "apiDocs": "Документация API",
-    "remainingScans": "Осталось сканирований"
+    "remainingScans": "Осталось сканирований",
+    "themeTooltip": "Switch to {mode} theme (Alt+T)"
   },
   "sidebar": {
     "target": "Цель",
@@ -74,22 +75,68 @@
       "online": "ОНЛАЙН"
     },
     "caps": {
-      "domain":   { "title": "Домен / IP", "item1": "WHOIS · DNS · GeoIP",    "item2": "Поддомены · Shodan",       "item3": "VirusTotal · Wayback" },
-      "email":    { "title": "Почта",      "item1": "Репутация DNS · SMTP",  "item2": "Проверка утечек · Одноразовые", "item3": "SPF · DKIM · DMARC" },
-      "phone":    { "title": "Телефон",    "item1": "Валидация · Оператор", "item2": "Страна · Обратный поиск" },
-      "username": { "title": "Юзернейм",   "item1": "Blackbird · Maigret",   "item2": "50+ / 3000+ платформ",     "item3": "OPSEC-оценка" }
+      "domain": {
+        "title": "Домен / IP",
+        "item1": "WHOIS · DNS · GeoIP",
+        "item2": "Поддомены · Shodan",
+        "item3": "VirusTotal · Wayback"
+      },
+      "email": {
+        "title": "Почта",
+        "item1": "Репутация DNS · SMTP",
+        "item2": "Проверка утечек · Одноразовые",
+        "item3": "SPF · DKIM · DMARC"
+      },
+      "phone": {
+        "title": "Телефон",
+        "item1": "Валидация · Оператор",
+        "item2": "Страна · Обратный поиск"
+      },
+      "username": {
+        "title": "Юзернейм",
+        "item1": "Blackbird · Maigret",
+        "item2": "50+ / 3000+ платформ",
+        "item3": "OPSEC-оценка"
+      }
     },
     "standaloneTools": "Отдельные инструменты",
     "tools": {
-      "metadata": { "label": "Метаданные файла",  "desc": "EXIF, GPS, PDF, DOCX" },
-      "headers":  { "label": "Заголовки письма",   "desc": "SPF, DKIM, маршрут" },
-      "crypto":   { "label": "Крипто-адрес",     "desc": "Bitcoin и Ethereum" },
-      "qr":       { "label": "Декодер QR",         "desc": "Декодирование и анализ" },
-      "mac":      { "label": "MAC Lookup",        "desc": "Поиск производителя" },
-      "subnet":   { "label": "IP / Подсеть",     "desc": "Диапазоны сети и CIDR" },
-      "hash":     { "label": "Идентификатор Hash", "desc": "Определить тип хеша" },
-      "encoder":  { "label": "Base64 / URL", "desc": "Кодирование и декодирование" },
-      "jwt":      { "label": "JWT Декодер", "desc": "Декодировать JWT-токены" }
+      "metadata": {
+        "label": "Метаданные файла",
+        "desc": "EXIF, GPS, PDF, DOCX"
+      },
+      "headers": {
+        "label": "Заголовки письма",
+        "desc": "SPF, DKIM, маршрут"
+      },
+      "crypto": {
+        "label": "Крипто-адрес",
+        "desc": "Bitcoin и Ethereum"
+      },
+      "qr": {
+        "label": "Декодер QR",
+        "desc": "Декодирование и анализ"
+      },
+      "mac": {
+        "label": "MAC Lookup",
+        "desc": "Поиск производителя"
+      },
+      "subnet": {
+        "label": "IP / Подсеть",
+        "desc": "Диапазоны сети и CIDR"
+      },
+      "hash": {
+        "label": "Идентификатор Hash",
+        "desc": "Определить тип хеша"
+      },
+      "encoder": {
+        "label": "Base64 / URL",
+        "desc": "Кодирование и декодирование"
+      },
+      "jwt": {
+        "label": "JWT Декодер",
+        "desc": "Декодировать JWT-токены"
+      }
     },
     "demo": {
       "line1": "Это публичное демо с ограниченными квотами API. Некоторые модули (Shodan, VirusTotal) могут быть ограничены частотой запросов.",
@@ -243,33 +290,183 @@
     "opsec": {
       "scoreLabel": "Оценка OPSEC",
       "riskSuffix": "РИСК",
-      "data_exposure": { "label": "Утечки данных", "tooltip": "Утечки чувствительных данных: скомпрометированные пароли, открытые e-mail, публичные PII." },
-      "identity_opsec": { "label": "OPSEC личности", "tooltip": "Повторное использование идентификаторов: один логин/почта на множестве платформ." },
-      "infrastructure": { "label": "Инфраструктура", "tooltip": "Открытые сервисы, порты, слабая гигиена DNS/WHOIS, попадание в threat-intel." },
-      "web_security": { "label": "Web-безопасность", "tooltip": "TLS, security-заголовки, certificate transparency, архивные чувствительные пути." }
+      "data_exposure": {
+        "label": "Утечки данных",
+        "tooltip": "Утечки чувствительных данных: скомпрометированные пароли, открытые e-mail, публичные PII."
+      },
+      "identity_opsec": {
+        "label": "OPSEC личности",
+        "tooltip": "Повторное использование идентификаторов: один логин/почта на множестве платформ."
+      },
+      "infrastructure": {
+        "label": "Инфраструктура",
+        "tooltip": "Открытые сервисы, порты, слабая гигиена DNS/WHOIS, попадание в threat-intel."
+      },
+      "web_security": {
+        "label": "Web-безопасность",
+        "tooltip": "TLS, security-заголовки, certificate transparency, архивные чувствительные пути."
+      }
     },
-    "common": { "yes": "Да", "no": "Нет", "unknown": "Неизвестно", "points": "очк" },
-    "findings": { "title": "Находки безопасности", "none": "Находок безопасности нет" },
-    "whois": { "title": "Регистрация WHOIS", "registrar": "Регистратор", "organization": "Организация", "country": "Страна", "created": "Создан", "expires": "Истекает", "emails": "E-mail", "nameServers": "DNS-серверы" },
-    "dns": { "title": "DNS-записи" },
-    "subdomains": { "titleFmt": "Certificate Transparency — {n} поддоменов", "certsAnalysed": "Проанализировано сертификатов: {n}" },
-    "accounts": { "title": "Поиск по юзернейму", "platform": "Платформа", "url": "URL", "time": "Время" },
-    "virustotal": { "title": "VirusTotal", "malicious": "Зловреды", "suspicious": "Подозрительно", "harmless": "Безопасно", "undetected": "Не определено", "country": "Страна", "asn": "ASN" },
-    "abuseipdb": { "title": "AbuseIPDB", "abuseScore": "Уровень злоупотр.", "totalReports": "Всего жалоб", "isp": "Провайдер", "usageType": "Тип использования", "torExit": "⚠ Выходной узел TOR" },
-    "shodan": { "title": "Shodan", "openPorts": "Открытые порты", "cves": "Найденные CVE" },
-    "censys": { "titleCert": "Censys — поиск сертификатов", "titleHost": "Censys — данные хоста", "ip": "IP", "asn": "ASN", "location": "Локация", "openPorts": "Открытые порты", "subdomainsFmt": "Поддомены ({n})", "services": "Сервисы", "port": "Порт", "service": "Сервис", "software": "ПО" },
-    "darkweb": { "titleFmt": "Зеркала в даркнете — найдено {n}", "sources": "Источники" },
-    "wayback": { "title": "Wayback Machine", "summaryFmt": "Снимков: {n} · Первый: {first} · Последний: {last}", "recent": "Недавние снимки", "sensitive": "Чувствительные URL в архиве" },
-    "emailrep": { "title": "Репутация e-mail", "reputation": "Репутация", "suspicious": "Подозрительный", "validMx": "MX валиден", "deliverable": "Доставляется", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Репутация домена", "mxRecords": "MX-записи", "disposableWarn": "⚠ Обнаружен одноразовый e-mail", "spoofableWarn": "⚠ Домен можно подделать (нет SPF/DMARC)", "freeProvider": "Бесплатный провайдер e-mail" },
-    "smtp": { "title": "Проверка SMTP", "exists": "Существует", "connect": "SMTP-соединение", "catchAllWarn": "⚠ Catch-all сервер (принимает любой адрес)", "details": "Подробности" },
-    "breaches": { "title": "Проверка утечек", "found": "Утечки найдены", "breachedServices": "Скомпрометированные сервисы", "total": "Всего утечек" },
-    "dorks": { "title": "Google Dorks" },
-    "phone": { "title": "Разведка по телефону", "valid": "Валиден", "country": "Страна", "countryCode": "Код страны", "region": "Регион", "carrier": "Оператор", "lineType": "Тип линии", "timezones": "Часовые пояса", "ownerName": "Владелец", "address": "Адрес" },
-    "telegram": { "title": "Профиль Telegram", "found": "Найден", "username": "Username", "name": "Имя", "bio": "Био", "type": "Тип", "followers": "Подписчиков" },
-    "map": { "title": "Карта геолокации IP", "ip": "IP", "location": "Локация", "organization": "Организация", "coordinates": "Координаты", "loading": "Загрузка карты…", "noData": "Данных геолокации нет", "moreFmt": "Найдено локаций: {n}", "precision": "Точность", "approximate": "Приблизительно (регион, не точная точка)" },
-    "graph": { "title": "Граф сущностей", "loading": "Загрузка графа…", "empty": "Данных для графа нет" },
-    "json": { "title": "Сырой JSON", "show": "Показать сырые данные", "hide": "Скрыть сырые данные" },
-    "ai": { "title": "AI-анализ OSINT · Nvidia Nemotron", "chatTitle": "Спросить AI", "generate": "Сгенерировать резюме", "generating": "Генерация анализа…", "model": "Модель", "regenerate": "Сгенерировать заново", "placeholder": "Спросите что-нибудь про этот скан…" },
+    "common": {
+      "yes": "Да",
+      "no": "Нет",
+      "unknown": "Неизвестно",
+      "points": "очк"
+    },
+    "findings": {
+      "title": "Находки безопасности",
+      "none": "Находок безопасности нет"
+    },
+    "whois": {
+      "title": "Регистрация WHOIS",
+      "registrar": "Регистратор",
+      "organization": "Организация",
+      "country": "Страна",
+      "created": "Создан",
+      "expires": "Истекает",
+      "emails": "E-mail",
+      "nameServers": "DNS-серверы"
+    },
+    "dns": {
+      "title": "DNS-записи"
+    },
+    "subdomains": {
+      "titleFmt": "Certificate Transparency — {n} поддоменов",
+      "certsAnalysed": "Проанализировано сертификатов: {n}"
+    },
+    "accounts": {
+      "title": "Поиск по юзернейму",
+      "platform": "Платформа",
+      "url": "URL",
+      "time": "Время"
+    },
+    "virustotal": {
+      "title": "VirusTotal",
+      "malicious": "Зловреды",
+      "suspicious": "Подозрительно",
+      "harmless": "Безопасно",
+      "undetected": "Не определено",
+      "country": "Страна",
+      "asn": "ASN"
+    },
+    "abuseipdb": {
+      "title": "AbuseIPDB",
+      "abuseScore": "Уровень злоупотр.",
+      "totalReports": "Всего жалоб",
+      "isp": "Провайдер",
+      "usageType": "Тип использования",
+      "torExit": "⚠ Выходной узел TOR"
+    },
+    "shodan": {
+      "title": "Shodan",
+      "openPorts": "Открытые порты",
+      "cves": "Найденные CVE"
+    },
+    "censys": {
+      "titleCert": "Censys — поиск сертификатов",
+      "titleHost": "Censys — данные хоста",
+      "ip": "IP",
+      "asn": "ASN",
+      "location": "Локация",
+      "openPorts": "Открытые порты",
+      "subdomainsFmt": "Поддомены ({n})",
+      "services": "Сервисы",
+      "port": "Порт",
+      "service": "Сервис",
+      "software": "ПО"
+    },
+    "darkweb": {
+      "titleFmt": "Зеркала в даркнете — найдено {n}",
+      "sources": "Источники"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "summaryFmt": "Снимков: {n} · Первый: {first} · Последний: {last}",
+      "recent": "Недавние снимки",
+      "sensitive": "Чувствительные URL в архиве"
+    },
+    "emailrep": {
+      "title": "Репутация e-mail",
+      "reputation": "Репутация",
+      "suspicious": "Подозрительный",
+      "validMx": "MX валиден",
+      "deliverable": "Доставляется",
+      "spf": "SPF",
+      "dmarc": "DMARC",
+      "domainRep": "Репутация домена",
+      "mxRecords": "MX-записи",
+      "disposableWarn": "⚠ Обнаружен одноразовый e-mail",
+      "spoofableWarn": "⚠ Домен можно подделать (нет SPF/DMARC)",
+      "freeProvider": "Бесплатный провайдер e-mail"
+    },
+    "smtp": {
+      "title": "Проверка SMTP",
+      "exists": "Существует",
+      "connect": "SMTP-соединение",
+      "catchAllWarn": "⚠ Catch-all сервер (принимает любой адрес)",
+      "details": "Подробности"
+    },
+    "breaches": {
+      "title": "Проверка утечек",
+      "found": "Утечки найдены",
+      "breachedServices": "Скомпрометированные сервисы",
+      "total": "Всего утечек"
+    },
+    "dorks": {
+      "title": "Google Dorks"
+    },
+    "phone": {
+      "title": "Разведка по телефону",
+      "valid": "Валиден",
+      "country": "Страна",
+      "countryCode": "Код страны",
+      "region": "Регион",
+      "carrier": "Оператор",
+      "lineType": "Тип линии",
+      "timezones": "Часовые пояса",
+      "ownerName": "Владелец",
+      "address": "Адрес"
+    },
+    "telegram": {
+      "title": "Профиль Telegram",
+      "found": "Найден",
+      "username": "Username",
+      "name": "Имя",
+      "bio": "Био",
+      "type": "Тип",
+      "followers": "Подписчиков"
+    },
+    "map": {
+      "title": "Карта геолокации IP",
+      "ip": "IP",
+      "location": "Локация",
+      "organization": "Организация",
+      "coordinates": "Координаты",
+      "loading": "Загрузка карты…",
+      "noData": "Данных геолокации нет",
+      "moreFmt": "Найдено локаций: {n}",
+      "precision": "Точность",
+      "approximate": "Приблизительно (регион, не точная точка)"
+    },
+    "graph": {
+      "title": "Граф сущностей",
+      "loading": "Загрузка графа…",
+      "empty": "Данных для графа нет"
+    },
+    "json": {
+      "title": "Сырой JSON",
+      "show": "Показать сырые данные",
+      "hide": "Скрыть сырые данные"
+    },
+    "ai": {
+      "title": "AI-анализ OSINT · Nvidia Nemotron",
+      "chatTitle": "Спросить AI",
+      "generate": "Сгенерировать резюме",
+      "generating": "Генерация анализа…",
+      "model": "Модель",
+      "regenerate": "Сгенерировать заново",
+      "placeholder": "Спросите что-нибудь про этот скан…"
+    },
     "duration": "Выполнено за {duration}",
     "copyAllEmails": "Скопировать все email",
     "emailsCopied": "Email скопированы!",
@@ -322,5 +519,17 @@
     "fr": "FR",
     "es": "ES",
     "pl": "PL"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
   }
 }

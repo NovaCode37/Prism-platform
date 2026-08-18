@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book, Eye, Puzzle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book, Eye, Puzzle, AlertCircle, Keyboard } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslations, SUPPORTED_LOCALES } from '@/lib/i18n';
 import { Logo } from './Logo';
@@ -12,6 +12,7 @@ interface Props {
   onHome: () => void;
   onWatchlist: () => void;
   onMenuToggle: () => void;
+  onShortcuts: () => void;
 }
 
 function useDateTime() {
@@ -31,7 +32,7 @@ function useDateTime() {
   return dt;
 }
 
-export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle }: Props) {
+export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle , onShortcuts}: Props) {
   const { date, time } = useDateTime();
   const { theme, toggleTheme, mounted } = useTheme();
   const { locale, setLocale, t } = useTranslations();
@@ -118,9 +119,17 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle }: Pro
           <span className="hidden sm:inline">{locale.toUpperCase()}</span>
         </button>
         <button
+          onClick={onShortcuts}
+          className="text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2 hidden sm:flex"
+          title={t('shortcuts.title') + ' (?)'}
+          aria-label={t('shortcuts.title')}
+        >
+          <Keyboard size={15} />
+        </button>
+        <button
           onClick={toggleTheme}
           className="text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2"
-          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme (Alt+T)`}
+          title={t('topbar.themeTooltip').replace('{mode}', theme === 'dark' ? 'light' : 'dark')}
           aria-label="Toggle theme"
         >
           {mounted ? (theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} />}

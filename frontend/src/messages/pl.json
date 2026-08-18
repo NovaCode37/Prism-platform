@@ -7,7 +7,8 @@
     "toggleTheme": "Zmień motyw",
     "github": "GitHub",
     "apiDocs": "Dokumentacja API",
-    "remainingScans": "Pozostałe skany"
+    "remainingScans": "Pozostałe skany",
+    "themeTooltip": "Switch to {mode} theme (Alt+T)"
   },
   "sidebar": {
     "target": "Cel",
@@ -518,5 +519,17 @@
     "fr": "FR",
     "es": "ES",
     "pl": "PL"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
   }
 }

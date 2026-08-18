@@ -7,7 +7,8 @@
     "toggleTheme": "Toggle theme",
     "github": "GitHub",
     "apiDocs": "API Documentation",
-    "remainingScans": "Remaining scans"
+    "remainingScans": "Remaining scans",
+    "themeTooltip": "Switch to {mode} theme (Alt+T)"
   },
   "sidebar": {
     "target": "Target",
@@ -74,22 +75,68 @@
       "online": "ONLINE"
     },
     "caps": {
-      "domain":   { "title": "Domain / IP", "item1": "WHOIS · DNS · GeoIP", "item2": "Subdomains · Shodan", "item3": "VirusTotal · Wayback" },
-      "email":    { "title": "Email",       "item1": "DNS reputation · SMTP", "item2": "Breach check · Disposable", "item3": "SPF · DKIM · DMARC" },
-      "phone":    { "title": "Phone",       "item1": "Validation · Carrier", "item2": "Country · Reverse lookup" },
-      "username": { "title": "Username",    "item1": "Blackbird · Maigret",  "item2": "50+ / 3000+ platforms", "item3": "OPSEC Score" }
+      "domain": {
+        "title": "Domain / IP",
+        "item1": "WHOIS · DNS · GeoIP",
+        "item2": "Subdomains · Shodan",
+        "item3": "VirusTotal · Wayback"
+      },
+      "email": {
+        "title": "Email",
+        "item1": "DNS reputation · SMTP",
+        "item2": "Breach check · Disposable",
+        "item3": "SPF · DKIM · DMARC"
+      },
+      "phone": {
+        "title": "Phone",
+        "item1": "Validation · Carrier",
+        "item2": "Country · Reverse lookup"
+      },
+      "username": {
+        "title": "Username",
+        "item1": "Blackbird · Maigret",
+        "item2": "50+ / 3000+ platforms",
+        "item3": "OPSEC Score"
+      }
     },
     "standaloneTools": "Standalone Tools",
-"tools": {
-      "metadata": { "label": "File Metadata",  "desc": "EXIF, GPS, PDF, DOCX" },
-      "headers":  { "label": "Email Headers",   "desc": "SPF, DKIM, routing hops" },
-      "crypto":   { "label": "Crypto Address", "desc": "Bitcoin & Ethereum" },
-      "qr":       { "label": "QR Decode",       "desc": "Decode & analyze" },
-      "mac":      { "label": "MAC Lookup",      "desc": "Vendor lookup" },
-      "subnet":   { "label": "IP / Subnet",     "desc": "Network ranges & CIDR" },
-      "hash":     { "label": "Hash Identifier", "desc": "Identify hash types" },
-      "encoder":  { "label": "Base64 / URL", "desc": "Encode & decode" },
-      "jwt": { "label": "JWT Decoder", "desc": "Decode JWT tokens" }
+    "tools": {
+      "metadata": {
+        "label": "File Metadata",
+        "desc": "EXIF, GPS, PDF, DOCX"
+      },
+      "headers": {
+        "label": "Email Headers",
+        "desc": "SPF, DKIM, routing hops"
+      },
+      "crypto": {
+        "label": "Crypto Address",
+        "desc": "Bitcoin & Ethereum"
+      },
+      "qr": {
+        "label": "QR Decode",
+        "desc": "Decode & analyze"
+      },
+      "mac": {
+        "label": "MAC Lookup",
+        "desc": "Vendor lookup"
+      },
+      "subnet": {
+        "label": "IP / Subnet",
+        "desc": "Network ranges & CIDR"
+      },
+      "hash": {
+        "label": "Hash Identifier",
+        "desc": "Identify hash types"
+      },
+      "encoder": {
+        "label": "Base64 / URL",
+        "desc": "Encode & decode"
+      },
+      "jwt": {
+        "label": "JWT Decoder",
+        "desc": "Decode JWT tokens"
+      }
     },
     "demo": {
       "line1": "This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.",
@@ -243,33 +290,183 @@
     "opsec": {
       "scoreLabel": "OPSEC Score",
       "riskSuffix": "RISK",
-      "data_exposure": { "label": "Data Exposure", "tooltip": "Sensitive data leaks: breached credentials, exposed emails, public PII." },
-      "identity_opsec": { "label": "Identity OPSEC", "tooltip": "Re-use of identifiers across platforms: same username/email across many sites." },
-      "infrastructure": { "label": "Infrastructure", "tooltip": "Exposed services, open ports, weak DNS/WHOIS hygiene, threat-intel hits." },
-      "web_security": { "label": "Web Security", "tooltip": "TLS, security headers, certificate transparency, archived sensitive paths." }
+      "data_exposure": {
+        "label": "Data Exposure",
+        "tooltip": "Sensitive data leaks: breached credentials, exposed emails, public PII."
+      },
+      "identity_opsec": {
+        "label": "Identity OPSEC",
+        "tooltip": "Re-use of identifiers across platforms: same username/email across many sites."
+      },
+      "infrastructure": {
+        "label": "Infrastructure",
+        "tooltip": "Exposed services, open ports, weak DNS/WHOIS hygiene, threat-intel hits."
+      },
+      "web_security": {
+        "label": "Web Security",
+        "tooltip": "TLS, security headers, certificate transparency, archived sensitive paths."
+      }
     },
-    "common": { "yes": "Yes", "no": "No", "unknown": "Unknown", "points": "pts" },
-    "findings": { "title": "Security Findings", "none": "No security findings" },
-    "whois": { "title": "WHOIS Registration", "registrar": "Registrar", "organization": "Organization", "country": "Country", "created": "Created", "expires": "Expires", "emails": "Emails", "nameServers": "Name Servers" },
-    "dns": { "title": "DNS Records" },
-    "subdomains": { "titleFmt": "Certificate Transparency — {n} subdomains", "certsAnalysed": "{n} certificate(s) analysed" },
-    "accounts": { "title": "Username Search", "platform": "Platform", "url": "URL", "time": "Time" },
-    "virustotal": { "title": "VirusTotal", "malicious": "Malicious", "suspicious": "Suspicious", "harmless": "Harmless", "undetected": "Undetected", "country": "Country", "asn": "ASN" },
-    "abuseipdb": { "title": "AbuseIPDB", "abuseScore": "Abuse Score", "totalReports": "Total Reports", "isp": "ISP", "usageType": "Usage Type", "torExit": "⚠ TOR Exit Node" },
-    "shodan": { "title": "Shodan", "openPorts": "Open Ports", "cves": "CVEs Found" },
-    "censys": { "titleCert": "Censys — Certificate Search", "titleHost": "Censys — Host Info", "ip": "IP", "asn": "ASN", "location": "Location", "openPorts": "Open Ports", "subdomainsFmt": "Subdomains ({n})", "services": "Services", "port": "Port", "service": "Service", "software": "Software" },
-    "darkweb": { "titleFmt": "Dark Web Mirrors — {n} found", "sources": "Sources" },
-    "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} snapshots · First: {first} · Last: {last}", "recent": "Recent Snapshots", "sensitive": "Sensitive URLs in Archive" },
-    "emailrep": { "title": "Email Reputation", "reputation": "Reputation", "suspicious": "Suspicious", "validMx": "Valid MX", "deliverable": "Deliverable", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Domain Reputation", "mxRecords": "MX Records", "disposableWarn": "⚠ Disposable email detected", "spoofableWarn": "⚠ Domain is spoofable (missing SPF/DMARC)", "freeProvider": "Free email provider" },
-    "smtp": { "title": "SMTP Verification", "exists": "Exists", "connect": "SMTP Connect", "catchAllWarn": "⚠ Catch-all server (accepts any address)", "details": "Details" },
-    "breaches": { "title": "Breach Check", "found": "Breaches Found", "breachedServices": "Breached Services", "total": "Total Breaches" },
-    "dorks": { "title": "Google Dorks" },
-    "phone": { "title": "Phone Intelligence", "valid": "Valid", "country": "Country", "countryCode": "Country Code", "region": "Region", "carrier": "Carrier", "lineType": "Line Type", "timezones": "Timezones", "ownerName": "Owner Name", "address": "Address" },
-    "telegram": { "title": "Telegram Profile", "found": "Found", "username": "Username", "name": "Name", "bio": "Bio", "type": "Type", "followers": "Followers" },
-    "map": { "title": "IP Geolocation Map", "ip": "IP", "location": "Location", "organization": "Organization", "coordinates": "Coordinates", "loading": "Loading map…", "noData": "No geolocation data available", "moreFmt": "{n} locations found", "precision": "Precision", "approximate": "Approximate (regional, not exact)" },
-    "graph": { "title": "Entity Graph", "loading": "Loading graph…", "empty": "No graph data available for this scan" },
-    "json": { "title": "Raw JSON Results", "show": "Show raw data", "hide": "Hide raw data" },
-    "ai": { "title": "AI OSINT Analysis · Nvidia Nemotron", "chatTitle": "Ask the AI", "generate": "Generate AI Summary", "generating": "Generating analysis…", "model": "Model", "regenerate": "Regenerate", "placeholder": "Ask anything about this scan…" },
+    "common": {
+      "yes": "Yes",
+      "no": "No",
+      "unknown": "Unknown",
+      "points": "pts"
+    },
+    "findings": {
+      "title": "Security Findings",
+      "none": "No security findings"
+    },
+    "whois": {
+      "title": "WHOIS Registration",
+      "registrar": "Registrar",
+      "organization": "Organization",
+      "country": "Country",
+      "created": "Created",
+      "expires": "Expires",
+      "emails": "Emails",
+      "nameServers": "Name Servers"
+    },
+    "dns": {
+      "title": "DNS Records"
+    },
+    "subdomains": {
+      "titleFmt": "Certificate Transparency — {n} subdomains",
+      "certsAnalysed": "{n} certificate(s) analysed"
+    },
+    "accounts": {
+      "title": "Username Search",
+      "platform": "Platform",
+      "url": "URL",
+      "time": "Time"
+    },
+    "virustotal": {
+      "title": "VirusTotal",
+      "malicious": "Malicious",
+      "suspicious": "Suspicious",
+      "harmless": "Harmless",
+      "undetected": "Undetected",
+      "country": "Country",
+      "asn": "ASN"
+    },
+    "abuseipdb": {
+      "title": "AbuseIPDB",
+      "abuseScore": "Abuse Score",
+      "totalReports": "Total Reports",
+      "isp": "ISP",
+      "usageType": "Usage Type",
+      "torExit": "⚠ TOR Exit Node"
+    },
+    "shodan": {
+      "title": "Shodan",
+      "openPorts": "Open Ports",
+      "cves": "CVEs Found"
+    },
+    "censys": {
+      "titleCert": "Censys — Certificate Search",
+      "titleHost": "Censys — Host Info",
+      "ip": "IP",
+      "asn": "ASN",
+      "location": "Location",
+      "openPorts": "Open Ports",
+      "subdomainsFmt": "Subdomains ({n})",
+      "services": "Services",
+      "port": "Port",
+      "service": "Service",
+      "software": "Software"
+    },
+    "darkweb": {
+      "titleFmt": "Dark Web Mirrors — {n} found",
+      "sources": "Sources"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "summaryFmt": "{n} snapshots · First: {first} · Last: {last}",
+      "recent": "Recent Snapshots",
+      "sensitive": "Sensitive URLs in Archive"
+    },
+    "emailrep": {
+      "title": "Email Reputation",
+      "reputation": "Reputation",
+      "suspicious": "Suspicious",
+      "validMx": "Valid MX",
+      "deliverable": "Deliverable",
+      "spf": "SPF",
+      "dmarc": "DMARC",
+      "domainRep": "Domain Reputation",
+      "mxRecords": "MX Records",
+      "disposableWarn": "⚠ Disposable email detected",
+      "spoofableWarn": "⚠ Domain is spoofable (missing SPF/DMARC)",
+      "freeProvider": "Free email provider"
+    },
+    "smtp": {
+      "title": "SMTP Verification",
+      "exists": "Exists",
+      "connect": "SMTP Connect",
+      "catchAllWarn": "⚠ Catch-all server (accepts any address)",
+      "details": "Details"
+    },
+    "breaches": {
+      "title": "Breach Check",
+      "found": "Breaches Found",
+      "breachedServices": "Breached Services",
+      "total": "Total Breaches"
+    },
+    "dorks": {
+      "title": "Google Dorks"
+    },
+    "phone": {
+      "title": "Phone Intelligence",
+      "valid": "Valid",
+      "country": "Country",
+      "countryCode": "Country Code",
+      "region": "Region",
+      "carrier": "Carrier",
+      "lineType": "Line Type",
+      "timezones": "Timezones",
+      "ownerName": "Owner Name",
+      "address": "Address"
+    },
+    "telegram": {
+      "title": "Telegram Profile",
+      "found": "Found",
+      "username": "Username",
+      "name": "Name",
+      "bio": "Bio",
+      "type": "Type",
+      "followers": "Followers"
+    },
+    "map": {
+      "title": "IP Geolocation Map",
+      "ip": "IP",
+      "location": "Location",
+      "organization": "Organization",
+      "coordinates": "Coordinates",
+      "loading": "Loading map…",
+      "noData": "No geolocation data available",
+      "moreFmt": "{n} locations found",
+      "precision": "Precision",
+      "approximate": "Approximate (regional, not exact)"
+    },
+    "graph": {
+      "title": "Entity Graph",
+      "loading": "Loading graph…",
+      "empty": "No graph data available for this scan"
+    },
+    "json": {
+      "title": "Raw JSON Results",
+      "show": "Show raw data",
+      "hide": "Hide raw data"
+    },
+    "ai": {
+      "title": "AI OSINT Analysis · Nvidia Nemotron",
+      "chatTitle": "Ask the AI",
+      "generate": "Generate AI Summary",
+      "generating": "Generating analysis…",
+      "model": "Model",
+      "regenerate": "Regenerate",
+      "placeholder": "Ask anything about this scan…"
+    },
     "duration": "Completed in {duration}",
     "copyAllEmails": "Copy all emails",
     "emailsCopied": "Emails copied!",
@@ -322,5 +519,17 @@
     "fr": "FR",
     "es": "ES",
     "pl": "PL"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
   }
 }
