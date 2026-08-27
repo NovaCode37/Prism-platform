@@ -4,6 +4,35 @@ from modules.graph_export import (
     to_gexf
 )
 import xml.etree.ElementTree as ET
+import pytest
+import copy
+
+@pytest.fixture
+def graph():
+    return {
+        "nodes": [
+            {
+                "id": "1",
+                "label": "Node A",
+                "type": "function",
+                "color": "#FF0000",
+            },
+            {
+                "id": "2",
+                "label": "Node B",
+                "type": "class",
+                "color": "#00FF00",
+            },
+        ],
+        "edges": [
+            {
+                "from": "1",
+                "to": "2",
+                "label": "calls",
+            }
+        ],
+    }
+
 class TestHexToRgb:
     def test_hex_to_rgb_with_non_string_input(self):
         assert _hex_to_rgb(123) == (150,150,150)
@@ -16,63 +45,74 @@ class TestHexToRgb:
         assert _hex_to_rgb("#zzzzzz") == (150,150,150)
     def test_hex_to_rgb_with_right_value(self):
         assert _hex_to_rgb("#000000") == (0,0,0)
+
 class TestGraphml:
-    def test_to_graphml_empyt_graph(self):
+    def test_to_graphml_empty_graph(self):
+        result = to_graphml({})
+
+        root = ET.fromstring(result)
+
         ns = "http://graphml.graphdrawing.org/xmlns"
-        root = ET.Element("graphml", {"xmlns": ns})
-        for key_id, target, name in (
-        ("label", "node", "label"),
-        ("type", "node", "type"),
-        ("color", "node", "color"),
-        ("elabel", "edge", "label"),
-        ):
-            ET.SubElement(root, "key", {
-                "id": key_id, "for": target, "attr.name": name, "attr.type": "string",
-            })
-        g = ET.SubElement(root, "graph", {"edgedefault": "directed"})
-        assert to_graphml({}) == '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(root, encoding="unicode")
-    def test_to_graphml_graph(self):
-        graph = {
-            "nodes": [
-                {
-                    "id": "1",
-                    "label": "Node A",
-                    "type": "function",
-                    "color": "#FF0000",
-                },
-                {
-                    "id": "2",
-                    "label": "Node B",
-                    "type": "class",
-                    "color": "#00FF00",
-                },
-            ],
-            "edges": [
-                {
-                    "from": "1",
-                    "to": "2",
-                    "label": "calls",
-                }
-            ],
+
+        assert root.tag == f"{{{ns}}}graphml"
+
+        graph = root.find(f"{{{ns}}}graph")
+        assert graph is not None
+        assert graph.get("edgedefault") == "directed"
+
+        nodes = graph.findall(f"{{{ns}}}node")
+        edges = graph.findall(f"{{{ns}}}edge")
+
+        assert nodes == []
+        assert edges == []
+
+        keys = root.findall(f"{{{ns}}}key")
+
+        assert len(keys) == 4
+
+        key_data = {
+            key.get("id"): {
+                "for": key.get("for"),
+                "attr.name": key.get("attr.name"),
+                "attr.type": key.get("attr.type"),
+            }
+            for key in keys
         }
+
+        assert key_data == {
+            "label": {
+                "for": "node",
+                "attr.name": "label",
+                "attr.type": "string",
+            },
+            "type": {
+                "for": "node",
+                "attr.name": "type",
+                "attr.type": "string",
+            },
+            "color": {
+                "for": "node",
+                "attr.name": "color",
+                "attr.type": "string",
+            },
+            "elabel": {
+                "for": "edge",
+                "attr.name": "label",
+                "attr.type": "string",
+            },
+        }
+    def test_to_graphml_graph(self,graph):
         result = to_graphml(graph)
         assert '<?xml version="1.0" encoding="UTF-8"?>' in result
         assert '<node id="1">' in result
         assert '<node id="2">' in result
         assert "Node A" in result
         assert "Node B" in result
-    def test_to_graphml_graph_with_no_label(self):
-        graph = {
-            "nodes": [
-                {
-                    "id": "1",
-                    "type": "function",
-                    "color": "#FF0000",
-                }
-            ],
-            "edges": [],
-        }
-        result = to_graphml(graph)
+    def test_to_graphml_graph_with_no_label(self,graph):
+        test_graph = copy.deepcopy(graph)
+        for node in test_graph["nodes"]:
+            node.pop("label")
+        result = to_graphml(test_graph)
         root = ET.fromstring(result)
 
         node = root.find(".//{http://graphml.graphdrawing.org/xmlns}node")
@@ -87,17 +127,12 @@ class TestGraphml:
         assert data["label"] in (None, "")
         assert data["type"] == "function"
         assert data["color"] == "#FF0000"
-    def test_to_graphml_node_without_type_or_color(self):
-        graph = {
-            "nodes": [
-                {
-                    "id": "1",
-                }
-            ],
-            "edges": [],
-        }
-
-        result = to_graphml(graph)
+    def test_to_graphml_node_without_type_or_color(self,graph):
+        test_graph = copy.deepcopy(graph)
+        for node in test_graph["nodes"]:
+            node.pop("type")
+            node.pop("color")
+        result = to_graphml(test_graph)
 
         root = ET.fromstring(result)
 
@@ -108,8 +143,7 @@ class TestGraphml:
             element.get("key"): element.text
             for element in node
         }
-
-        assert data["label"] in (None, "")
+        
         assert data["type"] in (None, "")
         assert data["color"] in (None, "")
 class TestGexf:
@@ -134,31 +168,7 @@ class TestGexf:
         assert edges is not None
         assert list(nodes) == []
         assert list(edges) == []
-    def test_to_gexf_graph(self):
-        graph = {
-            "nodes": [
-                {
-                    "id": "1",
-                    "label": "Node A",
-                    "type": "function",
-                    "color": "#FF0000",
-                },
-                {
-                    "id": "2",
-                    "label": "Node B",
-                    "type": "class",
-                    "color": "#00FF00",
-                },
-            ],
-            "edges": [
-                {
-                    "from": "1",
-                    "to": "2",
-                    "label": "calls",
-                }
-            ],
-        }
-
+    def test_to_gexf_graph(self,graph):
         result = to_gexf(graph)
         root = ET.fromstring(result)
 
@@ -175,19 +185,7 @@ class TestGexf:
 
         assert len(nodes) == 2
         assert len(edges) == 1
-    def test_to_gexf_color(self):
-        graph = {
-            "nodes": [
-                {
-                    "id": "1",
-                    "label": "Node A",
-                    "type": "function",
-                    "color": "#FF0000",
-                }
-            ],
-            "edges": [],
-        }
-
+    def test_to_gexf_color(self,graph):
         result = to_gexf(graph)
         root = ET.fromstring(result)
 
