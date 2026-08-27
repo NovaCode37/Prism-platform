@@ -1,6 +1,6 @@
 requests>=2.34.2
 aiohttp>=3.14.3
-python-dotenv>=1.2.2
+python-dotenv>=1.2.3
 
 phonenumbers>=9.0.36
 
