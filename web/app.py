@@ -618,11 +618,14 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
             if want("blackbird"):
                 from modules.blackbird import Blackbird
                 bb = Blackbird(timeout=10, max_concurrent=25)
-                await _run_module(scan_id, "blackbird", bb.search, target)
-                results["blackbird"] = [
-                    {"site": r.site, "url": r.url, "status": r.status, "response_time": r.response_time}
-                    for r in bb.results
-                ]
+                outcome = await _run_module(scan_id, "blackbird", bb.search, target)
+                if isinstance(outcome, dict) and outcome.get("error"):
+                    results["blackbird"] = outcome
+                else:
+                    results["blackbird"] = [
+                        {"site": r.site, "url": r.url, "status": r.status, "response_time": r.response_time}
+                        for r in bb.results
+                    ]
 
             if want("maigret"):
                 from modules.maigret_wrapper import MaigretWrapper

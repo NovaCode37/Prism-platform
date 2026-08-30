@@ -208,12 +208,16 @@ export interface GravatarData extends ModuleStatusFields {
   error?: string;
 }
 
+export interface BlackbirdFailure extends ModuleStatusFields {
+  error?: string;
+}
+
 export interface ScanResults {
   whois?: WhoisData;
   dns?: DnsRecord;
   geoip?: GeoipData;
   cert_transparency?: CertTransparencyData;
-  blackbird?: BlackbirdResult[];
+  blackbird?: BlackbirdResult[] | BlackbirdFailure;
   virustotal?: VirusTotalData;
   abuseipdb?: AbuseIPDBData;
   shodan?: ShodanData;

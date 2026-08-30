@@ -702,11 +702,12 @@ export function ScanResults({ scan, onHome }: Props) {
         r.cert_transparency.subdomains.forEach(s => lines.push(`- ${s}`));
         lines.push('');
       }
-      if (r.blackbird?.some(b => b.status === 'found')) {
+      const found = Array.isArray(r.blackbird) ? r.blackbird.filter(b => b.status === 'found') : [];
+      if (found.length) {
         lines.push('## Accounts Found');
         lines.push('| Platform | URL |');
         lines.push('|----------|-----|');
-        r.blackbird.filter(b => b.status === 'found').forEach(b => lines.push(`| ${b.site} | ${b.url} |`));
+        found.forEach(b => lines.push(`| ${b.site} | ${b.url} |`));
         lines.push('');
       }
       const md = lines.join('\n');
@@ -779,6 +780,8 @@ export function ScanResults({ scan, onHome }: Props) {
 
   const [accountFilter, setAccountFilter] = useState('');
 
+  const accounts = Array.isArray(r.blackbird) ? r.blackbird : [];
+
   const skippedIpProviders = [
     { name: 'Shodan', mod: r.shodan, key: 'SHODAN_API_KEY' },
     { name: 'VirusTotal', mod: r.virustotal, key: 'VIRUSTOTAL_API_KEY' },
@@ -792,7 +795,7 @@ export function ScanResults({ scan, onHome }: Props) {
     if (t.id === 'whois') return r.whois && !r.whois.error;
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
     if (t.id === 'subdomains') return r.cert_transparency?.subdomains?.length;
-    if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
+    if (t.id === 'accounts') return accounts.some(b => b.status === 'found');
     if (t.id === 'github') return r.github && modStatus(r.github) === 'ok';
     if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(m => m && modStatus(m) !== 'error');
     if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
@@ -1055,7 +1058,7 @@ export function ScanResults({ scan, onHome }: Props) {
               <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
                 <th className="pb-2">Platform</th><th className="pb-2">URL</th><th className="pb-2 text-right">Time</th>
               </tr></thead>
-              <tbody>{r.blackbird?.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).map(b => (
+              <tbody>{accounts.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).map(b => (
                 <tr key={b.site} className="border-b border-border-1 last:border-0">
                   <td className="py-2 font-medium text-text-1">{b.site}</td>
                   <td className="py-2">
@@ -1069,7 +1072,7 @@ export function ScanResults({ scan, onHome }: Props) {
               ))}</tbody>
             </table>
             </div>
-            {(r.blackbird?.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase())))?.length === 0) && (
+            {(accounts.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).length === 0) && (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <User size={24} className="text-text-3 opacity-40 mb-2" />
                 <div className="text-text-3 text-sm">

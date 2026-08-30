@@ -209,11 +209,14 @@ async def run_scan(
             _log("Running blackbird ...")
             from modules.blackbird import Blackbird
             bb = Blackbird(timeout=10, max_concurrent=25)
-            await _invoke(bb.search, target)
-            results["blackbird"] = [
-                {"site": r.site, "url": r.url, "status": r.status, "response_time": r.response_time}
-                for r in bb.results
-            ]
+            outcome = await _invoke(bb.search, target)
+            if isinstance(outcome, dict) and outcome.get("error"):
+                results["blackbird"] = outcome
+            else:
+                results["blackbird"] = [
+                    {"site": r.site, "url": r.url, "status": r.status, "response_time": r.response_time}
+                    for r in bb.results
+                ]
 
         if want("maigret"):
             _log("Running maigret ...")
