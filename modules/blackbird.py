@@ -3,13 +3,19 @@ import aiohttp
 import json
 import csv
 import os
+import re
 import html as _html
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from urllib.parse import quote
 import sys
 sys.path.append('..')
 from config import OUTPUT_DIR, Colors
+
+
+def _safe_username(username: str) -> str:
+    return re.sub(r'[^A-Za-z0-9_.-]', '_', username or '')[:64] or "target"
 
 
 @dataclass
@@ -83,7 +89,7 @@ class Blackbird:
     async def check_site(self, session: aiohttp.ClientSession, username: str,
                          site: str, config: tuple) -> SiteResult:
         url_template, error_type, error_indicator = config
-        url = url_template.format(username)
+        url = url_template.format(quote(username, safe=""))
 
         start_time = asyncio.get_event_loop().time()
 
@@ -143,7 +149,7 @@ class Blackbird:
 
     def export_json(self, username: str, filepath: str = None) -> str:
         if filepath is None:
-            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{_safe_username(username)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
 
         data = {
             "username": username,
@@ -169,7 +175,7 @@ class Blackbird:
 
     def export_csv(self, username: str, filepath: str = None) -> str:
         if filepath is None:
-            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{_safe_username(username)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
 
         with open(filepath, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -181,7 +187,7 @@ class Blackbird:
 
     def export_html(self, username: str, filepath: str = None) -> str:
         if filepath is None:
-            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html")
+            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{_safe_username(username)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html")
 
         found = self.get_found()
 
@@ -235,7 +241,7 @@ class Blackbird:
 
     def export_txt(self, username: str, filepath: str = None) -> str:
         if filepath is None:
-            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+            filepath = os.path.join(OUTPUT_DIR, f"blackbird_{_safe_username(username)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
 
         found = self.get_found()
 

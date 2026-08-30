@@ -571,6 +571,37 @@ class TestBlackbird:
         assert data["total_found"] == 1
         assert data["total_checked"] == 2
 
+    @pytest.mark.parametrize("username", [
+        "user?name",
+        'user"name',
+        "user:name",
+        "../../../pwned",
+        "a" * 300,
+        "",
+    ])
+    def test_export_json_keeps_hostile_usernames_inside_output_dir(self, username):
+        from config import OUTPUT_DIR
+        from modules.blackbird import Blackbird, SiteResult
+        bb = Blackbird()
+        bb.results = [SiteResult("GitHub", "https://github.com/x", "found", 200, 0.5)]
+        path = bb.export_json(username)
+        try:
+            assert os.path.exists(path)
+            assert os.path.abspath(path).startswith(os.path.abspath(OUTPUT_DIR))
+        finally:
+            os.remove(path)
+
+    @pytest.mark.parametrize("username", ["evil.com/#", "evil.com?", "../../../etc", "a@evil.com"])
+    def test_check_site_urls_stay_on_the_expected_host(self, username):
+        from urllib.parse import quote
+        from yarl import URL
+        from modules.blackbird import Blackbird
+        for template, _type, _indicator in Blackbird.SITES.values():
+            base_host = URL(template.format("x")).host
+            suffix = base_host[1:] if base_host.startswith("x") else base_host
+            host = URL(template.format(quote(username, safe=""))).host
+            assert host.endswith(suffix)
+
     def test_export_csv(self, tmp_path):
         from modules.blackbird import Blackbird, SiteResult
         bb = Blackbird()
