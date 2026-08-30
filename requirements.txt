@@ -7,7 +7,7 @@ phonenumbers>=9.0.37
 dnspython>=2.8.0
 python-whois>=0.9.6
 
-maigret>=0.6.4
+maigret>=0.6.5
 
 dataclasses-json>=0.6.7
 
