@@ -9,11 +9,11 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 **[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)** · **[FAQ](#faq)**
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.6.0-7c5cfc?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.7.0-7c5cfc?style=flat-square)](CHANGELOG.md)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
 [![Firefox Add-on](https://img.shields.io/amo/v/prism-osint?style=flat-square&logo=firefoxbrowser&logoColor=white&label=Firefox%20Add-on&color=ff7139)](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-137%20passing-3fb950?style=flat-square)](#running-tests)
+[![Tests](https://img.shields.io/badge/tests-285%20passing-3fb950?style=flat-square)](#running-tests)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
@@ -69,7 +69,7 @@ PRISM aggregates data from **20+ external intelligence sources** to build a comp
 - **Frontend** — Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Leaflet (maps)
 - **AI** — OpenRouter (Nvidia Nemotron) or Groq (Llama-3) for summary and chat
 - **Infrastructure** — Docker, docker-compose, GitHub Actions CI/CD
-- **Tests** — pytest, **137 test cases** with monkeypatching, network mocking, SSRF/auth coverage
+- **Tests** — pytest, **285 test cases** with monkeypatching, network mocking, SSRF/auth coverage
 
 <p align="center">
   <img src="docs/pics/main_showcase/main_showcase.png" alt="PRISM Dashboard" width="720" />
@@ -574,7 +574,7 @@ prism/
 │       ├── components/           # UI (Topbar, Sidebar, Map, Graph, ...)
 │       └── lib/                  # API client, i18n, types
 │
-└── tests/                        # 137 pytest tests
+└── tests/                        # 285 pytest tests
     ├── test_modules.py
     ├── test_modules_extended.py
     ├── test_v2_1_modules.py
@@ -751,7 +751,7 @@ For security issues, see [SECURITY.md](SECURITY.md).
 
 ## Development note
 
-PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (137 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
+PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (285 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
 
 ---
 

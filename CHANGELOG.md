@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.7.0] — 2026-09-01
+
+### Added
+- **Domain Exposure module (Lunar)** — how often a domain turns up in infostealer logs and breach data over a rolling year, split between staff and customers, with a monthly timeline and breakdowns by malware family, affected service and country. Needs no API key and returns aggregates only, but it is still a third party, so it is off unless `LUNAR_ENABLED` is set. Domain targets only; outbound requests honour `MODULE_PROXY`. Lunar builds a report on first request and caches it for a month, so a domain nobody has queried yet is reported as skipped rather than failed (#286).
+
+### Security
+- **Rate limits could be bypassed with a header** — `client_ip` read `X-Forwarded-For` and `X-Real-IP` whatever `TRUST_PROXY_HEADERS` was set to, and the limiter keys on its result. With no proxy in front, which is the default, a different header value per request landed in a fresh bucket every time, so `10/minute` on `/api/scan` and the `200/day` and `60/hour` ceilings meant nothing, and each scan bought fans out to dozens of third-party lookups. The headers are now read only when `TRUST_PROXY_HEADERS` is on. The daily scan quota was never affected: it keys on the API-key principal.
+- **A username could redirect a lookup to another host** — Blackbird interpolated the username into its URL templates unescaped, and the Tumblr template carries the placeholder in the host position, so scanning `evil.com/#` sent the request to `evil.com`. `validate_target` rejects only ``[;|`$<>{}]``, so a slash or a hash reached the module untouched. Usernames are now percent-encoded before substitution.
+- **A username could write outside `results/`** — Blackbird built its export filenames straight from the username, so `../../pwned` escaped the output directory. Names are now sanitised the way `maigret_wrapper` and `report_generator` already did.
+
+### Fixed
+- **JSON export failed on some usernames** — `user?name` raised `OSError` before writing anything and a name past the path limit raised `FileNotFoundError`, same root cause as the export path issue above.
+- **A hanging maigret froze the scan** — the wrapper read output to EOF and then called `process.wait()`, neither with a timeout, so a maigret that stopped producing output blocked its worker for good and the scan neither finished nor reported an error. A watchdog now stops it after `MAIGRET_MAX_RUNTIME` seconds, 600 by default.
+- **A failed Blackbird search looked like a clean one** — the API and CLI threw away what the module returned and read `bb.results`, storing `[]` for a search that raised, which reads the same as checking every site and finding nothing.
+
+### Tests
+- 249 → 285, covering the Lunar module, the maigret watchdog, the rate-limit key, hostile usernames in export paths, and host escapes in the username URL templates.
+
+---
+
 ## [2.6.0] — 2026-07-27
 
 ### Added
