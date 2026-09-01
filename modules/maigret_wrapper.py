@@ -2,6 +2,7 @@ import subprocess
 import os
 import re
 import json
+import threading
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import sys
@@ -64,10 +65,14 @@ class MaigretWrapper:
             return False
 
     def search(self, username: str, output_formats: List[str] = None,
-               timeout: int = 30, top_sites: int = 500) -> Dict[str, Any]:
+               timeout: int = 30, top_sites: int = 500,
+               max_runtime: Optional[int] = None) -> Dict[str, Any]:
         if not self.maigret_installed:
             if not self.install_maigret():
                 return {"error": "Maigret not installed and installation failed"}
+
+        if max_runtime is None:
+            max_runtime = int(os.getenv("MAIGRET_MAX_RUNTIME") or "600")
 
         result = {
             "username": username,
@@ -125,21 +130,39 @@ class MaigretWrapper:
                 bufsize=1
             )
 
-            found_count = 0
-            for line in iter(process.stdout.readline, ''):
-                line = line.strip()
-                if line:
-                    if "[+]" in line or "found:" in line.lower():
-                        found_count += 1
-                        print(f"  {Colors.GREEN}{line}{Colors.RESET}")
-                    elif "[-]" in line or "not found" in line.lower():
-                        pass
-                    elif "[!]" in line or "error" in line.lower():
-                        print(f"  {Colors.YELLOW}{line}{Colors.RESET}")
-                    else:
-                        print(f"  {line}")
+            timed_out = threading.Event()
 
-            process.wait()
+            def _stop():
+                timed_out.set()
+                process.kill()
+
+            watchdog = threading.Timer(max_runtime, _stop)
+            watchdog.start()
+            try:
+                found_count = 0
+                for line in iter(process.stdout.readline, ''):
+                    line = line.strip()
+                    if line:
+                        if "[+]" in line or "found:" in line.lower():
+                            found_count += 1
+                            print(f"  {Colors.GREEN}{line}{Colors.RESET}")
+                        elif "[-]" in line or "not found" in line.lower():
+                            pass
+                        elif "[!]" in line or "error" in line.lower():
+                            print(f"  {Colors.YELLOW}{line}{Colors.RESET}")
+                        else:
+                            print(f"  {line}")
+
+                process.wait()
+            finally:
+                watchdog.cancel()
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+
+            if timed_out.is_set():
+                result["error"] = f"Search exceeded {max_runtime}s and was stopped"
+                return result
 
             json_file = f"{output_path}.json"
             if os.path.exists(json_file):
@@ -156,8 +179,6 @@ class MaigretWrapper:
 
             result["total_found"] = len(result["accounts"])
 
-        except subprocess.TimeoutExpired:
-            result["error"] = "Search timed out"
         except Exception as e:
             result["error"] = str(e)
 
