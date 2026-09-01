@@ -135,6 +135,8 @@ flowchart LR
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |
 | Dark Web Checker | .onion mirrors via Ahmia + DarkSearch | — |
+| Infostealer Exposure | Machines infected by stealers carrying the target's credentials (opt-in) | Hudson Rock |
+| Domain Exposure | Yearly exposure trend, malware families, affected services (opt-in) | Lunar |
 | Website Analyzer | Tech stack, emails, social links, metadata | — |
 | Email Reputation | DNS-based email rep (MX, SPF, DMARC, disposable check) | — |
 | SMTP Verify | Mailbox existence check via SMTP handshake | — |
@@ -150,6 +152,8 @@ flowchart LR
 | HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE/FR/ES | — |
 | AI Summary | Natural-language findings summary via LLM | OpenRouter / Groq |
 | Webhook Callbacks | HMAC-signed POST on scan completion (SSRF-guarded) | — |
+
+Infostealer Exposure and Domain Exposure are off unless you set `HUDSONROCK_ENABLED` or `LUNAR_ENABLED`. Both query a third party, so a default install sends them nothing. Lunar builds its report on the first request and caches it for a month, so a domain nobody has looked up yet comes back as skipped with `GENERATING_REPORT` — scan it again once the report is ready.
 
 ---
 
@@ -357,6 +361,7 @@ docker compose up -d --force-recreate
 | `DISABLE_DOCS`       | `true` to disable `/docs`, `/redoc`, `/openapi.json` in production      |
 | `SCAN_QUOTA_PER_DAY` | Daily scans per caller; `0`/unset = unlimited                            |
 | `HUDSONROCK_ENABLED` | `true` to enable the infostealer-exposure module (queries Hudson Rock) |
+| `LUNAR_ENABLED`      | `true` to enable the domain-exposure module (queries Lunar)             |
 | `MODULE_PROXY`       | Optional proxy for outbound module requests                             |
 | `ALLOW_PRIVATE_TARGETS` | `true` to allow scanning private/internal addresses (default `false`) |
 | `WATCHLIST_SCHEDULER` | `true` to enable the watchlist background scheduler                     |

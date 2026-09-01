@@ -550,6 +550,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     scan_id, "hudsonrock", HudsonRockLookup().search_domain, target
                 )
 
+            if want("lunar") and scan_type == "domain":
+                from modules.lunar import LunarLookup
+                results["lunar"] = await _run_module(
+                    scan_id, "lunar", LunarLookup().search_domain, target
+                )
+
         elif scan_type == "email":
             if want("smtp"):
                 from modules.smtp_verify import SMTPVerifier

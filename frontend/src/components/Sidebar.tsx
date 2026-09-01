@@ -18,7 +18,7 @@ interface RecentScan { target: string; type: ScanType; ts: number; }
 const SCAN_TYPES: ScanType[] = ['domain', 'ip', 'email', 'phone', 'username'];
 
 export const MODULE_MAP: Record<ScanType, string[]> = {
-  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion', 'hudsonrock'],
+  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion', 'hudsonrock', 'lunar'],
   ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
   email:    ['emailrep', 'smtp', 'leaks', 'gravatar', 'hudsonrock'],
   phone:    ['hlr'],
@@ -37,6 +37,7 @@ const MODULE_DESCRIPTIONS: Record<string, string> = {
   censys: 'Search internet hosts, services, and certificates with Censys',
   onion: 'Search for related information on dark web sources',
   hudsonrock: 'Check infostealer exposure using Hudson Rock',
+  lunar: 'Check domain exposure trends and malware families using Lunar',
   abuseipdb: 'Check IP reputation and abuse reports with AbuseIPDB',
   emailrep: 'Check email reputation and risk indicators',
   smtp: 'Verify email server and SMTP availability',

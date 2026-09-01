@@ -201,6 +201,30 @@ export interface HudsonRockData extends ModuleStatusFields {
   error?: string;
 }
 
+export interface LunarData extends ModuleStatusFields {
+  target?: string;
+  target_type?: 'domain';
+  report_status?: string | null;
+  period?: { from?: string; to?: string } | null;
+  total_events?: number | null;
+  infostealer_events?: number | null;
+  data_breach_events?: number | null;
+  employee_events?: number | null;
+  client_events?: number | null;
+  first_seen?: string | null;
+  last_seen?: string | null;
+  malware_families?: { family: string; events?: number | null }[];
+  services?: { service: string; events?: number | null }[];
+  countries?: { country: string; events?: number | null }[];
+  monthly_timeline?: {
+    month: string;
+    total_events?: number | null;
+    infostealer_events?: number | null;
+    data_breach_events?: number | null;
+  }[];
+  error?: string;
+}
+
 export interface GravatarData extends ModuleStatusFields {
   avatar_url?: string;
   display_name?: string;
@@ -230,6 +254,7 @@ export interface ScanResults {
   breaches?: BreachData;
   gravatar?: GravatarData;
   hudsonrock?: HudsonRockData;
+  lunar?: LunarData;
   website?: Record<string, unknown>;
   dorks?: string[];
   censys?: CensysData;

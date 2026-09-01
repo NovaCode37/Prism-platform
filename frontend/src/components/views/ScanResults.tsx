@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github, UserCircle } from 'lucide-react';
+import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github, UserCircle, TrendingUp } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
 import { fetchReportBlob, fetchGraphExport, generateAiSummary, sendAiChat, getMapData, getGraphData, startScan, getScan } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
@@ -444,6 +444,7 @@ const TABS = [
   { id: 'email', label: 'Email', icon: Mail },
   { id: 'gravatar', label: 'Gravatar', icon: UserCircle },
   { id: 'hudsonrock', label: 'Infostealers', icon: ShieldAlert },
+  { id: 'lunar', label: 'Exposure', icon: TrendingUp },
   { id: 'dorks', label: 'Dorks', icon: Zap },
   { id: 'phone', label: 'Phone', icon: Phone },
   { id: 'telegram', label: 'Telegram', icon: MessageCircle },
@@ -804,6 +805,7 @@ export function ScanResults({ scan, onHome }: Props) {
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches || r.gravatar;
     if (t.id === 'gravatar') return r.gravatar && modStatus(r.gravatar) === 'ok';
     if (t.id === 'hudsonrock') return r.hudsonrock && modStatus(r.hudsonrock) === 'ok';
+    if (t.id === 'lunar') return r.lunar && modStatus(r.lunar) === 'ok';
     if (t.id === 'dorks') return r.dorks?.length;
     if (t.id === 'phone') return r.phone;
     if (t.id === 'telegram') return r.telegram;
@@ -1534,6 +1536,80 @@ export function ScanResults({ scan, onHome }: Props) {
                   <DtRow label="Records found" value={r.hudsonrock?.stealers_found} />
                   <DtRow label="Corporate services" value={r.hudsonrock?.corporate_services} />
                   <DtRow label="User services" value={r.hudsonrock?.user_services} />
+                </div>
+              )}
+            </div>
+          </KeyModuleCard>
+        )}
+
+        {tab === 'lunar' && (
+          <KeyModuleCard
+            title="Domain Exposure"
+            mod={r.lunar}
+            onRefresh={() => refreshModule('lunar')}
+            refreshing={isRefreshing('lunar')}
+          >
+            <div className="space-y-3">
+              <div className="text-[11px] text-text-3 leading-relaxed pb-2 border-b border-border-1">
+                {"Aggregate counts of how often this domain appears in infostealer logs and breach data over a rolling year, split between staff and customers. Queries are sent to Lunar."}
+              </div>
+
+              <div className="space-y-1.5">
+                <DtRow label="Period" value={r.lunar?.period?.from ? `${r.lunar.period.from} to ${r.lunar.period.to}` : null} />
+                <DtRow label="Total events" value={r.lunar?.total_events} />
+                <DtRow label="Infostealer events" value={r.lunar?.infostealer_events} />
+                <DtRow label="Data breach events" value={r.lunar?.data_breach_events} />
+                <DtRow label="Employee events" value={r.lunar?.employee_events} />
+                <DtRow label="Client events" value={r.lunar?.client_events} />
+                <DtRow label="First seen" value={r.lunar?.first_seen} />
+                <DtRow label="Last seen" value={r.lunar?.last_seen} />
+              </div>
+
+              {(r.lunar?.malware_families?.length ?? 0) > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                    Malware families
+                  </div>
+                  <div className="space-y-1.5">
+                    {r.lunar?.malware_families?.map(entry => (
+                      <div key={entry.family} className="dt-row">
+                        <span className="dt-label">{entry.family}</span>
+                        <span>{entry.events}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(r.lunar?.services?.length ?? 0) > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                    Affected services
+                  </div>
+                  <div className="space-y-1.5">
+                    {r.lunar?.services?.map(entry => (
+                      <div key={entry.service} className="dt-row">
+                        <span className="dt-label">{entry.service}</span>
+                        <span>{entry.events}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(r.lunar?.countries?.length ?? 0) > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-text-3 uppercase tracking-wider mb-1.5">
+                    Countries
+                  </div>
+                  <div className="space-y-1.5">
+                    {r.lunar?.countries?.map(entry => (
+                      <div key={entry.country} className="dt-row">
+                        <span className="dt-label">{entry.country}</span>
+                        <span>{entry.events}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

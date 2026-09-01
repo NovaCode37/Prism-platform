@@ -151,6 +151,11 @@ async def run_scan(
             from modules.hudsonrock import HudsonRockLookup
             results["hudsonrock"] = await _invoke(HudsonRockLookup().search_domain, target)
 
+        if want("lunar") and scan_type == "domain":
+            _log("Running lunar ...")
+            from modules.lunar import LunarLookup
+            results["lunar"] = await _invoke(LunarLookup().search_domain, target)
+
     elif scan_type == "email":
         if want("smtp"):
             _log("Running smtp ...")
