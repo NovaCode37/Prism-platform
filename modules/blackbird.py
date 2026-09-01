@@ -14,6 +14,9 @@ sys.path.append('..')
 from config import OUTPUT_DIR, Colors
 
 
+CONTROL_USERNAME = "zq7xk2mvbn4rt9wp3ldh"
+
+
 def _safe_username(username: str) -> str:
     return re.sub(r'[^A-Za-z0-9_.-]', '_', username or '')[:64] or "target"
 
@@ -85,41 +88,72 @@ class Blackbird:
         self.timeout = timeout
         self.max_concurrent = max_concurrent
         self.results: List[SiteResult] = []
+        self._controls: Dict[str, Optional[Dict[str, Any]]] = {}
+
+    async def _fetch(self, session: aiohttp.ClientSession, url: str) -> Dict[str, Any]:
+        start = asyncio.get_event_loop().time()
+        async with session.get(url, allow_redirects=True) as response:
+            body = await response.text(errors="ignore")
+            return {
+                "status": response.status,
+                "final_url": str(response.url).lower(),
+                "redirected": bool(response.history),
+                "body": body,
+                "elapsed": asyncio.get_event_loop().time() - start,
+            }
+
+    async def _control(self, session: aiohttp.ClientSession, site: str,
+                       url_template: str) -> Optional[Dict[str, Any]]:
+        if site not in self._controls:
+            try:
+                self._controls[site] = await self._fetch(
+                    session, url_template.format(quote(CONTROL_USERNAME, safe=""))
+                )
+            except Exception:
+                self._controls[site] = None
+        return self._controls[site]
 
     async def check_site(self, session: aiohttp.ClientSession, username: str,
                          site: str, config: tuple) -> SiteResult:
         url_template, error_type, error_indicator = config
         url = url_template.format(quote(username, safe=""))
 
-        start_time = asyncio.get_event_loop().time()
-
         try:
-            async with session.get(url, allow_redirects=True) as response:
-                response_time = asyncio.get_event_loop().time() - start_time
-                http_code = response.status
-                final_url = str(response.url).lower()
-                redirected_away = bool(response.history) and username.lower() not in final_url
-
-                if http_code != 200 or redirected_away:
-                    status = "not_found"
-                elif error_type == "status":
-                    status = "found"
-                else:
-                    try:
-                        text = await response.text()
-                        status = "not_found" if error_indicator.lower() in text.lower() else "found"
-                    except Exception:
-                        status = "error"
-
-                return SiteResult(site, url, status, http_code, response_time)
-
+            response = await self._fetch(session, url)
         except asyncio.TimeoutError:
             return SiteResult(site, url, "timeout", 0, self.timeout)
         except Exception:
-            return SiteResult(site, url, "error", 0, 0)
+            return SiteResult(site, url, "error", 0, 0.0)
+
+        http_code = response["status"]
+        elapsed = response["elapsed"]
+
+        if http_code in (401, 403, 429) or http_code >= 500:
+            return SiteResult(site, url, "unknown", http_code, elapsed)
+        if http_code != 200:
+            return SiteResult(site, url, "not_found", http_code, elapsed)
+        if response["redirected"] and username.lower() not in response["final_url"]:
+            return SiteResult(site, url, "not_found", http_code, elapsed)
+
+        indicator = str(error_indicator).lower()
+        if error_type != "status" and indicator in response["body"].lower():
+            return SiteResult(site, url, "not_found", http_code, elapsed)
+
+        control = await self._control(session, site, url_template)
+        if control is None or control["status"] != 200:
+            return SiteResult(site, url, "found", http_code, elapsed)
+        if error_type != "status" and indicator in control["body"].lower():
+            return SiteResult(site, url, "found", http_code, elapsed)
+
+        echoes_any_name = CONTROL_USERNAME in control["body"].lower()
+        names_the_target = username.lower() in response["body"].lower()
+        if names_the_target and not echoes_any_name:
+            return SiteResult(site, url, "found", http_code, elapsed)
+        return SiteResult(site, url, "not_found", http_code, elapsed)
 
     async def search(self, username: str, sites: List[str] = None) -> List[SiteResult]:
         self.results = []
+        self._controls = {}
 
         if sites is None:
             sites_to_check = self.SITES
