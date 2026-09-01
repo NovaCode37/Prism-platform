@@ -665,7 +665,7 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
 ## Star History
 
-<a href="https://star-history.com/#NovaCode37/Prism-platform&Date">
+<a href="https://www.star-history.com/?repos=NovaCode37%2FPrism-platform&type=date&legend=top-left">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=NovaCode37/Prism-platform&type=Date&theme=dark" />
     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=NovaCode37/Prism-platform&type=Date" />
