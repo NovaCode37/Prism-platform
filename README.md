@@ -48,8 +48,8 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 - **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
 - **Real-time dashboard** — WebSocket-driven scan progress with **module-level progress bar (5/8 · 62%)**, interactive entity relationship graph, **multi-marker Leaflet GeoIP map**
 - **OPSEC Score** — aggregated 0–100 exposure risk score across data exposure, identity, infrastructure and web security
-- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE/FR/ES)
-- **Multi-language UI** — English, Russian, German, French, Spanish out of the box (i18n + auto-detect)
+- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE)
+- **Multi-language UI** — English, Russian, German, French, Spanish, Italian, Polish, Portuguese, and Chinese out of the box (i18n + auto-detect)
 - **Standalone CLI** — run scans headlessly via `python cli.py scan example.com --json`, and manage scheduled re-scans with `python cli.py watchlist add example.com --interval 6`
 - **Scan history & comparison** — browse past scans, load results, compare two scans side-by-side
 - **Webhook callbacks** — get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
@@ -103,8 +103,8 @@ flowchart LR
 | OPSEC score (0–100)               | ✅                    | ❌            | ❌           | ❌          | ❌         |
 | Entity graph (interactive)        | ✅                    | ✅            | ❌           | ❌          | ✅         |
 | GeoIP map (multi-marker)          | ✅ Leaflet            | ⚠️ basic      | ❌           | ❌          | ⚠️         |
-| HTML + PDF report export          | ✅ EN/RU/DE/FR/ES           | ⚠️ HTML       | ⚠️ HTML      | ⚠️          | ⚠️         |
-| Multi-language UI                 | ✅ EN/RU/DE/FR/ES           | ❌            | ❌           | ❌          | ❌         |
+| HTML + PDF report export          | ✅ EN/RU/DE                 | ⚠️ HTML       | ⚠️ HTML      | ⚠️          | ⚠️         |
+| Multi-language UI                 | ✅ EN/RU/DE/FR/ES/IT/PL/PT/ZH | ❌            | ❌           | ❌          | ❌         |
 | Zero-key out of the box           | ✅ 14/22 modules      | ⚠️            | ⚠️           | ⚠️          | ❌         |
 | Webhook callbacks (signed)        | ✅                    | ❌            | ❌           | ❌          | ❌         |
 | One-command Docker deploy         | ✅                    | ⚠️            | ⚠️           | ⚠️          | ❌         |
@@ -149,7 +149,7 @@ flowchart LR
 | File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | — |
 | OPSEC Score | Aggregated 0–100 exposure risk score | — |
 | Entity Graph | Interactive node-relationship visualization | — |
-| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE/FR/ES | — |
+| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE | — |
 | AI Summary | Natural-language findings summary via LLM | OpenRouter / Groq |
 | Webhook Callbacks | HMAC-signed POST on scan completion (SSRF-guarded) | — |
 
