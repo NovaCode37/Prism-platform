@@ -108,6 +108,10 @@ export interface ShodanData extends ModuleStatusFields {
   open_ports?: number[];
   vulns?: string[];
   services?: { port: number; transport: string; product?: string; version?: string }[];
+  hostnames?: string[];
+  tags?: string[];
+  cpes?: string[];
+  source?: 'shodan' | 'internetdb';
   error?: string;
 }
 

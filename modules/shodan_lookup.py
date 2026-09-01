@@ -1,3 +1,4 @@
+import ipaddress
 import requests
 from typing import Dict, Any, List
 import sys
@@ -9,9 +10,49 @@ from modules.module_status import annotate, print_status_notice, OK, SKIPPED, RA
 class ShodanLookup:
 
     BASE_URL = "https://api.shodan.io"
+    INTERNETDB_URL = "https://internetdb.shodan.io"
 
     def __init__(self):
         self.api_key = SHODAN_API_KEY
+
+    @staticmethod
+    def _is_ip(value: str) -> bool:
+        try:
+            ipaddress.ip_address((value or "").strip())
+            return True
+        except ValueError:
+            return False
+
+    def _internetdb(self, ip: str, result: Dict[str, Any], reason: str) -> Dict[str, Any]:
+        try:
+            r = requests.get(f"{self.INTERNETDB_URL}/{ip}", timeout=15)
+        except Exception as e:
+            return annotate(result, SKIPPED, f"{reason}; the free InternetDB dataset was unreachable ({str(e)[:80]})")
+
+        if r.status_code == 404:
+            result["source"] = "internetdb"
+            return annotate(result, OK, f"{reason}; the free InternetDB dataset has nothing on this address")
+        if r.status_code == 429:
+            return annotate(result, RATE_LIMITED, "InternetDB rate limit reached")
+        if r.status_code != 200:
+            return annotate(result, SKIPPED, f"{reason}; InternetDB returned {r.status_code}")
+
+        try:
+            data = r.json()
+        except ValueError:
+            return annotate(result, SKIPPED, f"{reason}; InternetDB returned a non-JSON response")
+
+        result.update({
+            "open_ports": sorted(data.get("ports") or []),
+            "hostnames": data.get("hostnames") or [],
+            "tags": data.get("tags") or [],
+            "vulns": data.get("vulns") or [],
+            "cpes": data.get("cpes") or [],
+            "source": "internetdb",
+        })
+        annotate(result, OK, f"{reason}; ports, hostnames and CVEs come from the free InternetDB dataset, "
+                             "which carries no organisation, location or banner detail")
+        return result
 
     def host_info(self, ip: str) -> Dict[str, Any]:
         result = {
@@ -27,12 +68,17 @@ class ShodanLookup:
             "hostnames": [],
             "domains": [],
             "tags": [],
+            "cpes": [],
             "last_update": None,
+            "source": "shodan",
             "error": None,
         }
 
+        if not self._is_ip(ip):
+            return annotate(result, ERROR, "Host lookup needs an IP address")
+
         if not self.api_key:
-            return annotate(result, SKIPPED, "No API key configured (SHODAN_API_KEY)")
+            return self._internetdb(ip, result, "No API key configured (SHODAN_API_KEY)")
 
         try:
             r = requests.get(
@@ -47,9 +93,12 @@ class ShodanLookup:
             if r.status_code == 401:
                 return annotate(result, ERROR, "Invalid Shodan API key")
             if r.status_code == 403:
-                return annotate(result, SKIPPED, "Shodan host lookup requires a paid membership or query credits (free API keys return 403)")
+                return self._internetdb(
+                    ip, result,
+                    "Shodan host lookup needs a paid membership or query credits (free keys return 403)",
+                )
             if r.status_code == 429:
-                return annotate(result, RATE_LIMITED, "Shodan API rate limit reached")
+                return self._internetdb(ip, result, "Shodan API rate limit reached")
             if r.status_code != 200:
                 result["error"] = f"Shodan API returned {r.status_code}"
                 return result
@@ -154,6 +203,9 @@ class ShodanLookup:
         print(f"{Colors.YELLOW}ISP:{Colors.RESET} {result.get('isp', 'N/A')}")
         print(f"{Colors.YELLOW}Location:{Colors.RESET} {result.get('city', 'N/A')}, {result.get('country', 'N/A')}")
         print(f"{Colors.YELLOW}OS:{Colors.RESET} {result.get('os', 'Unknown')}")
+
+        if result.get("source") == "internetdb":
+            print(f"{Colors.YELLOW}Source:{Colors.RESET} InternetDB (free dataset)")
 
         if result["open_ports"]:
             print(f"\n{Colors.YELLOW}Open Ports:{Colors.RESET} {', '.join(map(str, result['open_ports']))}")

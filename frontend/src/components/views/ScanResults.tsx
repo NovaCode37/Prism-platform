@@ -1171,6 +1171,11 @@ export function ScanResults({ scan, onHome }: Props) {
               )}
             </KeyModuleCard>
             <KeyModuleCard title="Shodan" mod={r.shodan} onRefresh={() => refreshModule('shodan')} refreshing={isRefreshing('shodan')}>
+              {r.shodan?.source === 'internetdb' && (
+                <div className="text-[11px] text-text-3 leading-relaxed mb-3 pb-2 border-b border-border-1">
+                  {"Ports, hostnames and CVEs below come from InternetDB, Shodan's free dataset. It carries no organisation, location or service banners — a paid Shodan key fills those in."}
+                </div>
+              )}
               {r.shodan?.open_ports?.length ? (
                 <div className="mb-3">
                   <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Open Ports</div>

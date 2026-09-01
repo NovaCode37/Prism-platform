@@ -130,7 +130,7 @@ flowchart LR
 | Certificate Transparency | Subdomain discovery via crt.sh | — |
 | Wayback Machine | Historical snapshots, sensitive URL patterns | — |
 | GeoIP | IP geolocation, ASN, timezone | ipinfo.io |
-| Shodan | Open ports, services, known CVEs | Shodan |
+| Shodan | Open ports, services, known CVEs; falls back to the keyless InternetDB dataset | Shodan (optional) |
 | Censys | Host services, ASN, certificate → subdomain discovery | Censys |
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |

@@ -123,11 +123,32 @@ class TestKeyDependentModulesSkip:
     """Each key-dependent module should report `skipped` (not a hard error)
     when its API key is absent."""
 
-    def test_shodan_skipped_without_key(self):
+    def test_shodan_falls_back_to_internetdb_without_key(self):
+        from unittest.mock import patch
         from modules.shodan_lookup import ShodanLookup
         sh = ShodanLookup()
         sh.api_key = ""
-        result = sh.host_info("8.8.8.8")
+
+        class _Resp:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {"ports": [22, 80], "hostnames": ["h"], "vulns": [], "tags": [], "cpes": []}
+
+        with patch("modules.shodan_lookup.requests.get", return_value=_Resp()):
+            result = sh.host_info("8.8.8.8")
+        assert classify(result) == OK
+        assert result["source"] == "internetdb"
+        assert result["error"] is None
+
+    def test_shodan_skipped_when_the_fallback_is_unreachable(self):
+        from unittest.mock import patch
+        from modules.shodan_lookup import ShodanLookup
+        sh = ShodanLookup()
+        sh.api_key = ""
+        with patch("modules.shodan_lookup.requests.get", side_effect=OSError("no network")):
+            result = sh.host_info("8.8.8.8")
         assert classify(result) == SKIPPED
         assert result["error"] is None
 
