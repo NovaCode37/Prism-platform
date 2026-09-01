@@ -44,11 +44,12 @@ _LLM_PROXIES = {"http": _LLM_PROXY, "https": _LLM_PROXY} if _LLM_PROXY else None
 def llm_providers() -> List[Dict[str, str]]:
     providers = []
     custom_key = os.getenv("LLM_API_KEY", "").strip()
-    if custom_key:
+    custom_url = os.getenv("LLM_BASE_URL", "").strip()
+    if custom_key or custom_url:
         providers.append({
             "name": "custom",
-            "url": os.getenv("LLM_BASE_URL", "").strip() or _OPENROUTER_URL,
-            "key": custom_key,
+            "url": custom_url or _OPENROUTER_URL,
+            "key": custom_key or "local",
             "model": os.getenv("LLM_MODEL", "").strip() or "nvidia/nemotron-3-nano-30b-a3b:free",
         })
     if OPENROUTER_API_KEY and not any(p["key"] == OPENROUTER_API_KEY for p in providers):

@@ -32,6 +32,16 @@ def test_no_providers_configured(monkeypatch):
     assert "No LLM provider configured" in out["error"]
 
 
+def test_a_keyless_local_endpoint_is_enough(monkeypatch):
+    _reset(monkeypatch)
+    monkeypatch.setenv("LLM_BASE_URL", "http://ollama:11434/v1/chat/completions")
+    monkeypatch.setenv("LLM_MODEL", "qwen2.5:3b")
+    providers = app_mod.llm_providers()
+    assert [p["name"] for p in providers] == ["custom"]
+    assert providers[0]["url"] == "http://ollama:11434/v1/chat/completions"
+    assert providers[0]["model"] == "qwen2.5:3b"
+
+
 def test_provider_order_puts_custom_first(monkeypatch):
     _reset(monkeypatch, custom="c", openrouter="o", groq="g")
     assert [p["name"] for p in app_mod.llm_providers()] == ["custom", "openrouter", "groq"]

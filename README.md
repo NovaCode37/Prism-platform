@@ -732,7 +732,24 @@ Yes, MIT licensed and completely self-hosted.
 Try the live demo, or spin it up with the one-command Docker demo.
 
 **Which LLM does the AI summary use?**
-Any OpenAI-compatible endpoint — OpenRouter, Groq, or local Ollama all work. Set `LLM_BASE_URL`, `LLM_API_KEY`, and `LLM_MODEL` in `.env` to point at your own provider, plus `LLM_PROXY` if the request needs to go through a proxy.
+Any OpenAI-compatible endpoint — OpenRouter, Groq, GigaChat, or a local Ollama all work. Set `LLM_BASE_URL`, `LLM_API_KEY`, and `LLM_MODEL` in `.env` to point at your own provider, plus `LLM_PROXY` if the request needs to go through a proxy. Every key you configure becomes a provider, and they are tried in order until one answers, so a blocked or rate-limited provider falls through to the next.
+
+**How do I run the AI locally, with nothing leaving the machine?**
+The compose file ships an Ollama service behind a profile, so it stays out of the way unless you ask for it:
+
+```bash
+docker compose --profile ollama up -d
+docker compose exec ollama ollama pull qwen2.5:3b
+```
+
+Then point PRISM at it in `.env` — the container reaches Ollama by service name, and no key is needed:
+
+```ini
+LLM_BASE_URL=http://ollama:11434/v1/chat/completions
+LLM_MODEL=qwen2.5:3b
+```
+
+Budget roughly 4 GB of RAM for a 3B model and 8 GB for a 7B one; answers are slower than a hosted provider, and nothing is sent off the machine.
 
 **Why do some modules fail on the public demo?**
 The demo is a shared-hosting instance with anonymous access and a daily scan quota, so it hits limits the average self-hosted install never will. Several modules also depend on third-party services that break on their own schedule — crt.sh regularly answers `502`, and the Wayback CDX API answers `503` under load. PRISM reports those upstream failures verbatim instead of hiding them.
