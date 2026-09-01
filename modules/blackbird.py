@@ -108,14 +108,14 @@ class Blackbird:
                     try:
                         text = await response.text()
                         status = "not_found" if error_indicator.lower() in text.lower() else "found"
-                    except:
+                    except Exception:
                         status = "error"
 
                 return SiteResult(site, url, status, http_code, response_time)
 
         except asyncio.TimeoutError:
             return SiteResult(site, url, "timeout", 0, self.timeout)
-        except Exception as e:
+        except Exception:
             return SiteResult(site, url, "error", 0, 0)
 
     async def search(self, username: str, sites: List[str] = None) -> List[SiteResult]:
