@@ -32,11 +32,40 @@ from modules.webhook_formatters import format_slack, format_discord
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 _LLM_KEY = os.getenv("LLM_API_KEY") or OPENROUTER_API_KEY or GROQ_API_KEY
-_LLM_URL = os.getenv("LLM_BASE_URL") or ("https://openrouter.ai/api/v1/chat/completions" if OPENROUTER_API_KEY else "https://api.groq.com/openai/v1/chat/completions")
+_LLM_URL = os.getenv("LLM_BASE_URL") or (_OPENROUTER_URL if OPENROUTER_API_KEY else _GROQ_URL)
 _LLM_MODEL = os.getenv("LLM_MODEL") or ("nvidia/nemotron-3-nano-30b-a3b:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant")
 _LLM_PROXY = os.getenv("LLM_PROXY", "").strip()
 _LLM_PROXIES = {"http": _LLM_PROXY, "https": _LLM_PROXY} if _LLM_PROXY else None
+
+
+def llm_providers() -> List[Dict[str, str]]:
+    providers = []
+    custom_key = os.getenv("LLM_API_KEY", "").strip()
+    if custom_key:
+        providers.append({
+            "name": "custom",
+            "url": os.getenv("LLM_BASE_URL", "").strip() or _OPENROUTER_URL,
+            "key": custom_key,
+            "model": os.getenv("LLM_MODEL", "").strip() or "nvidia/nemotron-3-nano-30b-a3b:free",
+        })
+    if OPENROUTER_API_KEY and not any(p["key"] == OPENROUTER_API_KEY for p in providers):
+        providers.append({
+            "name": "openrouter",
+            "url": _OPENROUTER_URL,
+            "key": OPENROUTER_API_KEY,
+            "model": os.getenv("LLM_MODEL", "").strip() or "nvidia/nemotron-3-nano-30b-a3b:free",
+        })
+    if GROQ_API_KEY and not any(p["key"] == GROQ_API_KEY for p in providers):
+        providers.append({
+            "name": "groq",
+            "url": _GROQ_URL,
+            "key": GROQ_API_KEY,
+            "model": os.getenv("GROQ_MODEL", "").strip() or "llama-3.1-8b-instant",
+        })
+    return providers
 
 from web.security import (
     require_api_key, validate_target, check_upload_size, get_allowed_origins,
@@ -1214,11 +1243,75 @@ def _llm_error_message(err) -> str:
         return str(err.get("message") or err.get("code") or err)
     return str(err)
 
+
+_LLM_BLOCKED_HINTS = (
+    "access denied",
+    "security policy",
+    "unavailable in your",
+    "not available in your",
+    "region",
+    "country",
+    "forbidden",
+    "cloudflare",
+)
+
+
+def _looks_geo_blocked(message: str) -> bool:
+    low = (message or "").lower()
+    return any(hint in low for hint in _LLM_BLOCKED_HINTS)
+
+
+def _call_llm(provider: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, Any]:
+    body = dict(payload)
+    body["model"] = provider["model"]
+    try:
+        r = _requests.post(
+            provider["url"],
+            headers={"Authorization": f"Bearer {provider['key']}", "Content-Type": "application/json",
+                     "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
+            json=body,
+            timeout=30,
+            proxies=_LLM_PROXIES,
+        )
+    except Exception as e:
+        return {"error": f"{provider['name']} could not be reached: {str(e)[:150]}"}
+    try:
+        data = r.json()
+    except ValueError:
+        return {"error": f"HTTP {r.status_code} from {provider['name']}: {r.text[:200]}"}
+    if not isinstance(data, dict):
+        return {"error": f"Unexpected response from {provider['name']}: {str(data)[:200]}"}
+    return data
+
+
+def _llm_complete(payload: Dict[str, Any]) -> Dict[str, Any]:
+    providers = llm_providers()
+    if not providers:
+        return {"error": "No LLM provider configured. Set LLM_API_KEY, OPENROUTER_API_KEY or GROQ_API_KEY in .env."}
+
+    attempts = []
+    for provider in providers:
+        data = _call_llm(provider, payload)
+        if data.get("choices"):
+            return {"text": data["choices"][0]["message"]["content"],
+                    "model": data.get("model") or provider["model"],
+                    "provider": provider["name"]}
+        message = _llm_error_message(data.get("error")) if data.get("error") else f"no choices returned by {provider['name']}"
+        attempts.append(f"{provider['name']}: {message}")
+
+    if len(attempts) == 1:
+        return {"error": attempts[0].split(": ", 1)[-1], "tried": attempts}
+    blocked = [a for a in attempts if _looks_geo_blocked(a)]
+    lead = "Every configured LLM provider refused the request."
+    if blocked:
+        lead += " Providers commonly reject traffic from datacentre regions at their edge."
+    return {"error": lead + " " + "; ".join(attempts), "tried": attempts}
+
 @app.post("/api/ai/summary", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def ai_summary(request: Request, req: dict):
-    if not _LLM_KEY:
-        return JSONResponse({"error": "OPENROUTER_API_KEY or GROQ_API_KEY not set in .env"}, status_code=400)
+    if not llm_providers():
+        return JSONResponse({"error": "No LLM provider configured. Set LLM_API_KEY, OPENROUTER_API_KEY or GROQ_API_KEY in .env."}, status_code=400)
     scan_id = req.get("scan_id")
     scan = _load_scan(scan_id) if scan_id else None
     if not scan or not _scan_visible_to(scan, get_principal(request)) or not scan.get("results"):
@@ -1238,39 +1331,21 @@ async def ai_summary(request: Request, req: dict):
         f"Data:\n{json.dumps(summary_data, indent=2, default=str)[:6000]}"
     )
 
+    payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 1024}
     try:
         loop = asyncio.get_event_loop()
-        def _llm_call():
-            r = _requests.post(
-                _LLM_URL,
-                headers={"Authorization": f"Bearer {_LLM_KEY}", "Content-Type": "application/json",
-                         "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
-                json={"model": _LLM_MODEL, "messages": [{"role": "user", "content": prompt}],
-                      "temperature": 0.3, "max_tokens": 1024},
-                timeout=30,
-                proxies=_LLM_PROXIES,
-            )
-            try:
-                return r.json()
-            except ValueError:
-                return {"error": f"HTTP {r.status_code} from LLM provider: {r.text[:200]}"}
-        data = await loop.run_in_executor(None, _llm_call)
-        if not isinstance(data, dict):
-            return JSONResponse({"error": f"Unexpected response: {str(data)[:300]}"}, status_code=500)
-        if data.get("error"):
-            return JSONResponse({"error": _llm_error_message(data["error"])}, status_code=400)
-        if not data.get("choices"):
-            return JSONResponse({"error": f"Unexpected response: {json.dumps(data)[:300]}"}, status_code=500)
-        text = data["choices"][0]["message"]["content"]
-        return {"summary": text, "model": data.get("model", _LLM_MODEL)}
+        outcome = await loop.run_in_executor(None, lambda: _llm_complete(payload))
+        if outcome.get("error"):
+            return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
+        return {"summary": outcome["text"], "model": outcome["model"], "provider": outcome["provider"]}
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
 @app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def ai_chat(request: Request, req: dict):
-    if not _LLM_KEY:
-        return JSONResponse({"error": "OPENROUTER_API_KEY or GROQ_API_KEY not set in .env"}, status_code=400)
+    if not llm_providers():
+        return JSONResponse({"error": "No LLM provider configured. Set LLM_API_KEY, OPENROUTER_API_KEY or GROQ_API_KEY in .env."}, status_code=400)
     scan_id = req.get("scan_id")
     message = req.get("message", "").strip()
     if not message:
@@ -1287,41 +1362,23 @@ async def ai_chat(request: Request, req: dict):
                         and not (isinstance(v, dict) and v.get("error"))}
         context = (f"OSINT scan of '{scan['target']}' (type: {scan['scan_type']}):\n"
                    f"{json.dumps(summary_data, indent=2, default=str)[:4000]}\n\n")
+    payload = {
+        "messages": [
+            {"role": "system", "content": (
+                "You are a professional OSINT analyst assistant. "
+                + (f"Context:\n{context}" if context else "Answer general OSINT questions concisely.")
+            )},
+            {"role": "user", "content": message},
+        ],
+        "temperature": 0.5,
+        "max_tokens": 512,
+    }
     try:
         loop = asyncio.get_event_loop()
-        def _llm_chat():
-            r = _requests.post(
-                _LLM_URL,
-                headers={"Authorization": f"Bearer {_LLM_KEY}", "Content-Type": "application/json",
-                         "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
-                json={
-                    "model": _LLM_MODEL,
-                    "messages": [
-                        {"role": "system", "content": (
-                            "You are a professional OSINT analyst assistant. "
-                            + (f"Context:\n{context}" if context else "Answer general OSINT questions concisely.")
-                        )},
-                        {"role": "user", "content": message},
-                    ],
-                    "temperature": 0.5,
-                    "max_tokens": 512,
-                },
-                timeout=30,
-                proxies=_LLM_PROXIES,
-            )
-            try:
-                return r.json()
-            except ValueError:
-                return {"error": f"HTTP {r.status_code} from LLM provider: {r.text[:200]}"}
-        data = await loop.run_in_executor(None, _llm_chat)
-        if not isinstance(data, dict):
-            return JSONResponse({"error": f"Unexpected response: {str(data)[:200]}"}, status_code=500)
-        if data.get("error"):
-            return JSONResponse({"error": _llm_error_message(data["error"])}, status_code=400)
-        if not data.get("choices"):
-            return JSONResponse({"error": f"Unexpected response: {json.dumps(data)[:200]}"}, status_code=500)
-        reply = data["choices"][0]["message"]["content"]
-        return {"reply": reply, "model": data.get("model", "")}
+        outcome = await loop.run_in_executor(None, lambda: _llm_complete(payload))
+        if outcome.get("error"):
+            return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
+        return {"reply": outcome["text"], "model": outcome["model"], "provider": outcome["provider"]}
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
