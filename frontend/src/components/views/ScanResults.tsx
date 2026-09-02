@@ -1734,8 +1734,21 @@ export function ScanResults({ scan, onHome }: Props) {
         {tab === 'ai' && (
           <div>
             <Card title="AI OSINT Analysis · Nvidia Nemotron">
+              <div className="flex gap-2.5 rounded-card border border-yellow/40 bg-yellow/10 p-3 mb-3">
+                <AlertTriangle size={15} className="text-yellow shrink-0 mt-px" />
+                <div className="text-[12px] text-text-1 leading-relaxed">
+                  <div className="font-semibold mb-1">AI analysis does not work on this public demo</div>
+                  <div className="text-text-2">
+                    {"The demo runs on shared hosting whose region every hosted LLM provider refuses at their edge, so the request never reaches a model. Nothing here is broken and no key is missing — the rest of the scan is unaffected. Self-host PRISM and point "}
+                    <code className="font-mono text-[11px]">LLM_BASE_URL</code>
+                    {" and "}
+                    <code className="font-mono text-[11px]">LLM_API_KEY</code>
+                    {" at your own provider, or run a local model, and this panel works normally."}
+                  </div>
+                </div>
+              </div>
               <div className="text-[11px] text-text-3 leading-relaxed mb-3 pb-3 border-b border-border-1">
-                {"AI-generated and may be inaccurate or incomplete - treat it as a lead, not a verified finding. Generating a summary sends this scan's data to the configured LLM provider (OpenRouter / Groq). Disable the AI module if you don't want that."}
+                {"AI-generated and may be inaccurate or incomplete - treat it as a lead, not a verified finding. Generating a summary sends this scan's data to the configured LLM provider. Disable the AI module if you don't want that."}
               </div>
               {!aiSummary && !aiLoading && (
                 <button onClick={runAi} className="btn-primary w-full">
@@ -1752,7 +1765,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 <div className="text-sm">
                   <div className="text-red">{aiError}</div>
                   <div className="text-[11px] text-text-3 leading-relaxed mt-2">
-                    {"On this public demo the LLM provider is often unreachable: OpenRouter and Groq reject requests coming from the demo server's hosting region at their Cloudflare edge, so the call never reaches the model. Self-host PRISM and point LLM_BASE_URL / LLM_API_KEY (or LLM_PROXY) at your own provider in .env, and this panel works normally."}
+                    {"This is the hosting-region block described above, not a fault in the scan. Every provider PRISM tried is named in the error."}
                   </div>
                 </div>
               )}
@@ -1769,6 +1782,12 @@ export function ScanResults({ scan, onHome }: Props) {
             </Card>
 
             <Card title="Ask the AI">
+              <div className="flex gap-2.5 rounded-card border border-yellow/40 bg-yellow/10 p-3 mb-3">
+                <AlertTriangle size={15} className="text-yellow shrink-0 mt-px" />
+                <div className="text-[12px] text-text-2 leading-relaxed">
+                  {"Same as above — the chat cannot reach a model on this demo. It works on a self-hosted instance with your own provider configured."}
+                </div>
+              </div>
               {chatHistory.length > 0 && (
                 <div className="space-y-3 mb-4 max-h-72 overflow-y-auto pr-1">
                   {chatHistory.map((m, i) => (

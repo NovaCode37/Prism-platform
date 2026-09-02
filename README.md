@@ -26,6 +26,8 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 
 </div>
 
+> **AI analysis does not work on the [live demo](https://getprism.su).** It runs on shared hosting whose region every hosted LLM provider refuses at their edge, so the request never reaches a model. That panel is the only thing affected — every other module works, and on a self-hosted instance with your own provider the AI works normally. See [the FAQ](#faq) for why.
+
 > If you find PRISM useful, please consider giving it a ⭐ — it helps others discover the project and motivates further development.
 
 <div align="center">
@@ -768,7 +770,20 @@ Budget roughly 4 GB of RAM for a 3B model and 8 GB for a 7B one; answers are slo
 **Why do some modules fail on the public demo?**
 The demo is a shared-hosting instance with anonymous access and a daily scan quota, so it hits limits the average self-hosted install never will. Several modules also depend on third-party services that break on their own schedule — crt.sh regularly answers `502`, and the Wayback CDX API answers `503` under load. PRISM reports those upstream failures verbatim instead of hiding them.
 
-AI analysis is unavailable on the demo for a separate reason: OpenRouter and Groq both reject requests coming from the demo server's hosting region at their Cloudflare edge, so the call is refused before it ever reaches a model. That is an IP-level block, not a bug or a bad key — self-host PRISM (or set `LLM_BASE_URL` / `LLM_PROXY`) and the AI panel works normally.
+**Why is AI analysis dead on the demo?**
+Hosted LLM providers refuse the demo's hosting region at their edge, so the call is rejected before it reaches a model. It is an IP-level block, not a bug and not a missing key — PRISM tries every provider you configure and reports what each one said.
+
+The demo sits on shared hosting, which rules out the two normal workarounds: there is no room to run a local model, and no second machine to proxy through. So it stays broken there, and only there.
+
+On your own instance it works. Point it at any OpenAI-compatible endpoint:
+
+```ini
+LLM_BASE_URL=https://your-provider/v1/chat/completions
+LLM_API_KEY=...
+LLM_MODEL=...
+```
+
+Or run the model yourself with nothing leaving the machine — see the Ollama answer above. Configure more than one provider and PRISM falls through to the next when one refuses.
 
 ---
 
