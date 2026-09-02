@@ -656,7 +656,21 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 - [x] Configurable LLM provider (`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` / `LLM_PROXY`) — any OpenAI-compatible endpoint
 - [x] Accessibility pass — reduced-motion, aria-live progress, scan-type ARIA labels
 
-### v2.7 — in progress
+### v2.7 — released
+- [x] Domain exposure module (Lunar) — yearly exposure trend, malware families, affected services; opt-in
+- [x] Rate limits keyed on the peer address unless proxy headers are trusted
+- [x] Username sanitised in Blackbird export paths and lookup URLs
+- [x] Watchdog on maigret runs so a stalled process no longer hangs the scan
+
+### v2.8 — released
+- [x] Username search confirmed against a control request — soft-404 sites no longer report accounts that do not exist
+- [x] Blocked sites reported as `unknown` instead of counted as absent
+- [x] Every configured LLM provider tried in turn, with Ollama shipped in the compose file behind a profile
+- [x] Shodan falls back to the keyless InternetDB dataset when no paid key answers
+
+### v2.9 — planned
+- [ ] Report translations for the six interface languages that still fall back to English ([#295](https://github.com/NovaCode37/Prism-platform/issues/295))
+- [ ] Username checks for the sites that serve identical HTML for every name — needs their APIs rather than page scraping
 - [ ] *(exploring)* AI OSINT agent — autonomous multi-module investigation
 
 > Want to contribute? Pick an open issue tagged `good first issue` or open a new one.
