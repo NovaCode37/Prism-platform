@@ -14,7 +14,7 @@ if _PROJECT_ROOT not in sys.path:
 
 import config
 
-__version__ = "2.7.0"
+__version__ = "2.8.0"
 
 
 def normalize_target(target: str) -> str:

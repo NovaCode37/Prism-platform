@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.8.0] — 2026-09-02
+
+### Fixed
+- **Username search invented accounts** — most of the 50 sites were judged by HTTP status alone, so any site answering `200` for a name nobody registered was reported as a hit. Probing all of them with a nonexistent username caught ten doing exactly that: Pinterest, Spotify, Medium, 500px, Imgur, HackerRank, Kaggle, Trello, Duolingo and OnlyFans. Five of them returned a body byte-identical to a real profile's. A `200` now triggers one control request per site with a username that cannot exist, and the hit only stands if the target's page names the target while the control's page does not name the control. Sites that echo whatever name is in the URL can no longer produce a hit. Measured against 21 live sites, false positives went from ten to zero.
+- **Twitch reported every username as found** — its text marker stopped appearing on the page. Markers are now cross-checked against the control response, and a marker missing from both is treated as stale, falling back to the name test.
+- **A blocked site looked like an absent account** — `401`, `403`, `429` and `5xx` become `unknown` instead of `not_found`. A site that refused us tells us nothing about the account, and reporting that as absence was producing quiet false negatives.
+- **The AI panel only ever tried one provider** — it picked one at import, so a configured Groq key sat unused while OpenRouter answered "Access denied by security policy". Every configured key is now a provider, tried in order until one returns a completion, each with its own model. When all fail, the response names each provider and its reason.
+- **Shodan showed nothing without a paid key** — a free key gets `403` on the host endpoint and no key skipped the module outright. It now falls back to InternetDB, Shodan's keyless dataset, for ports, hostnames, tags, CPEs and CVEs. A paid key still goes to Shodan for organisation, location and banners. An invalid key is still an error rather than a silent downgrade.
+- `host_info` requires an IP. It was interpolating whatever it was handed into the request path, and `validate_target` allows a slash through.
+
+### Added
+- **Ollama service in the compose file**, behind a profile so it stays out of the way. `docker compose --profile ollama up -d`, point `LLM_BASE_URL` at `http://ollama:11434/v1/chat/completions`, and the AI panel runs with nothing leaving the machine — which is the only fix when every hosted provider refuses the instance's region.
+- A custom endpoint no longer needs a key: `LLM_BASE_URL` alone is enough, since Ollama has nothing to authenticate.
+- `GROQ_MODEL`, and the `LLM_*` variables, documented in `.env.example` — it had none of them despite the README describing them since 2.6.0.
+
+### Tests
+- 285 → 326, covering the control-request detection, stale text markers, blocked-response handling, provider fallback, the Shodan fallback and its IP guard.
+
+---
+
 ## [2.7.0] — 2026-09-01
 
 ### Added
