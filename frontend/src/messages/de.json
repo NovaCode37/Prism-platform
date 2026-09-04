@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Tastenkürzel",
+    "close": "Schließen",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Darstellung",
+    "groupResults": "Ergebnisse",
+    "focusSearch": "Zum Suchfeld springen",
+    "showShortcuts": "Dieses Fenster anzeigen",
+    "toggleTheme": "Helles oder dunkles Design",
+    "prevTab": "Vorheriger Ergebnis-Tab",
+    "nextTab": "Nächster Ergebnis-Tab"
+  },
   "topbar": {
     "tagline": "Open-Source-Aufklärung",
     "scanning": "Scan läuft",

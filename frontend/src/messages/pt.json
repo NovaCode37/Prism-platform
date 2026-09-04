@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Atalhos de teclado",
+    "close": "Fechar",
+    "groupNavigation": "Navegação",
+    "groupAppearance": "Aparência",
+    "groupResults": "Resultados",
+    "focusSearch": "Ir para o campo de busca",
+    "showShortcuts": "Mostrar este painel",
+    "toggleTheme": "Tema claro ou escuro",
+    "prevTab": "Aba de resultados anterior",
+    "nextTab": "Próxima aba de resultados"
+  },
   "topbar": {
     "tagline": "Open Source Intelligence",
     "scanning": "Verificando",

@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Atajos de teclado",
+    "close": "Cerrar",
+    "groupNavigation": "Navegación",
+    "groupAppearance": "Apariencia",
+    "groupResults": "Resultados",
+    "focusSearch": "Ir al campo de búsqueda",
+    "showShortcuts": "Mostrar este panel",
+    "toggleTheme": "Tema claro u oscuro",
+    "prevTab": "Pestaña anterior de resultados",
+    "nextTab": "Pestaña siguiente de resultados"
+  },
   "topbar": {
     "tagline": "Inteligencia de Fuentes Abiertas",
     "scanning": "Escaneando",

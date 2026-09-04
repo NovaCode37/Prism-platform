@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Topbar } from './Topbar';
+import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
+import { useShortcutsPanel } from '@/lib/useShortcutsPanel';
 import { Sidebar } from './Sidebar';
 import { IdleView } from './views/IdleView';
 import { ScanProgress } from './views/ScanProgress';
@@ -48,6 +50,7 @@ export function App() {
   const [compareIds, setCompareIds] = useState<[string, string] | null>(null);
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const { isOpen: isShortcutsOpen, open: openShortcuts, close: closeShortcuts } = useShortcutsPanel();
   const wsRef = useRef<WebSocket | null>(null);
   const urlScanStarted = useRef(false);
   const usageLimitedRef = useRef(true);
@@ -271,7 +274,7 @@ export function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar status={scanStatus} usage={usage} onHome={handleHome} onWatchlist={handleWatchlist} onMenuToggle={() => setSidebarOpen(v => !v)} />
+      <Topbar status={scanStatus} usage={usage} onHome={handleHome} onWatchlist={handleWatchlist} onMenuToggle={() => setSidebarOpen(v => !v)} onShortcuts={openShortcuts} />
       <div className="flex flex-1 relative">
         {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/50 z-40 md:hidden" />}
         <Sidebar onScan={handleScan} onLoadScan={handleLoadScan} onCompare={handleCompare} isRunning={scanStatus === 'running'} isStarting={isStarting} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -295,6 +298,7 @@ export function App() {
           {view === 'watchlist' && <WatchlistView onBack={handleHome} />}
         </main>
       </div>
+      <KeyboardShortcutsPanel isOpen={isShortcutsOpen} onClose={closeShortcuts} />
     </div>
   );
 }

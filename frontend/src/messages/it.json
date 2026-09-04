@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Scorciatoie da tastiera",
+    "close": "Chiudi",
+    "groupNavigation": "Navigazione",
+    "groupAppearance": "Aspetto",
+    "groupResults": "Risultati",
+    "focusSearch": "Vai al campo di ricerca",
+    "showShortcuts": "Mostra questo pannello",
+    "toggleTheme": "Tema chiaro o scuro",
+    "prevTab": "Scheda risultati precedente",
+    "nextTab": "Scheda risultati successiva"
+  },
   "topbar": {
     "tagline": "Open Source Intelligence",
     "scanning": "Scansione",

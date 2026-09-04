@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Skróty klawiszowe",
+    "close": "Zamknij",
+    "groupNavigation": "Nawigacja",
+    "groupAppearance": "Wygląd",
+    "groupResults": "Wyniki",
+    "focusSearch": "Przejdź do pola wyszukiwania",
+    "showShortcuts": "Pokaż ten panel",
+    "toggleTheme": "Motyw jasny lub ciemny",
+    "prevTab": "Poprzednia karta wyników",
+    "nextTab": "Następna karta wyników"
+  },
   "topbar": {
     "tagline": "Open Source Intelligence",
     "scanning": "Skanowanie",

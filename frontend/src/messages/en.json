@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "close": "Close",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Appearance",
+    "groupResults": "Results",
+    "focusSearch": "Focus search input",
+    "showShortcuts": "Show this panel",
+    "toggleTheme": "Toggle light / dark theme",
+    "prevTab": "Previous results tab",
+    "nextTab": "Next results tab"
+  },
   "topbar": {
     "tagline": "Open Source Intelligence",
     "scanning": "Scanning",

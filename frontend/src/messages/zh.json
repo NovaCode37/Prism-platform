@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "键盘快捷键",
+    "close": "关闭",
+    "groupNavigation": "导航",
+    "groupAppearance": "外观",
+    "groupResults": "结果",
+    "focusSearch": "跳转到搜索框",
+    "showShortcuts": "显示此面板",
+    "toggleTheme": "切换浅色或深色主题",
+    "prevTab": "上一个结果标签页",
+    "nextTab": "下一个结果标签页"
+  },
   "topbar": {
     "tagline": "开源情报",
     "scanning": "扫描中",

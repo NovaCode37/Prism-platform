@@ -1,4 +1,16 @@
 {
+  "shortcuts": {
+    "title": "Raccourcis clavier",
+    "close": "Fermer",
+    "groupNavigation": "Navigation",
+    "groupAppearance": "Apparence",
+    "groupResults": "Résultats",
+    "focusSearch": "Aller au champ de recherche",
+    "showShortcuts": "Afficher ce panneau",
+    "toggleTheme": "Thème clair ou sombre",
+    "prevTab": "Onglet de résultats précédent",
+    "nextTab": "Onglet de résultats suivant"
+  },
   "topbar": {
     "tagline": "Renseignement en sources ouvertes",
     "scanning": "Analyse en cours",
