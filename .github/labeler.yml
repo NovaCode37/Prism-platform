@@ -1,0 +1,23 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**"
+
+python:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.py"
+
+javascript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/**/*.ts"
+          - "frontend/**/*.tsx"
+          - "frontend/**/*.js"
+          - "frontend/**/*.jsx"
+
+github_actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"

@@ -1,0 +1,28 @@
+name: Greeting
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/first-interaction@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >
+            Thanks for the first issue. If it is a bug, the versions and the
+            exact command or request you ran help a lot — most reports get
+            sorted out on that alone.
+          pr-message: >
+            Thanks for the first pull request here. CI needs a maintainer to
+            approve the run before it starts, so it may sit for a bit before
+            anything happens. `pytest tests/ -q` passing is the main thing I
+            look at.
