@@ -29,6 +29,7 @@ from modules.module_status import classify, reason_for, OK, ERROR
 from modules.opsec_score import score_from_results
 from modules.report_generator import generate_html_report, generate_pdf_report
 from modules.webhook_formatters import format_slack, format_discord
+from modules.rdap import RDAPLookup
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
@@ -323,11 +324,8 @@ def _validate_webhook_url(url: str) -> str:
         raise ValueError("webhook_url must be http(s) with a hostname")
     _resolve_all_public(parsed.hostname)
     try:
-                                                                            
-                                                              
         _requests.head(url, timeout=3, allow_redirects=False)
     except Exception:
-                                                                       
         pass
     return url
 
@@ -460,7 +458,6 @@ async def _run_module(scan_id: str, name: str, coro_or_func, *args, **kwargs) ->
     force_refresh = bool(_scans.get(scan_id, {}).get("force_refresh"))
     if not force_refresh and name in _CACHED_MODULES and cache_target:
         cached = _get_cached(name, str(cache_target))
-        # Ignore legacy non-OK cache entries so the module can re-run.
         if cached is not None and classify(cached) == OK:
             await _push(scan_id, _done_message(name, cached, cached=True))
             return cached
@@ -473,7 +470,6 @@ async def _run_module(scan_id: str, name: str, coro_or_func, *args, **kwargs) ->
         status = classify(result)
         if isinstance(result, dict) and "status" not in result:
             result["status"] = status
-        # Cache only successful results so a missing key is not frozen in cache.
         if name in _CACHED_MODULES and cache_target and status == OK:
             _set_cache(name, str(cache_target), result)
         await _push(scan_id, _done_message(name, result))
@@ -494,6 +490,9 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
             if want("whois") and scan_type == "domain":
                 from modules.extra_tools import WhoisLookup
                 results["whois"] = await _run_module(scan_id, "whois", WhoisLookup().lookup, target)
+
+            if want("rdap") and scan_type == "domain":
+                results["rdap"] = await _run_module(scan_id, "rdap", RDAPLookup().lookup, target)
 
             if want("dns") and scan_type == "domain":
                 from modules.extra_tools import DNSLookup
@@ -516,10 +515,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 )
 
             if want("wayback") and scan_type == "domain":
-                                                                            
-                                                                              
-                                                                            
-                                                            
                 from modules.wayback import WaybackMachine
                 wb = WaybackMachine()
                 wayback_snap = await _run_module(
@@ -533,8 +528,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     merged["urls"] = wayback_urls.get("urls", [])
                     merged["total_urls"] = wayback_urls.get("total", 0)
                     merged["interesting"] = wayback_urls.get("interesting", [])
-                                                                          
-                                                                           
                     if wayback_urls.get("error") and not merged.get("error"):
                         merged["urls_error"] = wayback_urls["error"]
                 results["wayback"] = merged
@@ -1353,7 +1346,6 @@ async def ai_chat(request: Request, req: dict):
         return JSONResponse({"error": "No message provided"}, status_code=400)
     scan = _load_scan(scan_id) if scan_id else None
     if scan and not _scan_visible_to(scan, get_principal(request)):
-                                                                             
         scan = None
     context = ""
     if scan and scan.get("results"):
@@ -1449,7 +1441,6 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
     if principal is None:
         await websocket.close(code=1008)
         return
-                                                                              
     scan = _scans.get(scan_id) or _load_scan(scan_id)
     if scan and not _scan_visible_to(scan, principal):
         await websocket.close(code=1008)

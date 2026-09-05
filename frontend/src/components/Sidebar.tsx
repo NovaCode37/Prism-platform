@@ -18,7 +18,7 @@ interface RecentScan { target: string; type: ScanType; ts: number; }
 const SCAN_TYPES: ScanType[] = ['domain', 'ip', 'email', 'phone', 'username'];
 
 export const MODULE_MAP: Record<ScanType, string[]> = {
-  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion', 'hudsonrock', 'lunar'],
+  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion', 'hudsonrock', 'lunar', 'rdap'],
   ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
   email:    ['emailrep', 'smtp', 'leaks', 'gravatar', 'hudsonrock'],
   phone:    ['hlr'],
@@ -47,6 +47,7 @@ const MODULE_DESCRIPTIONS: Record<string, string> = {
   blackbird: 'Search for a username across online platforms with Blackbird',
   maigret: 'Search for a username across websites with Maigret',
   github: 'Search GitHub for information associated with a username',
+  rdap: 'Look up domain registration using RDAP (modern WHOIS replacement)',
 };
 
 interface Props {
@@ -332,9 +333,6 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
               </button>
             )}
 
-
-
-
             <div className="flex items-center gap-1 mb-1.5">
               <button
                 onClick={() => { setCompareMode(v => !v); setCompareSelection([]); }}
@@ -342,7 +340,6 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
                   compareMode ? 'bg-purple/20 text-purple border border-purple/30' : 'bg-surface-3 text-text-3 border border-border-1 hover:text-text-2'
                 }`}
               >
-                
                 <span className="flex items-center gap-1"><GitCompare size={8} /> {t('sidebar.compare')}</span>
               </button>
 
@@ -354,16 +351,10 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
     <Trash2 size={10} />
   </button>
 
-
               <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto" aria-label="Refresh history">
                 <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
               </button>
             </div>
-
-
-
-
-
 
             {historyLoading ? (
               <div className="flex justify-center py-2"><Loader2 size={14} className="spin text-text-3" /></div>

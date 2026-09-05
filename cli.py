@@ -71,6 +71,11 @@ async def run_scan(
             from modules.extra_tools import WhoisLookup
             results["whois"] = await _invoke(WhoisLookup().lookup, target)
 
+        if want("rdap") and scan_type == "domain":
+            _log("Running rdap ...")
+            from modules.rdap import RDAPLookup
+            results["rdap"] = await _invoke(RDAPLookup().lookup, target)
+
         if want("dns") and scan_type == "domain":
             _log("Running dns ...")
             from modules.extra_tools import DNSLookup
