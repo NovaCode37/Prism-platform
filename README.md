@@ -284,6 +284,8 @@ docker compose up --build
 
 Open **http://localhost:8080**. Docker builds the Next.js static export and serves it from FastAPI together with `/api/*`, `/ws/*`, and `/healthz`.
 
+The container runs as uid 1000, not root. If you mount `./results` from a directory owned by someone else, reports will fail to write — `chown -R 1000:1000 results` on the host fixes it.
+
 The example `.env` is intentionally easy to run: `ALLOW_ANON_API=true` and no API key is required. Before exposing PRISM beyond your machine, switch to API-key mode as shown in [API keys and anonymous mode](#api-keys-and-anonymous-mode).
 
 ### Manual

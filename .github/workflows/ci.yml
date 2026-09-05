@@ -108,3 +108,10 @@ jobs:
           sleep 10
           curl --fail http://localhost:8080/ || (docker logs osint-test && exit 1)
           docker stop osint-test
+
+      - name: Check the image runs unprivileged
+        run: |
+          uid=$(docker run --rm osint-toolkit:${{ github.sha }} id -u)
+          test "$uid" != "0" || (echo "container runs as root (uid $uid)" && exit 1)
+          docker run --rm osint-toolkit:${{ github.sha }} \
+            sh -c 'touch results/.probe scan_data/.probe module_cache/.probe watchlist_data/.probe'

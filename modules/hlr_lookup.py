@@ -11,7 +11,7 @@ class HLRLookup:
 
     def __init__(self):
         self.api_key = NUMVERIFY_API_KEY
-        self.numverify_url = "http://apilayer.net/api/validate"
+        self.numverify_url = "https://apilayer.net/api/validate"
 
     def validate_phone(self, phone: str, country_code: str = None) -> Dict[str, Any]:
         result = {
@@ -90,15 +90,21 @@ class HLRLookup:
         return result
 
     def _numverify_lookup(self, phone: str) -> Optional[Dict]:
-        try:
-            params = {
-                "access_key": self.api_key,
-                "number": phone.replace("+", "").replace(" ", ""),
-                "format": 1
-            }
-            response = requests.get(self.numverify_url, params=params, timeout=10)
-            if response.status_code == 200:
+        params = {
+            "access_key": self.api_key,
+            "number": phone.replace("+", "").replace(" ", ""),
+            "format": 1
+        }
+        fallback = self.numverify_url.replace("https://", "http://", 1)
+        for url in (self.numverify_url, fallback):
+            try:
+                response = requests.get(url, params=params, timeout=10)
+                if response.status_code != 200:
+                    return None
                 data = response.json()
+                err = data.get("error") or {}
+                if isinstance(err, dict) and err.get("code") == 105:
+                    continue
                 if data.get("valid"):
                     return {
                         "country_code": data.get("country_code"),
@@ -107,8 +113,9 @@ class HLRLookup:
                         "carrier": data.get("carrier") or None,
                         "line_type": data.get("line_type")
                     }
-        except Exception:
-            pass
+            except Exception:
+                pass
+            return None
         return None
 
     def print_result(self, result: Dict):

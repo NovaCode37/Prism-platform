@@ -44,6 +44,8 @@ function loadLeaflet(): Promise<any> {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      link.crossOrigin = 'anonymous';
       link.setAttribute('data-leaflet', '1');
       document.head.appendChild(link);
     }
@@ -55,6 +57,8 @@ function loadLeaflet(): Promise<any> {
     }
     const s = document.createElement('script');
     s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+    s.crossOrigin = 'anonymous';
     s.setAttribute('data-leaflet', '1');
     s.onload = () => resolve((window as any).L);
     s.onerror = () => reject(new Error('Failed to load Leaflet'));
