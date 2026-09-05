@@ -96,13 +96,6 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=get_allowed_origins(),
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "X-API-Key", "Authorization"],
-    allow_credentials=False,
-)
 app.add_middleware(SlowAPIMiddleware)
 
 @app.middleware("http")
@@ -119,6 +112,14 @@ if _TRUSTED_HOSTS and _TRUSTED_HOSTS != ["*"]:
 
 if _TRUST_PROXY_HEADERS:
     app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=_FORWARDED_ALLOW_IPS)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_allowed_origins(),
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key", "Authorization"],
+    allow_credentials=False,
+)
 
 @app.on_event("startup")
 async def _startup_banner() -> None:
