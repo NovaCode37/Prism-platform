@@ -812,6 +812,12 @@ For security issues, see [SECURITY.md](SECURITY.md).
 
 ---
 
+## Also from this project
+
+[claude-security-skills](https://github.com/NovaCode37/claude-security-skills) — eight security skills for Claude Code: secret scanning, Python SAST, prompt-injection testing, and HTTP, JWT, Dockerfile, CORS and dependency auditing. Standard library only, installable as a plugin.
+
+---
+
 ## Development note
 
 PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (326 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
