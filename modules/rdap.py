@@ -55,6 +55,14 @@ class RDAPLookup:
                 return f"{base_url}domain/{domain}"
         return f"https://rdap.org/domain/{domain}"
 
+    def _tld_served(self, domain: str) -> bool:
+        if not self.use_bootstrap:
+            return True
+        tld_map = self._load_bootstrap()
+        if not tld_map:
+            return True
+        return domain.rsplit(".", 1)[-1] in tld_map
+
     def _format_date(self, date_str: Optional[str]) -> Optional[str]:
         if not date_str:
             return None
@@ -74,10 +82,10 @@ class RDAPLookup:
         vcard = entity.get("vcardArray", [])
         if len(vcard) > 1 and isinstance(vcard[1], list):
             for prop in vcard[1]:
-                if not isinstance(prop, list) or len(prop) < 3:
+                if not isinstance(prop, list) or len(prop) < 4:
                     continue
                 prop_name = prop[0]
-                prop_value = prop[2] if len(prop) > 2 else None
+                prop_value = prop[3]
                 if prop_name == "fn":
                     contact["name"] = prop_value
                 elif prop_name == "email":
@@ -125,6 +133,8 @@ class RDAPLookup:
                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
             )
             if r.status_code == 404:
+                if not self._tld_served(domain):
+                    return annotate(result, SKIPPED, "This TLD does not serve RDAP")
                 result["registered"] = False
                 return annotate(result, OK, "Domain is not registered")
             if r.status_code == 403:
@@ -179,7 +189,7 @@ class RDAPLookup:
                 if not isinstance(roles, list):
                     roles = [roles] if roles else []
                 if "registrar" in roles or "registrar" in entity.get("type", "").lower():
-                    result["registrar"] = entity.get("fn") or entity.get("handle")
+                    result["registrar"] = self._parse_contact(entity)["name"]
                 if "registrant" in roles:
                     result["registrant"] = self._parse_contact(entity)
                 if "administrative" in roles or "admin" in roles:

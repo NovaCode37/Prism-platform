@@ -33,8 +33,13 @@ REGISTERED_RESPONSE = {
     "entities": [
         {
             "handle": "292",
-            "fn": "MarkMonitor Inc.",
             "roles": ["registrar"],
+            "vcardArray": [
+                "vcard",
+                [
+                    ["fn", {}, "text", "MarkMonitor Inc."],
+                ],
+            ],
         },
         {
             "handle": "R-001",
@@ -43,11 +48,11 @@ REGISTERED_RESPONSE = {
             "vcardArray": [
                 "vcard",
                 [
-                    ["fn", {}, "Domain Owner"],
-                    ["org", {}, "Example Corp"],
-                    ["email", {}, "admin@example.com"],
-                    ["tel", {}, "+1-555-123-4567"],
-                    ["adr", {}, ["", "", "123 Main St", "Anytown", "CA", "90210", "US"]],
+                    ["fn", {}, "text", "Domain Owner"],
+                    ["org", {}, "text", "Example Corp"],
+                    ["email", {}, "text", "admin@example.com"],
+                    ["tel", {}, "uri", "+1-555-123-4567"],
+                    ["adr", {}, "text", ["", "", "123 Main St", "Anytown", "CA", "90210", "US"]],
                 ],
             ],
         },
@@ -196,9 +201,22 @@ def test_rdap_lookup_redirect_following(monkeypatch):
             redirect_response,
             FakeResponse(200, REGISTERED_RESPONSE),
         ]
-        rdap = RDAPLookup()
+        rdap = RDAPLookup(use_bootstrap=False)
         result = rdap.lookup("example.com")
         assert mock_get.call_count == 2
         second_call = mock_get.call_args_list[1]
         assert "rdap.verisign.com" in second_call[0][0]
         assert classify(result) == OK
+
+
+def test_rdap_lookup_tld_without_rdap(monkeypatch):
+    bootstrap = {"services": [[["com"], ["https://rdap.verisign.com/com/v1/"]]]}
+    with patch("modules.rdap.requests.get") as mock_get:
+        mock_get.side_effect = [
+            FakeResponse(200, bootstrap),
+            FakeResponse(404, {}),
+        ]
+        rdap = RDAPLookup()
+        result = rdap.lookup("sberbank.ru")
+        assert classify(result) == SKIPPED
+        assert result["registered"] is None
