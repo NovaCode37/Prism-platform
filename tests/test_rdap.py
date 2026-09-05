@@ -32,8 +32,8 @@ REGISTERED_RESPONSE = {
     ],
     "entities": [
         {
-            "handle": "REG-123",
-            "fn": "Example Registrar",
+            "handle": "292",
+            "fn": "MarkMonitor Inc.",
             "roles": ["registrar"],
         },
         {
@@ -66,11 +66,11 @@ def test_rdap_lookup_registered_domain(monkeypatch):
         result = rdap.lookup("example.com")
         assert classify(result) == OK
         assert result["domain"] == "example.com"
-        assert result["status"] == "registered"
+        assert result["registered"] is True
         assert result["created"] == "1995-08-14T04:00:00Z"
         assert result["expires"] == "2025-08-13T04:00:00Z"
         assert result["updated"] == "2023-05-01T12:00:00Z"
-        assert result["registrar"] == "Example Registrar"
+        assert result["registrar"] == "MarkMonitor Inc."
         assert "ns1.example.com" in result["nameservers"]
         assert "ns2.example.com" in result["nameservers"]
         assert result["registrant"] is not None
@@ -85,7 +85,7 @@ def test_rdap_lookup_unregistered_domain(monkeypatch):
         rdap = RDAPLookup()
         result = rdap.lookup("notarealdomain123456789.com")
         assert classify(result) == OK
-        assert result["status"] == "unregistered"
+        assert result["registered"] is False
         assert result["error"] is None
 
 

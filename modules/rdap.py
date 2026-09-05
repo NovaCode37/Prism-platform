@@ -70,7 +70,7 @@ class RDAPLookup:
             "organization": None,
             "country": None,
         }
-        contact["name"] = entity.get("handle") or entity.get("fn")
+        contact["name"] = entity.get("fn") or entity.get("handle")
         vcard = entity.get("vcardArray", [])
         if len(vcard) > 1 and isinstance(vcard[1], list):
             for prop in vcard[1]:
@@ -98,7 +98,7 @@ class RDAPLookup:
         result: Dict[str, Any] = {
             "domain": domain,
             "rdap_url": None,
-            "status": None,
+            "registered": None,
             "created": None,
             "expires": None,
             "updated": None,
@@ -125,7 +125,7 @@ class RDAPLookup:
                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
             )
             if r.status_code == 404:
-                result["status"] = "unregistered"
+                result["registered"] = False
                 return annotate(result, OK, "Domain is not registered")
             if r.status_code == 403:
                 return annotate(result, SKIPPED, "RDAP server refused the request (access denied)")
@@ -155,7 +155,7 @@ class RDAPLookup:
                     return annotate(result, SKIPPED, f"RDAP unavailable (HTTP {r.status_code})")
 
             data = r.json()
-            result["status"] = "registered"
+            result["registered"] = True
 
             events = data.get("events", [])
             if isinstance(events, list):
@@ -179,7 +179,7 @@ class RDAPLookup:
                 if not isinstance(roles, list):
                     roles = [roles] if roles else []
                 if "registrar" in roles or "registrar" in entity.get("type", "").lower():
-                    result["registrar"] = entity.get("handle") or entity.get("fn")
+                    result["registrar"] = entity.get("fn") or entity.get("handle")
                 if "registrant" in roles:
                     result["registrant"] = self._parse_contact(entity)
                 if "administrative" in roles or "admin" in roles:
