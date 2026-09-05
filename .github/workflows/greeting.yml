@@ -8,6 +8,7 @@ on:
 
 jobs:
   greet:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -16,12 +17,12 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: >
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: >
             Thanks for the first issue. If it is a bug, the versions and the
             exact command or request you ran help a lot — most reports get
             sorted out on that alone.
-          pr-message: >
+          pr_message: >
             Thanks for the first pull request here. CI needs a maintainer to
             approve the run before it starts, so it may sit for a bit before
             anything happens. `pytest tests/ -q` passing is the main thing I
