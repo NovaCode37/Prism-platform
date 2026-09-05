@@ -1217,12 +1217,16 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
     suffix = os.path.splitext(file.filename or "")[1].lower()
     if suffix not in ALLOWED_EXTS:
         return JSONResponse({"error": f"Unsupported file type: {suffix}"}, status_code=400)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        shutil.copyfileobj(file.file, tmp)
-        tmp_path = tmp.name
+    loop = asyncio.get_event_loop()
+
+    def _spool() -> str:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            shutil.copyfileobj(file.file, tmp)
+            return tmp.name
+
+    tmp_path = await loop.run_in_executor(None, _spool)
     try:
         from modules.metadata_extractor import extract_metadata
-        loop = asyncio.get_event_loop()
         result = await loop.run_in_executor(None, extract_metadata, tmp_path)
         result["filename"] = file.filename
         result["file_type"] = result.pop("format", None)
@@ -1397,9 +1401,9 @@ async def list_scans(request: Request):
 @limiter.limit("10/minute")
 async def clear_scans(request: Request):
     principal = get_principal(request)
-    deleted = 0
 
-    try:
+    def _purge() -> int:
+        deleted = 0
         for fname in os.listdir(_SCANS_DIR):
             if not fname.endswith(".json"):
                 continue
@@ -1421,6 +1425,11 @@ async def clear_scans(request: Request):
             except Exception:
                 pass
 
+        return deleted
+
+    try:
+        loop = asyncio.get_event_loop()
+        deleted = await loop.run_in_executor(None, _purge)
         return {"deleted": deleted}
 
     except Exception as e:
