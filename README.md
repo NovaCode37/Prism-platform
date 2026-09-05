@@ -57,7 +57,7 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 - **Webhook callbacks** — get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
 - **Hardened auth** — header-only API keys (`X-API-Key` / `Bearer`), no query-string secrets, strict CORS, per-principal scan isolation
 - **Zero mandatory API keys** — 14 out of 22 modules work without any keys at all
-- **One-command deploy** — `docker compose up --build` and you're running
+- **One-command deploy** — `docker run ghcr.io/novacode37/prism-platform` with nothing to build (amd64 and arm64)
 - **Fully open source** — MIT license, extensible module architecture, contributor-friendly
 
 ---
@@ -257,6 +257,23 @@ Open **http://localhost:8080** — the Next.js UI and FastAPI backend are served
 > The demo runs anonymously (`ALLOW_ANON_API=true`) on `:8080`. For authenticated production-style setup, use the Docker / Manual setups below.
 
 ### Docker (recommended)
+
+Nothing to clone and nothing to build:
+
+```bash
+docker run -p 8080:8080 -e ALLOW_ANON_API=true ghcr.io/novacode37/prism-platform:latest
+```
+
+Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.8`, `2.8.0`, plus `edge` built from `main`.
+
+To configure it, pass an env file instead:
+
+```bash
+curl -O https://raw.githubusercontent.com/NovaCode37/Prism-platform/main/.env.example
+docker run -p 8080:8080 --env-file .env.example ghcr.io/novacode37/prism-platform:latest
+```
+
+Building it yourself works too, and is what you want if you are changing the code:
 
 ```bash
 git clone https://github.com/NovaCode37/Prism-platform.git
