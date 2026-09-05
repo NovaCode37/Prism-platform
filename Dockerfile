@@ -4,7 +4,7 @@ ARG UV_IMAGE=ghcr.io/astral-sh/uv:alpine
 
 FROM --platform=$BUILDPLATFORM ${UV_IMAGE} AS uv-bin
 
-FROM ${NODE_IMAGE} AS frontend-build
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS frontend-build
 
 WORKDIR /build/frontend
 
