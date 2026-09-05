@@ -380,10 +380,8 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
         return
     try:
         _resolve_all_public(parsed.hostname)
-    except ValueError as e:
-        msg = str(e)
-        if "cannot be resolved" not in msg and "did not resolve" not in msg:
-            return
+    except ValueError:
+        return
 
     webhook_format = os.environ.get("WEBHOOK_FORMAT", "raw")
     if webhook_format == "slack":

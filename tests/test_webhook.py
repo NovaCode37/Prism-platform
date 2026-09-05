@@ -49,6 +49,7 @@ class TestWebhookDelivery:
             captured["headers"] = headers
 
         monkeypatch.setattr(app_mod._requests, "post", fake_post)
+        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: None)
         monkeypatch.setattr(app_mod, "WEBHOOK_SECRET", "shh")
         payload = {"scan_id": "abc", "status": "completed"}
         app_mod._send_webhook("https://hooks.example.com/prism", payload)
@@ -65,6 +66,7 @@ class TestWebhookDelivery:
             raise RuntimeError("network down")
 
         monkeypatch.setattr(app_mod._requests, "post", boom)
+        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: None)
                         
         app_mod._send_webhook("https://hooks.example.com/prism", {"x": 1})
 
@@ -159,3 +161,28 @@ class TestTestWebhookEndpoint:
         assert "target" in payload
         assert "added" in payload
         assert "changes" in payload
+
+class TestWebhookResolutionGuard:
+    def _blocked(self, monkeypatch, error):
+        from web import app as app_mod
+        sent = []
+
+        def fake_post(*a, **kw):
+            sent.append(a)
+
+        def refuse(hostname):
+            raise ValueError(error)
+
+        monkeypatch.setattr(app_mod._requests, "post", fake_post)
+        monkeypatch.setattr(app_mod, "_resolve_all_public", refuse)
+        app_mod._send_webhook("https://hooks.example.com/prism", {"x": 1})
+        return sent
+
+    def test_private_address_is_not_posted_to(self, monkeypatch):
+        assert self._blocked(monkeypatch, "webhook_url resolves to a private/internal address") == []
+
+    def test_unresolvable_host_is_not_posted_to(self, monkeypatch):
+        assert self._blocked(monkeypatch, "webhook_url hostname cannot be resolved") == []
+
+    def test_empty_resolution_is_not_posted_to(self, monkeypatch):
+        assert self._blocked(monkeypatch, "webhook_url hostname did not resolve") == []
