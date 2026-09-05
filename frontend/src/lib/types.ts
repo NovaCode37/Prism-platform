@@ -236,12 +236,47 @@ export interface GravatarData extends ModuleStatusFields {
   error?: string;
 }
 
+export interface RDAPData extends ModuleStatusFields {
+  domain?: string;
+  rdap_url?: string;
+  registered?: boolean | null;
+  created?: string | null;
+  expires?: string | null;
+  updated?: string | null;
+  registrar?: string | null;
+  registrant?: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    organization?: string | null;
+    country?: string | null;
+  } | null;
+  administrative?: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    organization?: string | null;
+    country?: string | null;
+  } | null;
+  technical?: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    organization?: string | null;
+    country?: string | null;
+  } | null;
+  nameservers?: string[];
+  raw?: unknown;
+  error?: string | null;
+}
+
 export interface BlackbirdFailure extends ModuleStatusFields {
   error?: string;
 }
 
 export interface ScanResults {
   whois?: WhoisData;
+  rdap?: RDAPData;
   dns?: DnsRecord;
   geoip?: GeoipData;
   cert_transparency?: CertTransparencyData;

@@ -323,11 +323,8 @@ def _validate_webhook_url(url: str) -> str:
         raise ValueError("webhook_url must be http(s) with a hostname")
     _resolve_all_public(parsed.hostname)
     try:
-                                                                            
-                                                              
         _requests.head(url, timeout=3, allow_redirects=False)
     except Exception:
-                                                                       
         pass
     return url
 
@@ -495,6 +492,10 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 from modules.extra_tools import WhoisLookup
                 results["whois"] = await _run_module(scan_id, "whois", WhoisLookup().lookup, target)
 
+            if want("rdap") and scan_type == "domain":
+                from modules.rdap import RDAPLookup
+                results["rdap"] = await _run_module(scan_id, "rdap", RDAPLookup().lookup, target)
+
             if want("dns") and scan_type == "domain":
                 from modules.extra_tools import DNSLookup
                 results["dns"] = await _run_module(scan_id, "dns", DNSLookup().lookup, target)
@@ -516,10 +517,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 )
 
             if want("wayback") and scan_type == "domain":
-                                                                            
-                                                                              
-                                                                            
-                                                            
                 from modules.wayback import WaybackMachine
                 wb = WaybackMachine()
                 wayback_snap = await _run_module(
@@ -533,8 +530,6 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     merged["urls"] = wayback_urls.get("urls", [])
                     merged["total_urls"] = wayback_urls.get("total", 0)
                     merged["interesting"] = wayback_urls.get("interesting", [])
-                                                                          
-                                                                           
                     if wayback_urls.get("error") and not merged.get("error"):
                         merged["urls_error"] = wayback_urls["error"]
                 results["wayback"] = merged
@@ -1353,7 +1348,6 @@ async def ai_chat(request: Request, req: dict):
         return JSONResponse({"error": "No message provided"}, status_code=400)
     scan = _load_scan(scan_id) if scan_id else None
     if scan and not _scan_visible_to(scan, get_principal(request)):
-                                                                             
         scan = None
     context = ""
     if scan and scan.get("results"):
@@ -1449,7 +1443,6 @@ async def websocket_endpoint(websocket: WebSocket, scan_id: str):
     if principal is None:
         await websocket.close(code=1008)
         return
-                                                                              
     scan = _scans.get(scan_id) or _load_scan(scan_id)
     if scan and not _scan_visible_to(scan, principal):
         await websocket.close(code=1008)

@@ -433,6 +433,7 @@ const OPSEC_CATEGORY_INFO: Record<string, { label: string; tooltip: string }> = 
 const TABS = [
   { id: 'findings', label: 'Findings', icon: Shield },
   { id: 'whois', label: 'WHOIS', icon: Globe },
+  { id: 'rdap', label: 'RDAP', icon: Globe },
   { id: 'dns', label: 'DNS', icon: Server },
   { id: 'subdomains', label: 'Subdomains', icon: Lock },
   { id: 'accounts', label: 'Accounts', icon: User },
@@ -794,6 +795,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
   const visibleTabs = TABS.filter(t => {
     if (t.id === 'whois') return r.whois && !r.whois.error;
+    if (t.id === 'rdap') return r.rdap && !r.rdap.error;
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
     if (t.id === 'subdomains') return r.cert_transparency?.subdomains?.length;
     if (t.id === 'accounts') return accounts.some(b => b.status === 'found');
@@ -992,6 +994,47 @@ export function ScanResults({ scan, onHome }: Props) {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* RDAP */}
+        {tab === 'rdap' && r.rdap && !r.rdap.error && (
+          <Card title="RDAP Registration" onRefresh={() => refreshModule('rdap')} refreshing={isRefreshing('rdap')}>
+            <div className="space-y-1.5">
+              {r.rdap.registered === false && (
+                <div className="text-text-3 text-sm py-2">Domain is not registered</div>
+              )}
+              {r.rdap.registrar && (
+                <div className="dt-row"><span className="dt-label">Registrar</span><span className="dt-value">{r.rdap.registrar}</span></div>
+              )}
+              {r.rdap.created && (
+                <div className="dt-row"><span className="dt-label">Created</span><span className="dt-value">{r.rdap.created}</span></div>
+              )}
+              {r.rdap.expires && (
+                <div className="dt-row"><span className="dt-label">Expires</span><span className="dt-value">{r.rdap.expires}</span></div>
+              )}
+              {r.rdap.updated && (
+                <div className="dt-row"><span className="dt-label">Updated</span><span className="dt-value">{r.rdap.updated}</span></div>
+              )}
+              {r.rdap.nameservers && r.rdap.nameservers.length > 0 && (
+                <div className="dt-row"><span className="dt-label">Name Servers</span>
+                  <div className="flex flex-wrap gap-1">
+                    {r.rdap.nameservers.slice(0, 4).map(ns => (
+                      <span key={ns} className="tag">{ns}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {r.rdap.registrant && (
+                <div className="mt-2 p-2 bg-surface-2 rounded">
+                  <div className="text-[10px] text-text-3 uppercase tracking-wider mb-1">Registrant</div>
+                  {r.rdap.registrant.name && <div className="text-sm">{r.rdap.registrant.name}</div>}
+                  {r.rdap.registrant.organization && <div className="text-xs text-text-2">{r.rdap.registrant.organization}</div>}
+                  {r.rdap.registrant.email && <div className="text-xs text-text-2">{r.rdap.registrant.email}</div>}
+                  {r.rdap.registrant.country && <div className="text-xs text-text-2">{r.rdap.registrant.country}</div>}
                 </div>
               )}
             </div>
