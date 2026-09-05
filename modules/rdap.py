@@ -156,8 +156,6 @@ class RDAPLookup:
 
             data = r.json()
             result["status"] = "registered"
-            result["created"] = self._format_date(data.get("events", {}).get("registration") or data.get("registrationDate"))
-            result["expires"] = self._format_date(data.get("events", {}).get("expiration") or data.get("expirationDate"))
 
             events = data.get("events", [])
             if isinstance(events, list):

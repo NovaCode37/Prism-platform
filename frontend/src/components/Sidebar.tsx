@@ -333,6 +333,8 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
               </button>
             )}
 
+
+
             <div className="flex items-center gap-1 mb-1.5">
               <button
                 onClick={() => { setCompareMode(v => !v); setCompareSelection([]); }}
@@ -351,10 +353,13 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
     <Trash2 size={10} />
   </button>
 
+
               <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto" aria-label="Refresh history">
                 <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
               </button>
             </div>
+
+
 
             {historyLoading ? (
               <div className="flex justify-center py-2"><Loader2 size={14} className="spin text-text-3" /></div>
