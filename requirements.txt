@@ -2,7 +2,7 @@ requests>=2.34.2
 aiohttp>=3.14.3
 python-dotenv>=1.2.3
 
-phonenumbers>=9.0.37
+phonenumbers>=9.0.38
 
 dnspython>=2.8.0
 python-whois>=0.9.6
