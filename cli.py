@@ -33,18 +33,35 @@ def normalize_target(target: str) -> str:
 
 def detect_type(target: str) -> str:
     if "@" in target:
-        return "email"
-    stripped = target.replace("+", "").replace("-", "").replace(" ", "")
-    if stripped.isdigit():
+        # Check if it's a username with @ prefix (not an email)
+        # Email must have text before @ and a domain after with a dot
+        if target.startswith("@"):
+            return "username"
+        # Check if it's a valid email format
+        parts = target.split("@")
+        if len(parts) == 2 and parts[0] and "." in parts[1]:
+            return "email"
+        # If it has @ but doesn't look like email, treat as username
+        return "username"
+    
+    # Phone number detection - strip all non-digit characters except +
+    stripped = target.replace("+", "").replace("-", "").replace(" ", "").replace("(", "").replace(")", "").replace(".", "")
+    if stripped.isdigit() and len(stripped) >= 7:
         return "phone"
+    
     t = target.lstrip("@")
     if t.startswith("t.me/") or t.startswith("telegram.me/"):
         return "telegram"
+    
+    # IP address detection: 4 dot-separated numbers
     if "." in target:
         segs = target.split(".")
         if len(segs) == 4 and all(s.isdigit() for s in segs):
             return "ip"
-        return "domain"
+        # Contains dot but not 4 segments -> domain
+        if not any(char.isspace() for char in target):
+            return "domain"
+    
     return "username"
 
 
