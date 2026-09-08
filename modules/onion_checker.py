@@ -5,6 +5,8 @@ from typing import Any, Dict, List, Set
 
 import requests
 
+from modules import get_proxies
+
 
 _ONION_RE = re.compile(r"https?://[a-z2-7]{16,56}\.onion[/\w\-\.]*", re.IGNORECASE)
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -42,6 +44,7 @@ class OnionChecker:
                 "https://ahmia.fi/search/",
                 params={"q": query},
                 timeout=self.timeout,
+                proxies=get_proxies(),
                 headers={"User-Agent": "PRISM-OSINT/2.1"},
             )
             if r.status_code != 200:
@@ -69,6 +72,7 @@ class OnionChecker:
                 "https://darksearch.io/api/search",
                 params={"query": query, "page": 1},
                 timeout=self.timeout,
+                proxies=get_proxies(),
                 headers={"User-Agent": "PRISM-OSINT/2.1"},
             )
             if r.status_code != 200:

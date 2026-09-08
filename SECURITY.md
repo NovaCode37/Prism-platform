@@ -66,8 +66,7 @@ PRISM ships with these on:
 
 ## Known limitations
 
-- **`MODULE_PROXY` reaches 2 of the 22 modules that make outbound requests.** If you set it expecting every lookup to leave through the proxy, twenty of them still go out directly from the host. Tracked in [#324](https://github.com/NovaCode37/Prism-platform/issues/324). Until that lands, route the whole container's egress if the source address matters to you.
-- Maigret runs as a subprocess and inherits the host's network the same way.
+- Maigret runs as a subprocess, so `MODULE_PROXY` does not reach it. It uses the host's network directly. If the source address matters to you, route the whole container's egress rather than relying on the variable alone.
 
 ## Deployment
 

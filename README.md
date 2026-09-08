@@ -362,7 +362,7 @@ docker compose up -d --force-recreate
 | `SCAN_QUOTA_PER_DAY` | Daily scans per caller; `0`/unset = unlimited                            |
 | `HUDSONROCK_ENABLED` | `true` to enable the infostealer-exposure module (queries Hudson Rock) |
 | `LUNAR_ENABLED`      | `true` to enable the domain-exposure module (queries Lunar)             |
-| `MODULE_PROXY`       | Proxy for the Hudson Rock and Lunar modules only, not the other 20 (#324) |
+| `MODULE_PROXY`       | Proxy for every outbound module request |
 | `ALLOW_PRIVATE_TARGETS` | `true` to allow scanning private/internal addresses (default `false`) |
 | `WATCHLIST_SCHEDULER` | `true` to enable the watchlist background scheduler                     |
 | `WATCHLIST_POLL_SECONDS` | How often the scheduler checks for due watchlists (default `60`)     |
