@@ -1,4 +1,3 @@
-// frontend/src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
 import { LoadingWrapper } from '@/components/LoadingScreen';
@@ -91,12 +90,10 @@ const JSON_LD = {
 };
 
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
-// Use the exported STORAGE_KEY from i18n
 const LANG_INIT = `(function(){try{var l=localStorage.getItem('${STORAGE_KEY}')||'en';document.documentElement.lang=l;}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // Keep lang="en" as server-rendered default; client corrects it
     <html lang="en">
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
@@ -104,7 +101,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT }} />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
-        {/* Restore LoadingWrapper */}
         <I18nProvider>
           <LoadingWrapper>{children}</LoadingWrapper>
         </I18nProvider>
@@ -112,3 +108,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

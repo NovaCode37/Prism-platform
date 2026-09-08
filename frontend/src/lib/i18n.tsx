@@ -1,4 +1,3 @@
-// frontend/src/lib/i18n.tsx
 'use client';
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import en from '@/messages/en.json';
@@ -87,3 +86,4 @@ export function useTranslations() {
   }
   return ctx;
 }
+
