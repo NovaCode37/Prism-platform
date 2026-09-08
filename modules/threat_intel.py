@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 from config import Colors, VIRUSTOTAL_API_KEY, ABUSEIPDB_API_KEY
 from modules.module_status import annotate, print_status_notice, OK, SKIPPED, RATE_LIMITED, ERROR
+from modules import get_proxies
 
 
 class VirusTotal:
@@ -18,10 +19,12 @@ class VirusTotal:
         if not self.api_key:
             return annotate({}, SKIPPED, "No API key configured (VIRUSTOTAL_API_KEY)")
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}{endpoint}",
                 headers=self.headers,
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 return r.json()
@@ -91,11 +94,13 @@ class VirusTotal:
                 "No API key configured (VIRUSTOTAL_API_KEY)",
             )
         try:
+            proxies = get_proxies()
             submit_r = requests.post(
                 f"{self.BASE_URL}/urls",
                 headers=self.headers,
                 data={"url": url},
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
             if submit_r.status_code == 429:
                 return annotate(
@@ -113,6 +118,7 @@ class VirusTotal:
                 f"{self.BASE_URL}/analyses/{analysis_id}",
                 headers=self.headers,
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
             if result_r.status_code != 200:
                 return {"query": url, "type": "url", "error": f"Results fetch failed: {result_r.status_code}"}
@@ -196,11 +202,13 @@ class AbuseIPDB:
             return annotate(result, SKIPPED, "No API key configured (ABUSEIPDB_API_KEY)")
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/check",
                 headers=self.headers,
                 params={"ipAddress": ip, "maxAgeInDays": max_age_days, "verbose": True},
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 data = r.json().get("data", {})

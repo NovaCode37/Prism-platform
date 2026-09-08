@@ -166,3 +166,13 @@ def test_no_proxy_by_default(enabled, monkeypatch):
     with patch("modules.hudsonrock.requests.get", return_value=FakeResponse(payload=DOMAIN_PAYLOAD)) as mock_get:
         HudsonRockLookup().search_domain("example.com")
     assert mock_get.call_args.kwargs["proxies"] is None
+
+def test_get_proxies_returns_none_when_not_set(monkeypatch):
+    from modules import get_proxies
+    monkeypatch.delenv("MODULE_PROXY", raising=False)
+    assert get_proxies() is None
+
+def test_get_proxies_returns_dict_when_set(monkeypatch):
+    from modules import get_proxies
+    monkeypatch.setenv("MODULE_PROXY", "http://proxy:8080")
+    assert get_proxies() == {"http": "http://proxy:8080", "https": "http://proxy:8080"}

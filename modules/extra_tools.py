@@ -6,6 +6,7 @@ from datetime import datetime
 import sys
 sys.path.append('..')
 from config import IPINFO_API_KEY, Colors
+from modules import get_proxies
 
 try:
     import whois
@@ -168,7 +169,13 @@ class GeoIPLookup:
             if self.api_key:
                 params["token"] = self.api_key
 
-            response = requests.get(url, params=params, timeout=10)
+            proxies = get_proxies()
+            response = requests.get(
+                url,
+                params=params,
+                timeout=10,
+                proxies=proxies,  # Add this line
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -319,7 +326,14 @@ class WebsiteAnalyzer:
         }
 
         try:
-            response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
+            proxies = get_proxies()
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=15,
+                allow_redirects=True,
+                proxies=proxies,  # Add this line
+            )
             html = response.text
 
             result["headers"] = {

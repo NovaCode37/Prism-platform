@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Any, Dict, List, Optional
+from modules import get_proxies
 
 import requests
 
@@ -39,18 +40,19 @@ class HudsonRockLookup:
     def _headers(self) -> Dict[str, str]:
         return {"Accept": "application/json", "User-Agent": "PRISM-OSINT"}
 
-    def _proxies(self) -> Optional[Dict[str, str]]:
-        proxy = os.getenv("MODULE_PROXY", "").strip()
-        return {"http": proxy, "https": proxy} if proxy else None
+    # def _proxies(self) -> Optional[Dict[str, str]]:
+    #     proxy = os.getenv("MODULE_PROXY", "").strip()
+    #     return {"http": proxy, "https": proxy} if proxy else None
 
     def _request(self, path: str, params: Dict[str, str], result: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/{path}",
                 params=params,
                 headers=self._headers(),
                 timeout=self.TIMEOUT,
-                proxies=self._proxies(),
+                proxies=proxies,
             )
         except requests.Timeout:
             annotate(result, ERROR, f"Hudson Rock did not respond within {self.TIMEOUT}s")

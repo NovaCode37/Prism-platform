@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 from config import Colors, SHODAN_API_KEY
 from modules.module_status import annotate, print_status_notice, OK, SKIPPED, RATE_LIMITED, ERROR
+from modules import get_proxies
 
 
 class ShodanLookup:
@@ -25,7 +26,12 @@ class ShodanLookup:
 
     def _internetdb(self, ip: str, result: Dict[str, Any], reason: str) -> Dict[str, Any]:
         try:
-            r = requests.get(f"{self.INTERNETDB_URL}/{ip}", timeout=15)
+            proxies = get_proxies()
+            r = requests.get(
+                f"{self.INTERNETDB_URL}/{ip}",
+                timeout=15,
+                proxies=proxies,  # Add this line
+            )
         except Exception as e:
             return annotate(result, SKIPPED, f"{reason}; the free InternetDB dataset was unreachable ({str(e)[:80]})")
 
@@ -81,10 +87,12 @@ class ShodanLookup:
             return self._internetdb(ip, result, "No API key configured (SHODAN_API_KEY)")
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/shodan/host/{ip}",
                 params={"key": self.api_key},
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
 
             if r.status_code == 404:
@@ -153,10 +161,12 @@ class ShodanLookup:
             return annotate(result, SKIPPED, "No API key configured (SHODAN_API_KEY)")
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/shodan/host/search",
                 params={"key": self.api_key, "query": query, "limit": limit},
                 timeout=20,
+                proxies=proxies,  # Add this line
             )
 
             if r.status_code == 403:

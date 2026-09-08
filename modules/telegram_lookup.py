@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 from modules.module_status import annotate, print_status_notice, OK, SKIPPED, ERROR
+from modules import get_proxies
 
 
 class TelegramLookup:
@@ -32,11 +33,13 @@ class TelegramLookup:
         }
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://t.me/{username}",
                 headers=self.HEADERS,
                 timeout=12,
                 allow_redirects=True,
+                proxies=proxies,  # Add this line
             )
 
             if r.status_code == 404:
@@ -102,10 +105,12 @@ class TelegramLookup:
 
         if bot_token:
             try:
+                proxies = get_proxies()
                 r = requests.get(
                     f"https://api.telegram.org/bot{bot_token}/getChat",
                     params={"chat_id": tg_id},
                     timeout=10,
+                    proxies=proxies,  # Add this line
                 )
                 data = r.json()
                 if data.get("ok") and data.get("result"):

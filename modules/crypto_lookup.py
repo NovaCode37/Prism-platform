@@ -1,6 +1,7 @@
 import re
 import requests
 from typing import Dict, Any
+from modules import get_proxies
 
 
 class CryptoLookup:
@@ -19,9 +20,11 @@ class CryptoLookup:
 
     def _btc_price(self) -> float:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
                 timeout=6,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 return r.json().get("bitcoin", {}).get("usd", 0)
@@ -31,9 +34,11 @@ class CryptoLookup:
 
     def _eth_price(self) -> float:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
                 timeout=6,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 return r.json().get("ethereum", {}).get("usd", 0)
@@ -43,9 +48,11 @@ class CryptoLookup:
 
     def _ltc_price(self) -> float:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd",
                 timeout=6,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 return r.json().get("litecoin", {}).get("usd", 0)
@@ -66,9 +73,11 @@ class CryptoLookup:
             "error": None,
         }
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://blockchain.info/rawaddr/{address}?limit=0",
                 timeout=12,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 data = r.json()
@@ -100,9 +109,11 @@ class CryptoLookup:
             "error": None,
         }
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://api.ethplorer.io/getAddressInfo/{address}?apiKey=freekey",
                 timeout=12,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 data = r.json()
@@ -132,9 +143,11 @@ class CryptoLookup:
             "error": None,
         }
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://api.blockcypher.com/v1/ltc/main/addrs/{address}/balance",
                 timeout=12,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 data = r.json()

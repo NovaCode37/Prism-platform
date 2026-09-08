@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 import sys
 sys.path.append('..')
 from config import Colors
+from modules import get_proxies
 
 
 class CertTransparency:
@@ -19,13 +20,15 @@ class CertTransparency:
         }
 
         try:
-            params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"}
+            proxies = get_proxies()
             response = requests.get(
                 self.BASE_URL,
-                params=params,
+                params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"},
                 timeout=30,
                 headers={"User-Agent": "OSINT-Toolkit/2.0"},
+                proxies=proxies,  # Add this line
             )
+
 
             if response.status_code != 200:
                 result["error"] = f"crt.sh returned status {response.status_code}"

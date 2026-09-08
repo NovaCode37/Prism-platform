@@ -1,5 +1,6 @@
 import requests
 from typing import Dict, Any, Optional, Tuple
+from modules import get_proxies
 
 
 class QRDecoder:
@@ -22,10 +23,12 @@ class QRDecoder:
 
     def _decode_api(self, image_bytes: bytes, filename: str) -> Tuple[Optional[str], Optional[str]]:
         try:
+            proxies = get_proxies()
             r = requests.post(
                 "https://api.qrserver.com/v1/read-qr-code/",
                 files={"file": (filename, image_bytes)},
                 timeout=15,
+                proxies=proxies,  # Add this line
             )
             if r.status_code != 200:
                 return None, f"API returned HTTP {r.status_code}"

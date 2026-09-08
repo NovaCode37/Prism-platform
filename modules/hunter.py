@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional
 import sys
 sys.path.append('..')
 from config import Colors
+from modules import get_proxies
 
 FREE_PROVIDERS = {
     "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
@@ -51,9 +52,11 @@ class EmailRepLookup:
 
     def _check_disposable(self, domain: str) -> bool:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://open.kickbox.com/v1/disposable/{domain}",
                 timeout=8,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 return r.json().get("disposable", False)

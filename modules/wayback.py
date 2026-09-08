@@ -4,6 +4,7 @@ from datetime import datetime
 import sys
 sys.path.append('..')
 from config import Colors
+from modules import get_proxies
 
 
 class WaybackMachine:
@@ -30,7 +31,13 @@ class WaybackMachine:
                 "filter": "statuscode:200",
                 "collapse": "timestamp:8",
             }
-            r = requests.get(self.CDX_URL, params=params, timeout=45)
+            proxies = get_proxies()
+            r = requests.get(
+                self.CDX_URL,
+                params=params,
+                timeout=45,
+                proxies=proxies,  # Add this line
+            )
 
             if r.status_code != 200:
                 result["error"] = f"CDX API returned {r.status_code}"
@@ -107,7 +114,13 @@ class WaybackMachine:
                 "collapse": "urlkey",
                 "filter": "statuscode:200",
             }
-            r = requests.get(self.CDX_URL, params=params, timeout=25)
+            proxies = get_proxies()
+            r = requests.get(
+                self.CDX_URL,
+                params=params,
+                timeout=25,
+                proxies=proxies,  # Add this line
+            )
 
             if r.status_code != 200:
                 result["error"] = f"CDX API returned {r.status_code}"
@@ -137,10 +150,12 @@ class WaybackMachine:
     def check_availability(self, url: str) -> Dict[str, Any]:
         result = {"url": url, "available": False, "closest_snapshot": None, "error": None}
         try:
+            proxies = get_proxies()
             r = requests.get(
                 self.AVAILABILITY_URL,
                 params={"url": url},
                 timeout=10,
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 200:
                 data = r.json()

@@ -1,6 +1,7 @@
 import ipaddress
 import re
 from typing import Any, Dict, List, Optional
+from modules import get_proxies
 
 import requests
 
@@ -127,10 +128,12 @@ class RDAPLookup:
         result["rdap_url"] = rdap_url
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 rdap_url,
                 timeout=self.timeout,
                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
+                proxies=proxies,  # Add this line
             )
             if r.status_code == 404:
                 if not self._tld_served(domain):
@@ -152,6 +155,7 @@ class RDAPLookup:
                                 location,
                                 timeout=self.timeout,
                                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
+                                proxies=proxies,  # Add this line
                             )
                             if r2.status_code == 200:
                                 r = r2
