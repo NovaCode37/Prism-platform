@@ -1,3 +1,4 @@
+// frontend/src/lib/i18n.tsx
 'use client';
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import en from '@/messages/en.json';
@@ -46,22 +47,27 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY) as Locale | null;
       if (stored && SUPPORTED_LOCALES.includes(stored)) {
         setLocaleState(stored);
+        document.documentElement.lang = stored;
         return;
       }
       const lang = (typeof navigator !== 'undefined' ? navigator.language?.toLowerCase() : '') || '';
-      if (lang.startsWith('ru')) setLocaleState('ru');
-      else if (lang.startsWith('de')) setLocaleState('de');
-      else if (lang.startsWith('fr')) setLocaleState('fr');
-      else if (lang.startsWith('es')) setLocaleState('es');
-      else if (lang.startsWith('it')) setLocaleState('it');
-      else if (lang.startsWith('pt')) setLocaleState('pt');
-      else if (lang.startsWith('pl')) setLocaleState('pl');
-      else if (lang.startsWith('zh')) setLocaleState('zh');
+      let detected: Locale = 'en';
+      if (lang.startsWith('ru')) detected = 'ru';
+      else if (lang.startsWith('de')) detected = 'de';
+      else if (lang.startsWith('fr')) detected = 'fr';
+      else if (lang.startsWith('es')) detected = 'es';
+      else if (lang.startsWith('it')) detected = 'it';
+      else if (lang.startsWith('pt')) detected = 'pt';
+      else if (lang.startsWith('pl')) detected = 'pl';
+      else if (lang.startsWith('zh')) detected = 'zh';
+      setLocaleState(detected);
+      document.documentElement.lang = detected;
     } catch {}
   }, []);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
+    document.documentElement.lang = l;
     try { localStorage.setItem(STORAGE_KEY, l); } catch {}
   }, []);
 

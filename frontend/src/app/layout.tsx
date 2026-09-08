@@ -1,3 +1,4 @@
+// frontend/src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
 import { LoadingWrapper } from '@/components/LoadingScreen';
@@ -90,18 +91,19 @@ const JSON_LD = {
 };
 
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+// Remove lang from html — it will be set client-side by I18nProvider
+const LANG_INIT = `(function(){try{var l=localStorage.getItem('prism_locale')||'en';document.documentElement.lang=l;}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_INIT }} />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
-        <I18nProvider>
-          <LoadingWrapper>{children}</LoadingWrapper>
-        </I18nProvider>
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );
