@@ -16,7 +16,7 @@ type Messages = typeof en;
 
 const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages };
 export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh'];
-const STORAGE_KEY = 'prism_locale';
+export const STORAGE_KEY = 'prism_locale';
 
 interface I18nContextValue {
   locale: Locale;
