@@ -5,6 +5,7 @@ from typing import Dict, Any, Optional
 import sys
 sys.path.append('..')
 from config import NUMVERIFY_API_KEY, Colors
+from modules import get_proxies
 
 
 class HLRLookup:
@@ -98,7 +99,13 @@ class HLRLookup:
         fallback = self.numverify_url.replace("https://", "http://", 1)
         for url in (self.numverify_url, fallback):
             try:
-                response = requests.get(url, params=params, timeout=10)
+                proxies = get_proxies()
+                response = requests.get(
+                    url,
+                    params=params,
+                    timeout=10,
+                    proxies=proxies,  
+                )
                 if response.status_code != 200:
                     return None
                 data = response.json()
@@ -153,10 +160,12 @@ class HLRLookup:
         clean = phone.replace("+", "").replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
 
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"https://api.numlookupapi.com/v1/validate/{clean}",
                 headers={"User-Agent": "OSINT-Toolkit/2.0"},
                 timeout=10,
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json()
@@ -183,10 +192,12 @@ class HLRLookup:
             ]:
                 try:
                     import re
+                    proxies = get_proxies()
                     r = requests.get(
                         site_url,
                         headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
                         timeout=8,
+                        proxies=proxies,  
                     )
                     if r.status_code == 200:
                         text = r.text

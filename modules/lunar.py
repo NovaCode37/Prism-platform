@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Any, Dict, List, Optional
+from modules import get_proxies
 
 import requests
 
@@ -43,18 +44,19 @@ class LunarLookup:
     def _headers(self) -> Dict[str, str]:
         return {"Accept": "application/json", "User-Agent": "PRISM-OSINT"}
 
-    def _proxies(self) -> Optional[Dict[str, str]]:
-        proxy = os.getenv("MODULE_PROXY", "").strip()
-        return {"http": proxy, "https": proxy} if proxy else None
+    # def _proxies(self) -> Optional[Dict[str, str]]:
+    #     proxy = os.getenv("MODULE_PROXY", "").strip()
+    #     return {"http": proxy, "https": proxy} if proxy else None
 
     def _request(self, domain: str, result: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 self.BASE_URL,
                 params={"domain": domain},
                 headers=self._headers(),
                 timeout=self.TIMEOUT,
-                proxies=self._proxies(),
+                proxies=proxies,
             )
         except requests.Timeout:
             annotate(result, ERROR, f"Lunar did not respond within {self.TIMEOUT}s")

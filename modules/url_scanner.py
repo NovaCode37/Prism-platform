@@ -2,6 +2,7 @@ import base64
 import time
 import requests
 from typing import Dict, Any
+from modules import get_proxies
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -31,11 +32,13 @@ class URLScanner:
         headers = {"x-apikey": VIRUSTOTAL_API_KEY}
 
         try:
+            proxies = get_proxies()
             r = requests.post(
                 f"{self.VT_BASE}/urls",
                 headers=headers,
                 data={"url": url},
                 timeout=15,
+                proxies=proxies,  
             )
             if r.status_code not in (200, 201):
                 result["error"] = f"Submit failed: HTTP {r.status_code}"
@@ -56,6 +59,7 @@ class URLScanner:
                     f"{self.VT_BASE}/analyses/{analysis_id}",
                     headers=headers,
                     timeout=15,
+                    proxies=proxies,  
                 )
                 data = r2.json().get("data", {})
                 attrs = data.get("attributes", {})

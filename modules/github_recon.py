@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 from modules.module_status import annotate, print_status_notice, OK, RATE_LIMITED, ERROR
+from modules import get_proxies
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 
@@ -44,7 +45,13 @@ class GitHubRecon:
             return annotate(result, ERROR, "No username provided")
 
         try:
-            r = requests.get(f"{self.BASE_URL}/users/{username}", headers=self._headers(), timeout=15)
+            proxies = get_proxies()
+            r = requests.get(
+                f"{self.BASE_URL}/users/{username}",
+                headers=self._headers(),
+                timeout=15,
+                proxies=proxies,  
+            )
             if r.status_code == 404:
                 result["error"] = "GitHub user not found"
                 return result
@@ -101,11 +108,13 @@ class GitHubRecon:
 
     def _get_repos(self, username: str) -> List[Dict[str, Any]]:
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/users/{username}/repos",
                 headers=self._headers(),
                 params={"per_page": 100, "sort": "pushed"},
                 timeout=15,
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json()
@@ -116,10 +125,12 @@ class GitHubRecon:
     def _emails_from_events(self, username: str) -> List[str]:
         emails: List[str] = []
         try:
+            proxies = get_proxies()
             r = requests.get(
                 f"{self.BASE_URL}/users/{username}/events/public",
                 headers=self._headers(),
                 timeout=15,
+                proxies=proxies,  
             )
             if r.status_code != 200:
                 return emails

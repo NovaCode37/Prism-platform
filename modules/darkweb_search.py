@@ -1,5 +1,6 @@
 import requests
 from typing import Dict, Any, List
+from modules import get_proxies
 
 
 class DarkWebSearch:
@@ -32,11 +33,13 @@ class DarkWebSearch:
 
         for backend in self.BACKENDS:
             try:
+                proxies = get_proxies()
                 r = requests.get(
                     backend["url"],
                     params=backend["params"](query),
                     headers=headers,
                     timeout=15,
+                    proxies=proxies,  
                 )
                 if r.status_code == 429:
                     last_error = f'{backend["name"]}: rate limited'
