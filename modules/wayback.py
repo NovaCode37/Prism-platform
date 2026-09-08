@@ -36,7 +36,7 @@ class WaybackMachine:
                 self.CDX_URL,
                 params=params,
                 timeout=45,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code != 200:
@@ -119,7 +119,7 @@ class WaybackMachine:
                 self.CDX_URL,
                 params=params,
                 timeout=25,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code != 200:
@@ -155,7 +155,7 @@ class WaybackMachine:
                 self.AVAILABILITY_URL,
                 params={"url": url},
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json()

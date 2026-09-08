@@ -52,7 +52,7 @@ class GravatarRecon:
                 f"{self.BASE_URL}/{email_hash}.json",
                 headers=self._headers(),
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code == 404:

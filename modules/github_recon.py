@@ -50,7 +50,7 @@ class GitHubRecon:
                 f"{self.BASE_URL}/users/{username}",
                 headers=self._headers(),
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 404:
                 result["error"] = "GitHub user not found"
@@ -114,7 +114,7 @@ class GitHubRecon:
                 headers=self._headers(),
                 params={"per_page": 100, "sort": "pushed"},
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json()
@@ -130,7 +130,7 @@ class GitHubRecon:
                 f"{self.BASE_URL}/users/{username}/events/public",
                 headers=self._headers(),
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code != 200:
                 return emails

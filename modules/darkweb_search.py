@@ -39,7 +39,7 @@ class DarkWebSearch:
                     params=backend["params"](query),
                     headers=headers,
                     timeout=15,
-                    proxies=proxies,  # Add this line
+                    proxies=proxies,  
                 )
                 if r.status_code == 429:
                     last_error = f'{backend["name"]}: rate limited'

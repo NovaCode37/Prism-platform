@@ -26,7 +26,7 @@ class CertTransparency:
                 params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"},
                 timeout=30,
                 headers={"User-Agent": "OSINT-Toolkit/2.0"},
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
 

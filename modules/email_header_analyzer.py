@@ -3,6 +3,7 @@ import socket
 from email import message_from_string
 from typing import Dict, Any, List, Optional
 import requests
+from modules import get_proxies
 
 
 def _reverse_dns(ip: str) -> Optional[str]:
@@ -31,7 +32,12 @@ def _parse_received_ip(line: str) -> Optional[str]:
 
 def _geoip(ip: str) -> Dict:
     try:
-        r = requests.get(f'https://ipinfo.io/{ip}/json', timeout=6)
+        proxies = get_proxies()  
+        r = requests.get(
+            f'https://ipinfo.io/{ip}/json',
+            timeout=6,
+            proxies=proxies,  
+        )
         if r.status_code == 200:
             d = r.json()
             return {

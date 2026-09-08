@@ -24,7 +24,7 @@ class CryptoLookup:
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
                 timeout=6,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json().get("bitcoin", {}).get("usd", 0)
@@ -38,7 +38,7 @@ class CryptoLookup:
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
                 timeout=6,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json().get("ethereum", {}).get("usd", 0)
@@ -52,7 +52,7 @@ class CryptoLookup:
             r = requests.get(
                 "https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd",
                 timeout=6,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json().get("litecoin", {}).get("usd", 0)
@@ -77,7 +77,7 @@ class CryptoLookup:
             r = requests.get(
                 f"https://blockchain.info/rawaddr/{address}?limit=0",
                 timeout=12,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json()
@@ -113,7 +113,7 @@ class CryptoLookup:
             r = requests.get(
                 f"https://api.ethplorer.io/getAddressInfo/{address}?apiKey=freekey",
                 timeout=12,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json()
@@ -147,7 +147,7 @@ class CryptoLookup:
             r = requests.get(
                 f"https://api.blockcypher.com/v1/ltc/main/addrs/{address}/balance",
                 timeout=12,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json()

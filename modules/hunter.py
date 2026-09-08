@@ -56,7 +56,7 @@ class EmailRepLookup:
             r = requests.get(
                 f"https://open.kickbox.com/v1/disposable/{domain}",
                 timeout=8,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json().get("disposable", False)

@@ -30,7 +30,7 @@ class ShodanLookup:
             r = requests.get(
                 f"{self.INTERNETDB_URL}/{ip}",
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
         except Exception as e:
             return annotate(result, SKIPPED, f"{reason}; the free InternetDB dataset was unreachable ({str(e)[:80]})")
@@ -92,7 +92,7 @@ class ShodanLookup:
                 f"{self.BASE_URL}/shodan/host/{ip}",
                 params={"key": self.api_key},
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code == 404:
@@ -166,7 +166,7 @@ class ShodanLookup:
                 f"{self.BASE_URL}/shodan/host/search",
                 params={"key": self.api_key, "query": query, "limit": limit},
                 timeout=20,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code == 403:

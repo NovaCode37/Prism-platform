@@ -28,7 +28,7 @@ class QRDecoder:
                 "https://api.qrserver.com/v1/read-qr-code/",
                 files={"file": (filename, image_bytes)},
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code != 200:
                 return None, f"API returned HTTP {r.status_code}"

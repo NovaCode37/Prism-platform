@@ -43,7 +43,7 @@ class LeakLookup:
                 headers=headers,
                 params={"truncateResponse": "false"},
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:
@@ -95,7 +95,7 @@ class LeakLookup:
                 f"{self.XON_API}/check-email/{email}",
                 headers={"User-Agent": "OSINT-Tool"},
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:
@@ -140,7 +140,7 @@ class LeakLookup:
                 params={"check": email},
                 headers={"User-Agent": "Mozilla/5.0 (compatible; PRISM-OSINT)"},
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:
@@ -185,7 +185,7 @@ class LeakLookup:
             response = requests.get(
                 f"https://api.pwnedpasswords.com/range/{prefix}",
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:
@@ -226,7 +226,7 @@ class LeakLookup:
                     "query": query
                 },
                 timeout=30,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:

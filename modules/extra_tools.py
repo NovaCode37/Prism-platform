@@ -174,7 +174,7 @@ class GeoIPLookup:
                 url,
                 params=params,
                 timeout=10,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if response.status_code == 200:
@@ -332,7 +332,7 @@ class WebsiteAnalyzer:
                 headers=headers,
                 timeout=15,
                 allow_redirects=True,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             html = response.text
 

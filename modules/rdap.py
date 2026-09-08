@@ -20,7 +20,12 @@ class RDAPLookup:
         if self._bootstrap_cache is not None:
             return self._bootstrap_cache
         try:
-            r = requests.get(IANA_BOOTSTRAP_URL, timeout=self.timeout)
+            proxies = get_proxies()  
+            r = requests.get(
+                IANA_BOOTSTRAP_URL,
+                timeout=self.timeout,
+                proxies=proxies, 
+            )
             if r.status_code != 200:
                 return {}
             data = r.json()
@@ -133,7 +138,7 @@ class RDAPLookup:
                 rdap_url,
                 timeout=self.timeout,
                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 404:
                 if not self._tld_served(domain):
@@ -155,7 +160,7 @@ class RDAPLookup:
                                 location,
                                 timeout=self.timeout,
                                 headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
-                                proxies=proxies,  # Add this line
+                                proxies=proxies,  
                             )
                             if r2.status_code == 200:
                                 r = r2

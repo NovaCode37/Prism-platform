@@ -24,7 +24,7 @@ class VirusTotal:
                 f"{self.BASE_URL}{endpoint}",
                 headers=self.headers,
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 return r.json()
@@ -100,7 +100,7 @@ class VirusTotal:
                 headers=self.headers,
                 data={"url": url},
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if submit_r.status_code == 429:
                 return annotate(
@@ -118,7 +118,7 @@ class VirusTotal:
                 f"{self.BASE_URL}/analyses/{analysis_id}",
                 headers=self.headers,
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if result_r.status_code != 200:
                 return {"query": url, "type": "url", "error": f"Results fetch failed: {result_r.status_code}"}
@@ -208,7 +208,7 @@ class AbuseIPDB:
                 headers=self.headers,
                 params={"ipAddress": ip, "maxAgeInDays": max_age_days, "verbose": True},
                 timeout=15,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
             if r.status_code == 200:
                 data = r.json().get("data", {})

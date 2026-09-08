@@ -39,7 +39,7 @@ class TelegramLookup:
                 headers=self.HEADERS,
                 timeout=12,
                 allow_redirects=True,
-                proxies=proxies,  # Add this line
+                proxies=proxies,  
             )
 
             if r.status_code == 404:
@@ -110,7 +110,7 @@ class TelegramLookup:
                     f"https://api.telegram.org/bot{bot_token}/getChat",
                     params={"chat_id": tg_id},
                     timeout=10,
-                    proxies=proxies,  # Add this line
+                    proxies=proxies,  
                 )
                 data = r.json()
                 if data.get("ok") and data.get("result"):
