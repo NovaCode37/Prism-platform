@@ -28,6 +28,12 @@ export function normalizeScanTarget(value: string): string {
     normalized = portMatch[1];
   }
 
+  // Strip trailing dot from domain names
+  // But preserve it for IP addresses (IPv6) and email addresses
+  if (normalized.includes('.') && !normalized.includes('@') && !normalized.includes(':')) {
+    normalized = normalized.replace(/\.+$/, '');
+  }
+
   // Email detection: lowercase the whole thing if it looks like an email
   if (normalized.includes('@') && !normalized.startsWith('@')) {
     return normalized.toLowerCase();
