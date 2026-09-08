@@ -284,6 +284,7 @@
     "json": { "title": "Raw JSON Results", "show": "Show raw data", "hide": "Hide raw data" },
     "ai": { "title": "AI OSINT Analysis · Nvidia Nemotron", "chatTitle": "Ask the AI", "generate": "Generate AI Summary", "generating": "Generating analysis…", "model": "Model", "regenerate": "Regenerate", "placeholder": "Ask anything about this scan…" },
     "duration": "Completed in {duration}",
+    "copyAllFindings": "Copy all findings",
     "copyAllEmails": "Copy all emails",
     "emailsCopied": "Emails copied!",
     "filterPlatforms": "Filter platforms..."

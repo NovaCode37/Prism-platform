@@ -1,90 +1,90 @@
 # Security Policy
 
-PRISM is a self-hosted OSINT platform. Even though every scan it performs is **passive**, the platform itself processes user inputs, talks to many third-party APIs, and exposes a public-facing dashboard. I take its security posture seriously.
+PRISM performs only passive lookups, but the platform itself takes user input, talks to a couple of dozen third-party APIs, and serves a dashboard that people put on the public internet. Reports about any of that are welcome.
 
-## Supported Versions
+## Supported versions
 
-| Version | Supported          |
-|---------|--------------------|
-| 2.4.x   | Active support     |
-| 2.3.x   | Security fixes only |
-| < 2.3   | Unsupported        |
+| Version | Supported |
+|---------|-----------|
+| 2.8.x   | Yes |
+| 2.7.x   | Security fixes only |
+| < 2.7   | No |
 
-Please upgrade to the latest `2.4.x` release before reporting any issue.
+This is a one-person project, so support means the latest minor plus the one before it. Please reproduce on the current release before reporting.
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-**Please do not open public GitHub issues for security vulnerabilities.**
+**Do not open a public issue for a security problem.**
 
-- Email: `entropq2@gmail.com` (preferred)
-- Or: open a private security advisory via GitHub →
-  `Security` → `Report a vulnerability`
+- Email `entropq2@gmail.com`, or
+- Open a private advisory: `Security` tab, then `Report a vulnerability`
 
-Include in your report:
+Useful to include:
 
-1. A clear description of the issue and impact.
-2. Steps to reproduce (or a minimal proof-of-concept).
-3. Affected version / commit hash.
-4. Your assessment of severity (low / medium / high / critical) and any suggested mitigation.
+1. What the issue is and what an attacker gets out of it.
+2. Steps to reproduce, or a minimal proof of concept.
+3. Version or commit hash.
+4. Your own read on severity, and a suggested fix if you have one.
 
-I aim to:
+What to expect back: I read reports within a week and reply with an assessment once I have reproduced it. Fixes for anything high or critical go out as soon as they are ready, usually within a couple of weeks. I would rather say that than promise a number I cannot keep. If a report has gone quiet for more than two weeks, send a reminder.
 
-- Acknowledge new reports within **72 hours**.
-- Provide an initial assessment within **7 days**.
-- Ship a fix or mitigation for confirmed issues within **30 days** for high/critical severity.
-
-If you'd like credit in the changelog, mention how you'd like to be attributed (name, handle, link).
+Tell me how you want to be credited in the changelog, or say if you would rather not be.
 
 ## Scope
 
 In scope:
 
-- The PRISM backend (`web/app.py`, `web/security.py`, scan modules under `modules/`).
-- The PRISM frontend (`frontend/`).
-- Default Docker / docker-compose deployment artifacts.
-- Webhook delivery and signing.
+- Backend: `web/app.py`, `web/security.py`, the modules under `modules/`
+- Frontend under `frontend/`
+- The browser extension under `extension/`
+- Docker and docker-compose deployment artefacts
+- Webhook delivery and signing
 
 Out of scope:
 
-- Vulnerabilities in third-party services PRISM consults (Shodan, VirusTotal, Censys, etc.) — please report those upstream.
-- Issues that require a maliciously modified deployment (e.g. attacker-controlled `.env`).
-- Theoretical issues without a working PoC.
-- Rate-limiting or DoS that requires sustained traffic from a privileged network position.
+- Bugs in the third-party services PRISM queries (Shodan, VirusTotal, Censys and the rest). Report those upstream.
+- Anything that needs a maliciously modified deployment, such as an attacker-controlled `.env`.
+- Findings with no working proof of concept.
+- Denial of service that needs sustained traffic or a privileged network position.
 
-## Hardening defaults (since v2.2)
+## Defaults
 
-PRISM ships with the following defaults to reduce attack surface:
+PRISM ships with these on:
 
-- **Header-only API auth** — `X-API-Key` or `Authorization: Bearer …`. Query-string keys are **rejected**.
-- **No anonymous access by default** — without configured `API_KEYS`, the API responds with `503` unless `ALLOW_ANON_API=true` is explicitly set.
-- **Strict CORS** — `ALLOWED_ORIGINS` must be explicitly listed; wildcard is not enabled by default.
-- **Per-principal scan isolation** — each scan is owned by a principal derived from the API key; cross-principal reads return `404`.
-- **SSRF guards** on:
-  - `validate_url_not_private` for user-supplied URLs.
-  - `_resolve_all_public` for webhook callback hosts (rejects private/loopback/reserved/link-local/multicast/unspecified addresses).
-- **HMAC-signed webhooks** when `WEBHOOK_SECRET` is set (`X-Prism-Secret` header).
-- **Security response headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
-- **Rate limiting** — global defaults `200/day, 60/hour` and per-route limits via `slowapi`.
-- **Trusted proxy headers are opt-in** — `TRUST_PROXY_HEADERS=true` only trusts `X-Forwarded-*` values from `FORWARDED_ALLOW_IPS`.
-- **Input validation** — target length cap, forbidden shell metacharacters in `validate_target`, UUID format check on scan IDs.
-- **Optional `DISABLE_DOCS=true`** to hide `/docs`, `/redoc`, `/openapi.json` in production.
+- **Header-only API auth.** `X-API-Key` or `Authorization: Bearer`. Keys in the query string are rejected.
+- **No anonymous access.** With no `API_KEYS` configured the API answers `503` unless `ALLOW_ANON_API=true` is set deliberately.
+- **CORS closed by default.** `ALLOWED_ORIGINS` has to list origins explicitly. There is no wildcard fallback.
+- **Per-principal scan isolation.** A scan belongs to the principal derived from the API key, and reads across principals return `404`.
+- **SSRF guards.** `validate_url_not_private` for user-supplied URLs, `_resolve_all_public` for webhook hosts. The webhook guard checks every address a hostname resolves to and refuses to send if any of them is private, or if the name does not resolve at all.
+- **HMAC-signed webhooks** when `WEBHOOK_SECRET` is set, in `X-Prism-Secret`.
+- **Response headers.** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- **Rate limiting.** `200/day` and `60/hour` globally, tighter per route, via slowapi. Keyed on the peer address unless proxy headers are explicitly trusted.
+- **Proxy headers off by default.** `TRUST_PROXY_HEADERS=true` trusts `X-Forwarded-*` only from the addresses in `FORWARDED_ALLOW_IPS`.
+- **Input validation.** Length cap and shell metacharacter rejection in `validate_target`, UUID check on scan IDs.
+- **Non-root container.** The image runs as uid 1000. CI fails if that stops being true.
+- **`DISABLE_DOCS=true`** hides `/docs`, `/redoc` and `/openapi.json`.
 
-## Recommended deployment hardening
+## Known limitations
 
-For production deployments I recommend:
+- **`MODULE_PROXY` reaches 2 of the 22 modules that make outbound requests.** If you set it expecting every lookup to leave through the proxy, twenty of them still go out directly from the host. Tracked in [#324](https://github.com/NovaCode37/Prism-platform/issues/324). Until that lands, route the whole container's egress if the source address matters to you.
+- Maigret runs as a subprocess and inherits the host's network the same way.
 
-1. Generate strong, unique values for `API_KEYS` (multiple tenants → comma-separated).
-2. Set `ALLOWED_ORIGINS` to the exact frontend origin(s).
-3. Set `WEBHOOK_SECRET` and validate the `X-Prism-Secret` header on the receiving side.
+## Deployment
+
+For anything reachable from outside your machine:
+
+1. Generate long random values for `API_KEYS`. Comma-separate them for multiple tenants.
+2. Set `ALLOWED_ORIGINS` to the exact frontend origins.
+3. Set `WEBHOOK_SECRET` and check `X-Prism-Secret` on the receiving end.
 4. Set `DISABLE_DOCS=true`.
-5. Run behind a reverse proxy (nginx, Caddy, Cloudflare) terminating TLS.
-6. Set `TRUST_PROXY_HEADERS=true` only when PRISM is not directly reachable, and restrict `FORWARDED_ALLOW_IPS` to the reverse proxy source IPs.
-7. Set `TRUSTED_HOSTS` to the public hostname(s) accepted by the backend.
-8. Treat `PRISM_UI_API_KEY` as public browser configuration; do not use a server-only secret for it.
-9. Restrict outbound network egress where possible (PRISM does call many third-party APIs).
-10. Mount `scan_data/` and `module_cache/` on persistent, access-controlled storage.
-11. Keep your Docker images updated and run `pytest -q` after every dependency upgrade.
+5. Put it behind a reverse proxy that terminates TLS.
+6. Set `TRUST_PROXY_HEADERS=true` only when PRISM is not directly reachable, and pin `FORWARDED_ALLOW_IPS` to the proxy.
+7. Set `TRUSTED_HOSTS` to the hostnames the backend should answer on.
+8. Treat `PRISM_UI_API_KEY` as public. It ships to the browser, so never put a server-side secret there.
+9. Restrict outbound egress where you can. PRISM calls a lot of third parties.
+10. Put `scan_data/` and `module_cache/` on storage you control. If you bind-mount them, `chown -R 1000:1000` so the non-root container can write.
+11. Update the image and run `pytest -q` after dependency upgrades.
 
 ## Legal use
 
-PRISM is for **lawful, authorized** OSINT only. See the *Legal Notice* in [README.md](README.md). Reports about the platform being misused for unauthorized surveillance, harassment, or doxxing are welcome and I will act on them.
+PRISM is for lawful, authorised OSINT. See the legal notice in [README.md](README.md). If you find the platform being used for surveillance, harassment or doxxing, tell me and I will act on it.

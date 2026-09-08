@@ -480,6 +480,7 @@
       "placeholder": "Zapytaj o cokolwiek na temat tego skanu…"
     },
     "duration": "Ukończono w {duration}",
+    "copyAllFindings": "Skopiuj wszystkie wyniki",
     "copyAllEmails": "Skopiuj wszystkie e-maile",
     "emailsCopied": "E-maile skopiowane!",
     "filterPlatforms": "Filtruj platformy..."

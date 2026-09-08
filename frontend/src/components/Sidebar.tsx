@@ -213,6 +213,11 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
                 <X size={12} />
               </button>
             )}
+            {!target && (
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-text-3 border border-border-1 rounded px-1.5 py-0.5 font-mono hidden sm:block select-none pointer-events-none">
+                /
+              </kbd>
+            )}
           </div>
         </div>
 

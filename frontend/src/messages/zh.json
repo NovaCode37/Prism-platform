@@ -284,6 +284,7 @@
     "json": { "title": "原始 JSON 结果", "show": "显示原始数据", "hide": "隐藏原始数据" },
     "ai": { "title": "AI OSINT 分析 · Nvidia Nemotron", "chatTitle": "向 AI 提问", "generate": "生成 AI 摘要", "generating": "正在生成分析…", "model": "模型", "regenerate": "重新生成", "placeholder": "询问关于此扫描的任何问题…" },
     "duration": "耗时 {duration} 完成",
+    "copyAllFindings": "复制所有发现",
     "copyAllEmails": "复制所有邮箱",
     "emailsCopied": "邮箱已复制！",
     "filterPlatforms": "筛选平台..."

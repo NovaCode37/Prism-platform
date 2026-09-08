@@ -176,6 +176,7 @@
     "json": { "title": "Résultats JSON bruts", "show": "Afficher les données brutes", "hide": "Masquer les données brutes" },
     "ai": { "title": "Analyse IA OSINT · Nvidia Nemotron", "chatTitle": "Demander à l'IA", "generate": "Générer un résumé IA", "generating": "Génération de l'analyse…", "model": "Modèle", "regenerate": "Régénérer", "placeholder": "Posez une question sur cette analyse…" },
     "duration": "Terminé en {duration}",
+    "copyAllFindings": "Copier tous les résultats",
     "copyAllEmails": "Copier tous les e-mails",
     "emailsCopied": "E-mails copiés !",
     "filterPlatforms": "Filtrer les plateformes..."

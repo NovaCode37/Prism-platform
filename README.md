@@ -1,10 +1,10 @@
 <div align="center">
 
-# PRISM — Open Source Intelligence Platform
+# PRISM
 
 **Self-hosted OSINT platform with 22+ modules, OPSEC scoring, AI summary, and a real-time web dashboard.**
 
-Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel, breach data, username search, dark-web mirrors, OPSEC score, entity graphs, and HTML/PDF reports in seconds.
+Scan a domain, IP, email, phone or username and get WHOIS, DNS, threat intel, breach data, username search, dark-web mirrors, OPSEC score, entity graphs, and HTML/PDF reports in seconds.
 
 **[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)** · **[FAQ](#faq)**
 
@@ -13,28 +13,17 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
 [![Firefox Add-on](https://img.shields.io/amo/v/prism-osint?style=flat-square&logo=firefoxbrowser&logoColor=white&label=Firefox%20Add-on&color=ff7139)](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-326%20passing-3fb950?style=flat-square)](#running-tests)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](Dockerfile)
-[![GitHub stars](https://img.shields.io/github/stars/NovaCode37/Prism-platform?style=flat-square&logo=github&color=yellow&cacheSeconds=3600)](https://github.com/NovaCode37/Prism-platform/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/NovaCode37/Prism-platform?style=flat-square&logo=github&cacheSeconds=3600)](https://github.com/NovaCode37/Prism-platform/network/members)
-[![Contributors](https://img.shields.io/github/contributors/NovaCode37/Prism-platform?style=flat-square&logo=github)](https://github.com/NovaCode37/Prism-platform/graphs/contributors)
-[![Views](https://visitor-badge.laobi.icu/badge?page_id=NovaCode37.Prism-platform&left_text=views)](https://github.com/NovaCode37/Prism-platform)
 
 </div>
 
-> **AI analysis does not work on the [live demo](https://getprism.su).** It runs on shared hosting whose region every hosted LLM provider refuses at their edge, so the request never reaches a model. That panel is the only thing affected — every other module works, and on a self-hosted instance with your own provider the AI works normally. See [the FAQ](#faq) for why.
+> **AI analysis does not work on the [live demo](https://getprism.su).** It runs on shared hosting whose region every hosted LLM provider refuses at their edge, so the request never reaches a model. That panel is the only thing affected. Every other module works, and on a self-hosted instance with your own provider the AI works normally. See [the FAQ](#faq) for why.
 
-> If you find PRISM useful, please consider giving it a ⭐ — it helps others discover the project and motivates further development.
 
 <div align="center">
 
 ### Table of Contents
 
-[Why PRISM?](#why-prism) • [Overview](#overview) • [Why PRISM vs alternatives?](#why-prism-vs-alternatives) • [Use cases](#use-cases) • [Features](#features) • [Showcase](#showcase) • [Quick Start](#quick-start) • [Configuration](#configuration) • [API](#api) • [Project Structure](#project-structure) • [Running Tests](#running-tests) • [CI/CD](#cicd) • [Roadmap](#roadmap) • [Star History](#star-history) • [Legal Notice](#legal-notice) • [Support the project](#support-the-project) • [Contributing](#contributing) • [Credits](#credits) • [License](#license)
+[Why PRISM?](#why-prism) • [Overview](#overview) • [How it compares](#how-it-compares) • [Use cases](#use-cases) • [Features](#features) • [Showcase](#showcase) • [Quick Start](#quick-start) • [Configuration](#configuration) • [API](#api) • [Project Structure](#project-structure) • [Running Tests](#running-tests) • [CI/CD](#cicd) • [Roadmap](#roadmap) • [Star History](#star-history) • [Legal Notice](#legal-notice) • [Support the project](#support-the-project) • [Contributing](#contributing) • [Credits](#credits) • [License](#license)
 
 </div>
 
@@ -46,32 +35,32 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 
 ## Why PRISM?
 
-- **22+ modules** — WHOIS, DNS, crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, **Censys**, **Dark Web (Ahmia + DarkSearch)**, email reputation, SMTP verify, breach lookup, Blackbird (50+ sites), Maigret (3000+ sites), Telegram, phone HLR, email headers, file metadata, and more
-- **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
-- **Real-time dashboard** — WebSocket-driven scan progress with **module-level progress bar (5/8 · 62%)**, interactive entity relationship graph, **multi-marker Leaflet GeoIP map**
-- **OPSEC Score** — aggregated 0–100 exposure risk score across data exposure, identity, infrastructure and web security
-- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE)
-- **Multi-language UI** — English, Russian, German, French, Spanish, Italian, Polish, Portuguese, and Chinese out of the box (i18n + auto-detect)
-- **Standalone CLI** — run scans headlessly via `python cli.py scan example.com --json`, and manage scheduled re-scans with `python cli.py watchlist add example.com --interval 6`
-- **Scan history & comparison** — browse past scans, load results, compare two scans side-by-side
-- **Webhook callbacks** — get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
-- **Hardened auth** — header-only API keys (`X-API-Key` / `Bearer`), no query-string secrets, strict CORS, per-principal scan isolation
-- **Zero mandatory API keys** — 14 out of 22 modules work without any keys at all
-- **One-command deploy** — `docker run ghcr.io/novacode37/prism-platform` with nothing to build (amd64 and arm64)
-- **Fully open source** — MIT license, extensible module architecture, contributor-friendly
+- **22+ modules**: WHOIS, DNS, crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, Censys, dark-web mirrors, email reputation, SMTP verify, breach lookup, Blackbird (50+ sites), Maigret (3000+ sites), Telegram, phone HLR, email headers, file metadata, and more
+- **AI summary**: written summary of the findings, plus a chat you can ask follow-up questions in. Needs an LLM provider of your own.
+- **Real-time dashboard**: WebSocket-driven scan progress with per-module progress, an entity graph and a GeoIP map
+- **OPSEC Score**: aggregated 0-100 exposure risk score across data exposure, identity, infrastructure and web security
+- **HTML, PDF, CSV & Markdown reports**: export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE)
+- **Multi-language UI**: English, Russian, German, French, Spanish, Italian, Polish, Portuguese, and Chinese out of the box (i18n + auto-detect)
+- **Standalone CLI**: run scans headlessly via `python cli.py scan example.com --json`, and manage scheduled re-scans with `python cli.py watchlist add example.com --interval 6`
+- **Scan history & comparison**: browse past scans, load results, compare two scans side-by-side
+- **Webhook callbacks**: get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
+- **Hardened auth**: header-only API keys (`X-API-Key` / `Bearer`), no query-string secrets, strict CORS, per-principal scan isolation
+- **Zero mandatory API keys**: 14 out of 22 modules work without any keys at all
+- **One-command deploy**: `docker run ghcr.io/novacode37/prism-platform` with nothing to build (amd64 and arm64)
+- **MIT licensed**, and adding a module means one file in `modules/`
 
 ---
 
 ## Overview
 
-PRISM aggregates data from **20+ external intelligence sources** to build a comprehensive profile of any target — domain, IP address, email, phone number, or social username. All data is presented in a real-time dashboard with relationship graphs, a GeoIP map, exportable HTML/PDF reports, and an automated OPSEC exposure score.
+PRISM queries 20-odd external sources and puts what comes back in one place. Targets can be a domain, an IP, an email, a phone number or a username. Results land in a dashboard as they arrive, with a relationship graph, a GeoIP map, an exposure score and HTML or PDF export.
 
 **Stack:**
-- **Backend** — Python 3.10+, FastAPI, asyncio, WebSocket, Pydantic, slowapi (rate limiting), xhtml2pdf (PDF)
-- **Frontend** — Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Leaflet (maps)
-- **AI** — OpenRouter (Nvidia Nemotron) or Groq (Llama-3) for summary and chat
-- **Infrastructure** — Docker, docker-compose, GitHub Actions CI/CD
-- **Tests** — pytest, **326 test cases** with monkeypatching, network mocking, SSRF/auth coverage
+- **Backend**: Python 3.10+, FastAPI, asyncio, WebSocket, Pydantic, slowapi (rate limiting), xhtml2pdf (PDF)
+- **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Leaflet (maps)
+- **AI**: OpenRouter (Nvidia Nemotron) or Groq (Llama-3) for summary and chat
+- **Infrastructure**: Docker, docker-compose, GitHub Actions CI/CD
+- **Tests**: pytest, 361 cases, network mocked
 
 <p align="center">
   <img src="docs/pics/main_showcase/main_showcase.png" alt="PRISM Dashboard" width="720" />
@@ -95,31 +84,21 @@ flowchart LR
 
 ---
 
-## Why PRISM vs alternatives?
+## How it compares
 
-| Capability                        | **PRISM**             | SpiderFoot CE | theHarvester | Recon-ng    | Maltego CE |
-|-----------------------------------|-----------------------|---------------|--------------|-------------|------------|
-| Modern web dashboard              | ✅ Next.js 14         | ⚠️ legacy     | ❌ CLI only  | ❌ CLI only | ✅ desktop |
-| Real-time scan progress           | ✅                    | ⚠️            | ❌           | ❌          | ❌         |
-| AI-powered summary + chat         | ✅ LLM                | ❌            | ❌           | ❌          | ❌         |
-| OPSEC score (0–100)               | ✅                    | ❌            | ❌           | ❌          | ❌         |
-| Entity graph (interactive)        | ✅                    | ✅            | ❌           | ❌          | ✅         |
-| GeoIP map (multi-marker)          | ✅ Leaflet            | ⚠️ basic      | ❌           | ❌          | ⚠️         |
-| HTML + PDF report export          | ✅ EN/RU/DE                 | ⚠️ HTML       | ⚠️ HTML      | ⚠️          | ⚠️         |
-| Multi-language UI                 | ✅ EN/RU/DE/FR/ES/IT/PL/PT/ZH | ❌            | ❌           | ❌          | ❌         |
-| Zero-key out of the box           | ✅ 14/22 modules      | ⚠️            | ⚠️           | ⚠️          | ❌         |
-| Webhook callbacks (signed)        | ✅                    | ❌            | ❌           | ❌          | ❌         |
-| One-command Docker deploy         | ✅                    | ⚠️            | ⚠️           | ⚠️          | ❌         |
+SpiderFoot, theHarvester, Recon-ng and Maltego all cover ground PRISM does, and several of them cover it better. theHarvester and Recon-ng are CLI tools and comfortable to script around. SpiderFoot has far more modules. Maltego's graph work is a different league.
+
+What PRISM does that those generally do not: results stream into a browser while the scan runs, everything is one container with no keys required to get started, and the scan ends with a report you can hand to someone who is not an analyst. If you want depth and already live in a terminal, SpiderFoot or Recon-ng is probably the better tool. If you want to point something at a domain and read the answer, this is built for that.
 
 ---
 
 ## Use cases
 
-- **Bug bounty recon** — kick off a single scan and get subdomains (crt.sh + Censys), open ports (Shodan), wayback sensitive paths, and AI-prioritized findings.
-- **Phishing investigation** — pivot from a suspicious domain or email to threat intel, breach exposure, mail auth (SPF/DKIM/DMARC), and historical snapshots.
-- **Brand & impersonation monitoring** — webhook-driven scans to detect new lookalike subdomains, dark-web mentions, and exposed credentials.
-- **Security awareness training** — give employees their own OPSEC score across email, phone, and username so they see exposure on a 0–100 scale.
-- **Academic / educational OSINT** — a self-hosted, MIT-licensed reference for teaching passive reconnaissance, geolocation, and threat intel pipelines.
+- **Bug bounty recon**: kick off a single scan and get subdomains (crt.sh + Censys), open ports (Shodan), wayback sensitive paths, and AI-prioritized findings.
+- **Phishing investigation**: pivot from a suspicious domain or email to threat intel, breach exposure, mail auth (SPF/DKIM/DMARC), and historical snapshots.
+- **Brand & impersonation monitoring**: webhook-driven scans to detect new lookalike subdomains, dark-web mentions, and exposed credentials.
+- **Security awareness training**: give employees their own OPSEC score across email, phone, and username so they see exposure on a 0-100 scale.
+- **Academic / educational OSINT**: a self-hosted, MIT-licensed reference for teaching passive reconnaissance, geolocation, and threat intel pipelines.
 
 ---
 
@@ -127,35 +106,35 @@ flowchart LR
 
 | Module | Description | API Key |
 |--------|-------------|----------|
-| WHOIS | Domain registration, registrar, dates | — |
-| DNS | A, MX, NS, TXT, CNAME, SOA records | — |
-| Certificate Transparency | Subdomain discovery via crt.sh | — |
-| Wayback Machine | Historical snapshots, sensitive URL patterns | — |
+| WHOIS | Domain registration, registrar, dates | none |
+| DNS | A, MX, NS, TXT, CNAME, SOA records | none |
+| Certificate Transparency | Subdomain discovery via crt.sh | none |
+| Wayback Machine | Historical snapshots, sensitive URL patterns | none |
 | GeoIP | IP geolocation, ASN, timezone | ipinfo.io |
 | Shodan | Open ports, services, known CVEs; falls back to the keyless InternetDB dataset | Shodan (optional) |
 | Censys | Host services, ASN, certificate → subdomain discovery | Censys |
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |
-| Dark Web Checker | .onion mirrors via Ahmia + DarkSearch | — |
+| Dark Web Checker | .onion mirrors via Ahmia + DarkSearch | none |
 | Infostealer Exposure | Machines infected by stealers carrying the target's credentials (opt-in) | Hudson Rock |
 | Domain Exposure | Yearly exposure trend, malware families, affected services (opt-in) | Lunar |
-| Website Analyzer | Tech stack, emails, social links, metadata | — |
-| Email Reputation | DNS-based email rep (MX, SPF, DMARC, disposable check) | — |
-| SMTP Verify | Mailbox existence check via SMTP handshake | — |
+| Website Analyzer | Tech stack, emails, social links, metadata | none |
+| Email Reputation | DNS-based email rep (MX, SPF, DMARC, disposable check) | none |
+| SMTP Verify | Mailbox existence check via SMTP handshake | none |
 | Breach Check | Email breach / credential leak lookup | Leak-Lookup |
-| Blackbird | Username presence across 50+ platforms (async) | — |
-| Maigret | Deep username search across 3000+ sites | — |
+| Blackbird | Username presence across 50+ platforms (async) | none |
+| Maigret | Deep username search across 3000+ sites | none |
 | Telegram Lookup | Username/ID lookup via Bot API + scraping | Telegram |
 | Phone / HLR | Number validation, carrier, country, reverse lookup | Numverify |
-| Email Headers | SPF/DKIM/DMARC analysis, routing hops, spoofing detection | — |
-| File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | — |
-| OPSEC Score | Aggregated 0–100 exposure risk score | — |
-| Entity Graph | Interactive node-relationship visualization | — |
-| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE | — |
+| Email Headers | SPF/DKIM/DMARC analysis, routing hops, spoofing detection | none |
+| File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | none |
+| OPSEC Score | Aggregated 0-100 exposure risk score | none |
+| Entity Graph | Interactive node-relationship visualization | none |
+| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE | none |
 | AI Summary | Natural-language findings summary via LLM | OpenRouter / Groq |
-| Webhook Callbacks | HMAC-signed POST on scan completion (SSRF-guarded) | — |
+| Webhook Callbacks | HMAC-signed POST on scan completion (SSRF-guarded) | none |
 
-Infostealer Exposure and Domain Exposure are off unless you set `HUDSONROCK_ENABLED` or `LUNAR_ENABLED`. Both query a third party, so a default install sends them nothing. Lunar builds its report on the first request and caches it for a month, so a domain nobody has looked up yet comes back as skipped with `GENERATING_REPORT` — scan it again once the report is ready.
+Infostealer Exposure and Domain Exposure are off unless you set `HUDSONROCK_ENABLED` or `LUNAR_ENABLED`. Both query a third party, so a default install sends them nothing. Lunar builds its report on the first request and caches it for a month, so a domain nobody has looked up yet comes back as skipped with `GENERATING_REPORT`. Scan it again once the report is ready.
 
 ---
 
@@ -175,7 +154,7 @@ Infostealer Exposure and Domain Exposure are off unless you set `HUDSONROCK_ENAB
 
 <h3 align="center">Browser Extension</h3>
 
-<p align="center">Right-click any domain, email, username, or IP — the full scan runs right inside the popup. No tab switching, no copy-paste.</p>
+<p align="center">Right-click any domain, email, username or IP and the full scan runs inside the popup. No tab switching, no copy-paste.</p>
 
 <p align="center">
   <a href="https://addons.mozilla.org/en-US/firefox/addon/prism-osint/"><img src="https://img.shields.io/badge/Get%20it%20on-Firefox%20Add--ons-ff7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white" alt="Get PRISM on Firefox Add-ons" /></a>
@@ -244,7 +223,7 @@ File Metadata (EXIF/GPS), Email Header Analyzer, Crypto Address Lookup, QR Code 
 
 ### Try in 60 seconds (no setup, no API keys)
 
-Spin up a self-contained demo preloaded with example scans — no API keys, no external lookups required:
+A self-contained demo preloaded with example scans. No API keys, no external lookups:
 
 ```bash
 git clone https://github.com/NovaCode37/Prism-platform.git
@@ -252,7 +231,7 @@ cd Prism-platform
 docker compose -f docker-compose.demo.yml up --build
 ```
 
-Open **http://localhost:8080** — the Next.js UI and FastAPI backend are served by the same container. Three sample scans (a domain, an IP, and a username) are already under **Recent Scans**, showing the dashboard, OPSEC score, entity graph, map, and HTML/PDF report.
+Open **http://localhost:8080**. The Next.js UI and FastAPI backend are served by the same container. Three sample scans (a domain, an IP, and a username) are already under **Recent Scans**, showing the dashboard, OPSEC score, entity graph, map, and HTML/PDF report.
 
 > The demo runs anonymously (`ALLOW_ANON_API=true`) on `:8080`. For authenticated production-style setup, use the Docker / Manual setups below.
 
@@ -284,7 +263,7 @@ docker compose up --build
 
 Open **http://localhost:8080**. Docker builds the Next.js static export and serves it from FastAPI together with `/api/*`, `/ws/*`, and `/healthz`.
 
-The container runs as uid 1000, not root. If you mount `./results` from a directory owned by someone else, reports will fail to write — `chown -R 1000:1000 results` on the host fixes it.
+The container runs as uid 1000, not root. If you mount `./results` from a directory owned by someone else, reports will fail to write. `chown -R 1000:1000 results` on the host fixes it.
 
 The example `.env` is intentionally easy to run: `ALLOW_ANON_API=true` and no API key is required. Before exposing PRISM beyond your machine, switch to API-key mode as shown in [API keys and anonymous mode](#api-keys-and-anonymous-mode).
 
@@ -318,7 +297,7 @@ When you run only `uvicorn` from source, FastAPI serves `/api/*`, `/ws/*`, and `
 
 ## Configuration
 
-PRISM is configured via environment variables (`.env`). External provider keys are optional — modules that need a missing provider key gracefully skip.
+PRISM is configured via environment variables (`.env`). External provider keys are optional. Modules that need a missing provider key gracefully skip.
 
 ### API keys and anonymous mode
 
@@ -580,7 +559,7 @@ prism/
 │   ├── crypto_lookup.py          # Crypto address heuristics
 │   ├── qr_decoder.py             # QR image decoder
 │   ├── url_scanner.py            # Standalone URL scanner
-│   ├── opsec_score.py            # Exposure risk scoring (0–100)
+│   ├── opsec_score.py            # Exposure risk scoring (0-100)
 │   ├── graph_builder.py          # Entity relationship graph data
 │   ├── report_generator.py       # Jinja2 HTML report + xhtml2pdf PDF
 │   └── report_i18n.py            # Report translations EN / RU / DE
@@ -595,7 +574,7 @@ prism/
 │       ├── components/           # UI (Topbar, Sidebar, Map, Graph, ...)
 │       └── lib/                  # API client, i18n, types
 │
-└── tests/                        # 326 pytest tests
+└── tests/                        # 361 pytest tests
     ├── test_modules.py
     ├── test_modules_extended.py
     ├── test_v2_1_modules.py
@@ -626,15 +605,15 @@ npx tsc --noEmit -p tsconfig.json
 
 GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
-1. **Lint** — flake8
-2. **Test** — pytest with coverage
-3. **Build** — Docker image
+1. **Lint**: flake8
+2. **Test**: pytest with coverage
+3. **Build**: Docker image
 
 ---
 
 ## Roadmap
 
-### v2.2 — released
+### v2.2 (released)
 - [x] Multilingual report rendering (EN / RU / DE) via `report_i18n`
 - [x] Webhook callbacks with HMAC signing + SSRF guard
 - [x] Multi-marker Leaflet GeoIP map (replaces single-iframe map)
@@ -644,55 +623,55 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 - [x] Authenticated HTML/PDF report download via blob fetch
 - [x] Test suite expanded to **102 cases**
 
-### v2.3 — released
+### v2.3 (released)
 - [x] Scan history panel + side-by-side scan comparison (diff view)
 - [x] CSV & Markdown report export (alongside HTML/PDF)
-- [x] French (FR) & Spanish (ES) locales — UI now ships EN / RU / DE / FR / ES
+- [x] French (FR) & Spanish (ES) locales: UI now ships EN / RU / DE / FR / ES
 - [x] Standalone CLI (`python cli.py scan <target> --json|--html|--pdf`)
 - [x] Slack / Discord webhook formatters (`WEBHOOK_FORMAT=slack|discord`)
 - [x] Rate-limit response headers, keyboard shortcuts, scan duration, copy-all-emails
-- [x] Graceful module degradation — `skipped` / `rate_limited` statuses instead of hard errors
+- [x] Graceful module degradation: `skipped` / `rate_limited` statuses instead of hard errors
 - [x] IP / Subnet calculator standalone tool
 - [x] One-command demo (`docker compose -f docker-compose.demo.yml up`) with seeded scans
 - [x] Reliable Leaflet map rendering + Unicode (Cyrillic) fonts in PDF export
 
-### v2.4 — released
+### v2.4 (released)
 - [x] GitHub user / organization recon module (profile, languages, repos, commit-metadata emails)
 - [x] Hash Identifier and Base64 / URL encoder standalone tools
-- [x] Per-module refresh — re-run a single module from its result card
+- [x] Per-module refresh: re-run a single module from its result card
 - [x] Approximate region-level GeoIP map for phone scans
-- [x] Scan history — sorted newest-first, auto-refresh, "Clear history", localized
+- [x] Scan history: sorted newest-first, auto-refresh, "Clear history", localized
 - [x] Friendly empty states (graph tab) and more rotating sidebar tips
-- [x] Hardening — Unicode (DejaVu) fonts in PDF, robust startup env parsing, apt-retry Docker builds
+- [x] Hardening: Unicode (DejaVu) fonts in PDF, robust startup env parsing, apt-retry Docker builds
 
-### v2.5 — released
+### v2.5 (released)
 - [x] Scheduled scans + continuous monitoring / watchlists with diff alerting
 - [x] Entity graph export to GEXF / GraphML (Gephi / Maltego)
 - [x] Per-API-key quotas and usage-stats endpoint
-- [x] Additional locale (ZH) — 9 languages, with dark / light theme toggle
+- [x] Additional locale (ZH): 9 languages, with dark / light theme toggle
 - [x] SSRF hardening for scan/watchlist targets + maigret path-traversal fix
 
-### v2.6 — released
-- [x] Browser extension for one-click scans — **[live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)** ([source](extension/))
-- [x] Configurable LLM provider (`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` / `LLM_PROXY`) — any OpenAI-compatible endpoint
-- [x] Accessibility pass — reduced-motion, aria-live progress, scan-type ARIA labels
+### v2.6 (released)
+- [x] Browser extension for one-click scans: **[live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)** ([source](extension/))
+- [x] Configurable LLM provider (`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` / `LLM_PROXY`): any OpenAI-compatible endpoint
+- [x] Accessibility pass: reduced-motion, aria-live progress, scan-type ARIA labels
 
-### v2.7 — released
-- [x] Domain exposure module (Lunar) — yearly exposure trend, malware families, affected services; opt-in
+### v2.7 (released)
+- [x] Domain exposure module (Lunar): yearly exposure trend, malware families, affected services; opt-in
 - [x] Rate limits keyed on the peer address unless proxy headers are trusted
 - [x] Username sanitised in Blackbird export paths and lookup URLs
 - [x] Watchdog on maigret runs so a stalled process no longer hangs the scan
 
-### v2.8 — released
-- [x] Username search confirmed against a control request — soft-404 sites no longer report accounts that do not exist
+### v2.8 (released)
+- [x] Username search confirmed against a control request: soft-404 sites no longer report accounts that do not exist
 - [x] Blocked sites reported as `unknown` instead of counted as absent
 - [x] Every configured LLM provider tried in turn, with Ollama shipped in the compose file behind a profile
 - [x] Shodan falls back to the keyless InternetDB dataset when no paid key answers
 
-### v2.9 — planned
+### v2.9 (planned)
 - [ ] Report translations for the six interface languages that still fall back to English ([#295](https://github.com/NovaCode37/Prism-platform/issues/295))
-- [ ] Username checks for the sites that serve identical HTML for every name — needs their APIs rather than page scraping
-- [ ] *(exploring)* AI OSINT agent — autonomous multi-module investigation
+- [ ] Username checks for the sites that serve identical HTML for every name: needs their APIs rather than page scraping
+- [ ] *(exploring)* AI OSINT agent: autonomous multi-module investigation
 
 > Want to contribute? Pick an open issue tagged `good first issue` or open a new one.
 
@@ -718,7 +697,7 @@ This tool is intended **exclusively for lawful, authorized use**:
 - Auditing your own digital footprint
 - Academic and educational purposes
 
-Every scan PRISM performs is passive and queries only publicly available data — but aggregating public data can still cause real harm. Do **not** use PRISM to:
+Every scan PRISM performs is passive and queries only publicly available data, but aggregating public data can still cause real harm. Do **not** use PRISM to:
 - Stalk, harass, dox, or surveil any person without their consent
 - Profile or track individuals you have no authorization to investigate
 - Collect data in violation of applicable law or the terms of service of the platforms involved
@@ -751,14 +730,14 @@ ETH:          0x0639476A71255FD2C15dceD53e167952DcddEE8A
   </tr>
 </table>
 
-**Want the browser extension in your store?** The [PRISM extension](extension/) is [live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/). Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store — if you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
+**Want the browser extension in your store?** The [PRISM extension](extension/) is [live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/). Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store. If you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
 
 ---
 
 ## FAQ
 
 **Do I need API keys?**
-No — 14 of 22 modules work without any keys.
+No. 14 of 22 modules work without any keys.
 
 **Is it free?**
 Yes, MIT licensed and completely self-hosted.
@@ -767,7 +746,7 @@ Yes, MIT licensed and completely self-hosted.
 Try the live demo, or spin it up with the one-command Docker demo.
 
 **Which LLM does the AI summary use?**
-Any OpenAI-compatible endpoint — OpenRouter, Groq, GigaChat, or a local Ollama all work. Set `LLM_BASE_URL`, `LLM_API_KEY`, and `LLM_MODEL` in `.env` to point at your own provider, plus `LLM_PROXY` if the request needs to go through a proxy. Every key you configure becomes a provider, and they are tried in order until one answers, so a blocked or rate-limited provider falls through to the next.
+Any OpenAI-compatible endpoint. OpenRouter, Groq, GigaChat and a local Ollama all work. Set `LLM_BASE_URL`, `LLM_API_KEY`, and `LLM_MODEL` in `.env` to point at your own provider, plus `LLM_PROXY` if the request needs to go through a proxy. Every key you configure becomes a provider, and they are tried in order until one answers, so a blocked or rate-limited provider falls through to the next.
 
 **How do I run the AI locally, with nothing leaving the machine?**
 The compose file ships an Ollama service behind a profile, so it stays out of the way unless you ask for it:
@@ -777,7 +756,7 @@ docker compose --profile ollama up -d
 docker compose exec ollama ollama pull qwen2.5:3b
 ```
 
-Then point PRISM at it in `.env` — the container reaches Ollama by service name, and no key is needed:
+Then point PRISM at it in `.env`. The container reaches Ollama by service name, and no key is needed:
 
 ```ini
 LLM_BASE_URL=http://ollama:11434/v1/chat/completions
@@ -787,10 +766,10 @@ LLM_MODEL=qwen2.5:3b
 Budget roughly 4 GB of RAM for a 3B model and 8 GB for a 7B one; answers are slower than a hosted provider, and nothing is sent off the machine.
 
 **Why do some modules fail on the public demo?**
-The demo is a shared-hosting instance with anonymous access and a daily scan quota, so it hits limits the average self-hosted install never will. Several modules also depend on third-party services that break on their own schedule — crt.sh regularly answers `502`, and the Wayback CDX API answers `503` under load. PRISM reports those upstream failures verbatim instead of hiding them.
+The demo is a shared-hosting instance with anonymous access and a daily scan quota, so it hits limits the average self-hosted install never will. Several modules also depend on third-party services that break on their own schedule. crt.sh regularly answers `502`, and the Wayback CDX API answers `503` under load. PRISM reports those upstream failures verbatim instead of hiding them.
 
 **Why is AI analysis dead on the demo?**
-Hosted LLM providers refuse the demo's hosting region at their edge, so the call is rejected before it reaches a model. It is an IP-level block, not a bug and not a missing key — PRISM tries every provider you configure and reports what each one said.
+Hosted LLM providers refuse the demo's hosting region at their edge, so the call is rejected before it reaches a model. It is an IP-level block, not a bug and not a missing key. PRISM tries every provider you configure and reports what each one said.
 
 The demo sits on shared hosting, which rules out the two normal workarounds: there is no room to run a local model, and no second machine to proxy through. So it stays broken there, and only there.
 
@@ -802,7 +781,7 @@ LLM_API_KEY=...
 LLM_MODEL=...
 ```
 
-Or run the model yourself with nothing leaving the machine — see the Ollama answer above. Configure more than one provider and PRISM falls through to the next when one refuses.
+Or run the model yourself with nothing leaving the machine, see the Ollama answer above. Configure more than one provider and PRISM falls through to the next when one refuses.
 
 ---
 
@@ -816,13 +795,13 @@ For security issues, see [SECURITY.md](SECURITY.md).
 
 ## Also from this project
 
-[claude-security-skills](https://github.com/NovaCode37/claude-security-skills) — eight security skills for Claude Code: secret scanning, Python SAST, prompt-injection testing, and HTTP, JWT, Dockerfile, CORS and dependency auditing. Standard library only, installable as a plugin.
+[claude-security-skills](https://github.com/NovaCode37/claude-security-skills): eight security skills for Claude Code: secret scanning, Python SAST, prompt-injection testing, and HTTP, JWT, Dockerfile, CORS and dependency auditing. Standard library only, installable as a plugin.
 
 ---
 
 ## Development note
 
-PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (326 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
+PRISM is built by one person, with AI assistance as part of the workflow. Everything gets reviewed and tested before it lands: 361 tests covering module mocking, SSRF and auth, and reverse-proxy behaviour. Bug reports and pull requests are welcome.
 
 ---
 
@@ -831,7 +810,7 @@ PRISM is built solo, with AI coding assistance as part of the workflow. All code
 PRISM stands on the shoulders of excellent open-source projects and public data sources.
 
 **Tools & techniques**
-- [Maigret](https://github.com/soxoj/maigret) — username search across thousands of sites (run as a subprocess)
+- [Maigret](https://github.com/soxoj/maigret): username search across thousands of sites (run as a subprocess)
 - Username heuristics inspired by [Sherlock](https://github.com/sherlock-project/sherlock) and [Blackbird](https://github.com/p1ngul1n0/blackbird)
 
 **Data sources & APIs**

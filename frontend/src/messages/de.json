@@ -284,6 +284,7 @@
     "json": { "title": "Rohe JSON-Daten", "show": "Rohdaten anzeigen", "hide": "Rohdaten verbergen" },
     "ai": { "title": "KI-OSINT-Analyse · Nvidia Nemotron", "chatTitle": "Frag die KI", "generate": "KI-Zusammenfassung erstellen", "generating": "Analyse wird erstellt…", "model": "Modell", "regenerate": "Neu generieren", "placeholder": "Frag etwas zu diesem Scan…" },
     "duration": "Abgeschlossen in {duration}",
+    "copyAllFindings": "Alle Funde kopieren",
     "copyAllEmails": "Alle E-Mails kopieren",
     "emailsCopied": "E-Mails kopiert!",
     "filterPlatforms": "Plattformen filtern..."

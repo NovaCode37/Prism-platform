@@ -284,6 +284,7 @@
     "json": { "title": "Сырой JSON", "show": "Показать сырые данные", "hide": "Скрыть сырые данные" },
     "ai": { "title": "AI-анализ OSINT · Nvidia Nemotron", "chatTitle": "Спросить AI", "generate": "Сгенерировать резюме", "generating": "Генерация анализа…", "model": "Модель", "regenerate": "Сгенерировать заново", "placeholder": "Спросите что-нибудь про этот скан…" },
     "duration": "Выполнено за {duration}",
+    "copyAllFindings": "Скопировать все находки",
     "copyAllEmails": "Скопировать все email",
     "emailsCopied": "Email скопированы!",
     "filterPlatforms": "Фильтр платформ..."

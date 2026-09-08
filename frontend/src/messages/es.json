@@ -141,6 +141,7 @@
     "json": { "title": "Resultados JSON sin procesar", "show": "Mostrar datos sin procesar", "hide": "Ocultar datos sin procesar" },
     "ai": { "title": "Análisis OSINT con IA · Nvidia Nemotron", "chatTitle": "Preguntar a la IA", "generate": "Generar resumen con IA", "generating": "Generando análisis…", "model": "Modelo", "regenerate": "Regenerar", "placeholder": "Pregunte cualquier cosa sobre este escaneo…" },
     "duration": "Completado en {duration}",
+    "copyAllFindings": "Copiar todos los hallazgos",
     "copyAllEmails": "Copiar todos los correos",
     "emailsCopied": "¡Correos copiados!",
     "filterPlatforms": "Filtrar plataformas..."
