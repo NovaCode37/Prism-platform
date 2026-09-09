@@ -78,6 +78,8 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
   const [activeModules, setActiveModules] = useState<number[]>([]);
   const [bootLine, setBootLine] = useState('');
   const calledDone = useRef(false);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     const progressTimer = setInterval(() => {
@@ -86,7 +88,7 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
           clearInterval(progressTimer);
           if (!calledDone.current) {
             calledDone.current = true;
-            setTimeout(onDone, 300);
+            setTimeout(() => onDoneRef.current(), 300);
           }
           return 100;
         }
