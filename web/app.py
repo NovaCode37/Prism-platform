@@ -23,7 +23,7 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import config
-from config import USER_AGENT
+from config import PRISM_VERSION, USER_AGENT
 
 from modules.graph_builder import build_graph
 from modules.module_status import classify, reason_for, OK, ERROR
@@ -88,7 +88,7 @@ _RESERVED_FRONTEND_PATHS = {"api", "ws", "healthz", "docs", "redoc", "openapi.js
 
 app = FastAPI(
     title="OSINT Toolkit",
-    version="2.8.1",
+    version=PRISM_VERSION,
     root_path=_BASE_PATH,
     docs_url=None if _disable_docs else "/docs",
     redoc_url=None if _disable_docs else "/redoc",
