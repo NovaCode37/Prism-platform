@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import re
 import requests as _requests
+import logging
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
@@ -30,6 +31,13 @@ from modules.module_status import classify, reason_for, OK, ERROR
 from modules.opsec_score import score_from_results
 from modules.report_generator import generate_html_report, generate_pdf_report
 from modules.webhook_formatters import format_slack, format_discord
+
+logger = logging.getLogger("prism")
+
+def _server_error(e: Exception, context: str, status_code: int = 500) -> JSONResponse:
+    """Log the real exception and return a generic error to the client."""
+    logger.exception("%s failed: %s", context, str(e))
+    return JSONResponse({"error": "Internal server error"}, status_code=status_code)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
@@ -1078,9 +1086,9 @@ async def download_report_pdf(request: Request, scan_id: str, lang: str = "en"):
             lambda: generate_pdf_report(scan["target"], scan["scan_type"], results, opsec, lang=lang),
         )
     except ImportError as e:
-        return JSONResponse({"error": str(e)}, status_code=501)
+        return _server_error(e, "PDF generation (ImportError)", status_code=501)
     except Exception as e:
-        return JSONResponse({"error": f"PDF generation failed: {str(e)[:200]}"}, status_code=500)
+        return _server_error(e, "PDF generation")
     return FileResponse(
         pdf_path,
         media_type="application/pdf",
@@ -1161,7 +1169,7 @@ async def mac_lookup(request: Request, req: dict):
             result = {"mac": normalized_mac, "vendor": local_vendor, "source": "local_fallback"}
             _set_cache("mac", normalized_mac, result)
             return result
-        return JSONResponse({"error": str(e), "mac": normalized_mac, "vendor": None}, status_code=500)
+        return _server_error(e, "MAC lookup for {}".format(normalized_mac))
 
 @app.post("/api/crypto", dependencies=[Depends(require_api_key)])
 @limiter.limit("20/minute")
@@ -1339,7 +1347,7 @@ async def ai_summary(request: Request, req: dict):
             return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
         return {"summary": outcome["text"], "model": outcome["model"], "provider": outcome["provider"]}
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return _server_error(e, "clear scan history")
 
 @app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
