@@ -1,3 +1,9 @@
+def _truncate(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    return text[:limit - 3] + "..."
+
+
 def format_slack(payload: dict) -> dict:
     target = payload.get("target", "unknown")
     scan_type = payload.get("scan_type", "unknown")
@@ -55,6 +61,9 @@ def format_slack(payload: dict) -> dict:
     return {"blocks": blocks}
 
 
+FIELD_VALUE_LIMIT = 1024
+
+
 def format_discord(payload: dict) -> dict:
     target = payload.get("target", "unknown")
     scan_type = payload.get("scan_type", "unknown")
@@ -100,10 +109,14 @@ def format_discord(payload: dict) -> dict:
         findings.append(f"**Subdomains:** {len(results['cert_transparency']['subdomains'])}")
 
     if findings:
-        fields.append({"name": "Notable Findings", "value": "\n".join(findings), "inline": False})
+        fields.append({
+            "name": "Notable Findings",
+            "value": _truncate("\n".join(findings), FIELD_VALUE_LIMIT),
+            "inline": False,
+        })
 
     embed = {
-        "title": f"PRISM Scan - {target}",
+        "title": _truncate(f"PRISM Scan - {target}", 256),
         "color": color,
         "fields": fields,
         "footer": {"text": "PRISM OSINT Platform"},
@@ -113,3 +126,4 @@ def format_discord(payload: dict) -> dict:
         embed["timestamp"] = payload["completed_at"]
 
     return {"embeds": [embed]}
+

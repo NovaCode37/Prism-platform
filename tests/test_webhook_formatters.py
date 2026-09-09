@@ -1,6 +1,6 @@
 import pytest
 
-from modules.webhook_formatters import format_slack, format_discord
+from modules.webhook_formatters import format_slack, format_discord, FIELD_VALUE_LIMIT
 
 
 class TestSlackFormatter:
@@ -60,12 +60,9 @@ class TestSlackFormatter:
         assert blocks[0]["type"] == "header"
         assert ":x:" in blocks[0]["text"]["text"]
 
-        # No OPSEC score block
         score_blocks = [b for b in blocks if b.get("text") and "*OPSEC Score:*" in b["text"]["text"]]
         assert len(score_blocks) == 0
 
-        # Find the findings block by section type and text content
-        # It's the section block that contains "Notable Findings"
         findings_blocks = [b for b in blocks if b.get("type") == "section" and b.get("text") and "Notable Findings" in b["text"]["text"]]
         assert len(findings_blocks) == 1
         assert "No notable findings" in findings_blocks[0]["text"]["text"]
@@ -82,7 +79,6 @@ class TestSlackFormatter:
         assert fields[0]["text"] == "*Target:*\n`unknown`"
         assert fields[1]["text"] == "*Type:*\nUNKNOWN"
 
-        # Find the findings block
         findings_blocks = [b for b in blocks if b.get("type") == "section" and b.get("text") and "Notable Findings" in b["text"]["text"]]
         assert len(findings_blocks) == 1
         assert "No notable findings" in findings_blocks[0]["text"]["text"]
@@ -123,7 +119,7 @@ class TestDiscordFormatter:
         embed = result["embeds"][0]
 
         assert embed["title"] == "PRISM Scan - example.com"
-        assert embed["color"] == 0x00FF00  # LOW risk -> green
+        assert embed["color"] == 0x00FF00
 
         fields = embed["fields"]
         assert fields[0]["name"] == "Target"
@@ -184,7 +180,6 @@ class TestDiscordFormatter:
         assert fields[1]["value"] == "DOMAIN"
         assert fields[2]["value"] == "FAILED"
 
-        # No OPSEC field
         opsec_fields = [f for f in fields if f["name"] == "OPSEC Score"]
         assert len(opsec_fields) == 0
 
@@ -194,15 +189,12 @@ class TestDiscordFormatter:
         result = format_discord(payload)
         embed = result["embeds"][0]
 
-        # When status is not provided, the color defaults to 0xFF0000 (red)
-        # because status != "completed" is True when status is "unknown"
         assert embed["color"] == 0xFF0000
         fields = embed["fields"]
         assert fields[0]["value"] == "`unknown`"
         assert fields[1]["value"] == "UNKNOWN"
         assert fields[2]["value"] == "UNKNOWN"
 
-        # No OPSEC field
         opsec_fields = [f for f in fields if f["name"] == "OPSEC Score"]
         assert len(opsec_fields) == 0
 
@@ -217,51 +209,33 @@ class TestDiscordFormatter:
         result = format_discord(payload)
         embed = result["embeds"][0]
 
-        assert embed["color"] == 0x5865F2  # Default
+        assert embed["color"] == 0x5865F2
         fields = embed["fields"]
         opsec_fields = [f for f in fields if f["name"] == "OPSEC Score"]
         assert len(opsec_fields) == 0
 
-    def test_discord_description_truncation(self):
-        """Test that Discord's embed description/field length limits are respected.
+    def test_field_value_truncation(self):
+        long_text = "x" * 1500
 
-        Discord limits:
-        - embed description: 4096 characters
-        - field value: 1024 characters
-        """
         payload = {
             "target": "example.com",
             "scan_type": "domain",
             "status": "completed",
             "results": {
                 "opsec_score": {"score": 85, "risk_level": "LOW"},
-                "breaches": {
-                    "found": True,
-                    "total": 999,
-                },
+                "breaches": {"found": True, "total": 999, "breaches": [long_text]},
             },
         }
-
-        # Add many breaches to create a long field value
-        breaches = [{"name": f"Breach {i}"} for i in range(100)]
-        payload["results"]["breaches"]["breaches"] = breaches
 
         result = format_discord(payload)
         embed = result["embeds"][0]
 
-        # The formatter should still produce valid output without crashing
-        assert embed["title"] == "PRISM Scan - example.com"
-        assert embed["color"] == 0x00FF00
-
-        # Note: The formatter doesn't currently truncate field values.
-        # This test documents the current behavior and verifies it doesn't crash.
         fields = embed["fields"]
         findings_field = next((f for f in fields if f["name"] == "Notable Findings"), None)
-        if findings_field:
-            # If we're passing a large breaches list, the value will be long.
-            # Discord would reject this (>1024 chars), but the formatter doesn't
-            # currently truncate. This test documents that behavior.
-            pass
+
+        assert findings_field is not None
+        assert len(findings_field["value"]) <= FIELD_VALUE_LIMIT
+        assert findings_field["value"].endswith("...")
 
     def test_discord_empty_results(self):
         payload = {
@@ -276,7 +250,7 @@ class TestDiscordFormatter:
 
         assert embed["title"] == "PRISM Scan - empty.com"
         fields = embed["fields"]
-        assert len(fields) == 3  # Target, Type, Status only
+        assert len(fields) == 3
         assert all(f["inline"] for f in fields)
         assert fields[0]["name"] == "Target"
         assert fields[0]["value"] == "`empty.com`"
@@ -329,6 +303,6 @@ class TestDiscordFormatter:
         opsec_field = next(f for f in fields if f["name"] == "OPSEC Score")
         assert opsec_field["value"] == "95/100 (MINIMAL)"
 
-        # No findings field when no findings
         findings_fields = [f for f in fields if f["name"] == "Notable Findings"]
         assert len(findings_fields) == 0
+
