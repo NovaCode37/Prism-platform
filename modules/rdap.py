@@ -1,3 +1,4 @@
+from config import USER_AGENT
 import ipaddress
 import re
 from typing import Any, Dict, List, Optional
@@ -137,7 +138,7 @@ class RDAPLookup:
             r = requests.get(
                 rdap_url,
                 timeout=self.timeout,
-                headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
+                headers={"Accept": "application/json", "User-Agent": USER_AGENT},
                 proxies=proxies,  
             )
             if r.status_code == 404:
@@ -159,7 +160,7 @@ class RDAPLookup:
                             r2 = requests.get(
                                 location,
                                 timeout=self.timeout,
-                                headers={"Accept": "application/json", "User-Agent": "PRISM-OSINT/2.1"},
+                                headers={"Accept": "application/json", "User-Agent": USER_AGENT},
                                 proxies=proxies,  
                             )
                             if r2.status_code == 200:

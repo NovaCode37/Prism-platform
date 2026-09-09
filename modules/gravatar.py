@@ -6,7 +6,7 @@ from modules import get_proxies
 
 sys.path.append("..")
 
-from config import Colors
+from config import Colors, USER_AGENT
 from modules.module_status import (
     annotate,
     print_status_notice,
@@ -28,7 +28,7 @@ class GravatarRecon:
     def _headers(self) -> Dict[str, str]:
         return {
             "Accept": "application/json",
-            "User-Agent": "PRISM-OSINT",
+            "User-Agent": USER_AGENT,
         }
 
     def lookup(self, email: str) -> Dict[str, Any]:

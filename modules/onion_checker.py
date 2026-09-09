@@ -1,4 +1,5 @@
 from __future__ import annotations
+from config import USER_AGENT
 
 import re
 from typing import Any, Dict, List, Set
@@ -45,7 +46,7 @@ class OnionChecker:
                 params={"q": query},
                 timeout=self.timeout,
                 proxies=get_proxies(),
-                headers={"User-Agent": "PRISM-OSINT/2.1"},
+                headers={"User-Agent": USER_AGENT},
             )
             if r.status_code != 200:
                 return []
@@ -73,7 +74,7 @@ class OnionChecker:
                 params={"query": query, "page": 1},
                 timeout=self.timeout,
                 proxies=get_proxies(),
-                headers={"User-Agent": "PRISM-OSINT/2.1"},
+                headers={"User-Agent": USER_AGENT},
             )
             if r.status_code != 200:
                 return []

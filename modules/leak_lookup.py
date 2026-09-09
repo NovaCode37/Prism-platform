@@ -3,7 +3,7 @@ import hashlib
 from typing import Dict, Any, List, Optional
 import sys
 sys.path.append('..')
-from config import LEAK_LOOKUP_API_KEY, HIBP_API_KEY, Colors
+from config import Colors, HIBP_API_KEY, LEAK_LOOKUP_API_KEY, USER_AGENT
 from modules.module_status import annotate, classify, print_status_notice, OK, SKIPPED, RATE_LIMITED, ERROR
 from modules import get_proxies
 
@@ -32,7 +32,7 @@ class LeakLookup:
             return annotate(result, SKIPPED, "No API key configured (HIBP_API_KEY)")
 
         headers = {
-            "User-Agent": "OSINT-Tool",
+            "User-Agent": USER_AGENT,
             "hibp-api-key": self.hibp_key,
         }
 
@@ -93,7 +93,7 @@ class LeakLookup:
             proxies = get_proxies()
             response = requests.get(
                 f"{self.XON_API}/check-email/{email}",
-                headers={"User-Agent": "OSINT-Tool"},
+                headers={"User-Agent": USER_AGENT},
                 timeout=10,
                 proxies=proxies,  
             )
@@ -138,7 +138,7 @@ class LeakLookup:
             response = requests.get(
                 self.LEAKCHECK_PUBLIC,
                 params={"check": email},
-                headers={"User-Agent": "Mozilla/5.0 (compatible; PRISM-OSINT)"},
+                headers={"User-Agent": USER_AGENT},
                 timeout=10,
                 proxies=proxies,  
             )

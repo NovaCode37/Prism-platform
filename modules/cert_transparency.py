@@ -2,7 +2,7 @@ import requests
 from typing import Dict, Any, List
 import sys
 sys.path.append('..')
-from config import Colors
+from config import Colors, USER_AGENT
 from modules import get_proxies
 
 
@@ -25,7 +25,7 @@ class CertTransparency:
                 self.BASE_URL,
                 params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"},
                 timeout=30,
-                headers={"User-Agent": "OSINT-Toolkit/2.0"},
+                headers={"User-Agent": USER_AGENT},
                 proxies=proxies,  
             )
 

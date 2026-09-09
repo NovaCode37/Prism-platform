@@ -23,6 +23,7 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import config
+from config import USER_AGENT
 
 from modules.graph_builder import build_graph
 from modules.module_status import classify, reason_for, OK, ERROR
@@ -183,7 +184,7 @@ def _geocode_place(query: str) -> Optional[Dict]:
         r = _requests.get(
             "https://nominatim.openstreetmap.org/search",
             params={"q": query, "format": "json", "limit": 1},
-            headers={"User-Agent": "PRISM-OSINT/2.3 (https://github.com/NovaCode37/Prism-platform)"},
+            headers={"User-Agent": USER_AGENT},
             timeout=8,
         )
         arr = r.json()
@@ -389,7 +390,7 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
     elif webhook_format == "discord":
         payload = format_discord(payload)
 
-    headers = {"Content-Type": "application/json", "User-Agent": "PRISM-Webhook/2.1.2"}
+    headers = {"Content-Type": "application/json", "User-Agent": USER_AGENT}
     if WEBHOOK_SECRET:
         headers["X-Prism-Secret"] = WEBHOOK_SECRET
     try:
