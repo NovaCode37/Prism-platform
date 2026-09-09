@@ -18,24 +18,52 @@ REPORT_TEMPLATE = r"""<!DOCTYPE html>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   :root {
-    --bg:       #0d1117;
-    --surf-1:   #161b22;
-    --surf-2:   #1c2128;
-    --surf-3:   #21262d;
-    --bdr-1:    #30363d;
-    --bdr-2:    #3d4450;
-    --t1:       #e6edf3;
-    --t2:       #b8bfc9;
-    --t3:       #6e7681;
-    --blue:     #4f8ef7;
-    --purple:   #7c5cfc;
-    --green:    #3fb950;
-    --red:      #f85149;
-    --yellow:   #d29922;
-    --grad:     linear-gradient(135deg, #4f8ef7, #7c5cfc);
+    --bg: #ffffff;
+    --surf-1: #f6f8fa;
+    --surf-2: #eaeef2;
+    --surf-3: #d0d7de;
+    --bdr-1: #d0d7de;
+    --bdr-2: #b1bac4;
+    --t1: #24292f;
+    --t2: #424a53;
+    --t3: #656d76;
+    --blue: #0969da;
+    --purple: #8250df;
+    --green: #1a7f37;
+    --red: #cf222e;
+    --yellow: #9a6700;
+    --grad: linear-gradient(135deg, #0969da, #8250df);
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --surf-1: #161b22;
+      --surf-2: #1c2128;
+      --surf-3: #21262d;
+      --bdr-1: #30363d;
+      --bdr-2: #3d4450;
+      --t1: #e6edf3;
+      --t2: #b8bfc9;
+      --t3: #6e7681;
+      --blue: #4f8ef7;
+      --purple: #7c5cfc;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --grad: linear-gradient(135deg, #4f8ef7, #7c5cfc);
+    }
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--t1); font-family: 'Silkscreen', system-ui, sans-serif; font-size: 13px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--bg);
+    color: var(--t1);
+    font-family: 'Silkscreen', system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
   a { color: var(--blue); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
@@ -135,6 +163,24 @@ REPORT_TEMPLATE = r"""<!DOCTYPE html>
     body { font-size: 11px !important; }
     .topbar { position: static !important; }
     .card, .score-banner, .section { break-inside: avoid; }
+    /* xhtml2pdf ignores prefers-color-scheme, so force light theme for PDF */
+    :root {
+      --bg: #ffffff !important;
+      --surf-1: #f6f8fa !important;
+      --surf-2: #eaeef2 !important;
+      --surf-3: #d0d7de !important;
+      --bdr-1: #d0d7de !important;
+      --bdr-2: #b1bac4 !important;
+      --t1: #24292f !important;
+      --t2: #424a53 !important;
+      --t3: #656d76 !important;
+      --blue: #0969da !important;
+      --purple: #8250df !important;
+      --green: #1a7f37 !important;
+      --red: #cf222e !important;
+      --yellow: #9a6700 !important;
+      --grad: linear-gradient(135deg, #0969da, #8250df) !important;
+    }
   }
 </style>
 </head>
