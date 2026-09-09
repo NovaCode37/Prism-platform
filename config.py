@@ -17,9 +17,6 @@ CENSYS_API_SECRET = os.getenv("CENSYS_API_SECRET", "")
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "results")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-# Single outbound identity for all modules. Kept in one place so version bumps
-# don't leave half the modules announcing a stale release.
 PRISM_VERSION = "2.8.1"
 USER_AGENT = f"PRISM-OSINT/{PRISM_VERSION} (+https://github.com/NovaCode37/Prism-platform)"
 

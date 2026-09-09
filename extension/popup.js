@@ -126,7 +126,7 @@ async function runPageScan() {
   const url = new URL(tab.url);
 
   if (url.protocol !== "http:" && url.protocol !== "https:") {
-  return fail(t("scanPageUnsupported", "This page cannot be scanned."));
+    return fail(t("scanPageUnsupported", "This page cannot be scanned."));
   }
 
   const target = url.hostname;
