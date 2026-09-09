@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { LoadingWrapper } from '@/components/LoadingScreen';
-import { I18nProvider } from '@/lib/i18n';
+import { I18nProvider, STORAGE_KEY } from '@/lib/i18n';
 
 const SITE_URL = 'https://getprism.su';
 const OG_IMAGE = 'https://raw.githubusercontent.com/NovaCode37/Prism-platform/main/docs/pics/main_showcase/main_showcase.png';
@@ -90,6 +90,7 @@ const JSON_LD = {
 };
 
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const LANG_INIT = `(function(){try{var l=localStorage.getItem('${STORAGE_KEY}')||'en';document.documentElement.lang=l;}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_INIT }} />
       </head>
       <body className="min-h-screen bg-bg text-text-1 antialiased prism-ready">
         <I18nProvider>
@@ -106,3 +108,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

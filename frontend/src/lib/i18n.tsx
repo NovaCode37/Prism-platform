@@ -15,7 +15,7 @@ type Messages = typeof en;
 
 const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages };
 export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh'];
-const STORAGE_KEY = 'prism_locale';
+export const STORAGE_KEY = 'prism_locale';
 
 interface I18nContextValue {
   locale: Locale;
@@ -46,22 +46,27 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY) as Locale | null;
       if (stored && SUPPORTED_LOCALES.includes(stored)) {
         setLocaleState(stored);
+        document.documentElement.lang = stored;
         return;
       }
       const lang = (typeof navigator !== 'undefined' ? navigator.language?.toLowerCase() : '') || '';
-      if (lang.startsWith('ru')) setLocaleState('ru');
-      else if (lang.startsWith('de')) setLocaleState('de');
-      else if (lang.startsWith('fr')) setLocaleState('fr');
-      else if (lang.startsWith('es')) setLocaleState('es');
-      else if (lang.startsWith('it')) setLocaleState('it');
-      else if (lang.startsWith('pt')) setLocaleState('pt');
-      else if (lang.startsWith('pl')) setLocaleState('pl');
-      else if (lang.startsWith('zh')) setLocaleState('zh');
+      let detected: Locale = 'en';
+      if (lang.startsWith('ru')) detected = 'ru';
+      else if (lang.startsWith('de')) detected = 'de';
+      else if (lang.startsWith('fr')) detected = 'fr';
+      else if (lang.startsWith('es')) detected = 'es';
+      else if (lang.startsWith('it')) detected = 'it';
+      else if (lang.startsWith('pt')) detected = 'pt';
+      else if (lang.startsWith('pl')) detected = 'pl';
+      else if (lang.startsWith('zh')) detected = 'zh';
+      setLocaleState(detected);
+      document.documentElement.lang = detected;
     } catch {}
   }, []);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
+    document.documentElement.lang = l;
     try { localStorage.setItem(STORAGE_KEY, l); } catch {}
   }, []);
 
@@ -81,3 +86,4 @@ export function useTranslations() {
   }
   return ctx;
 }
+
