@@ -63,7 +63,6 @@ def format_slack(payload: dict) -> dict:
 
 FIELD_VALUE_LIMIT = 1024
 
-
 def format_discord(payload: dict) -> dict:
     target = payload.get("target", "unknown")
     scan_type = payload.get("scan_type", "unknown")
@@ -109,9 +108,12 @@ def format_discord(payload: dict) -> dict:
         findings.append(f"**Subdomains:** {len(results['cert_transparency']['subdomains'])}")
 
     if findings:
+        value = "\n".join(findings)
+        if len(value) > FIELD_VALUE_LIMIT:
+            value = value[:FIELD_VALUE_LIMIT - 3] + "..."
         fields.append({
             "name": "Notable Findings",
-            "value": _truncate("\n".join(findings), FIELD_VALUE_LIMIT),
+            "value": value,
             "inline": False,
         })
 
