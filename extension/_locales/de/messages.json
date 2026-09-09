@@ -26,6 +26,15 @@
   "saveButton": {
     "message": "Speichern"
   },
+  "scanPageButton": {
+    "message": "Diese Seite scannen"
+  },
+  "scanPageUnsupported": {
+    "message": "Diese Seite kann nicht gescannt werden."
+  },
+  "scanPageHostname": {
+    "message": "Der Hostname der Seite konnte nicht ermittelt werden."
+  },
   "savedOk": {
     "message": "Gespeichert"
   },

@@ -17,6 +17,15 @@
   "scanButton": {
     "message": "Verificar"
   },
+  "scanPageButton": {
+    "message": "Verificar esta página"
+  },
+  "scanPageUnsupported": {
+    "message": "Esta página não pode ser verificada."
+  },
+  "scanPageHostname": {
+    "message": "Não foi possível determinar o nome do host da página."
+  },
   "serverLabel": {
     "message": "Servidor"
   },

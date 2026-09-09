@@ -17,6 +17,15 @@
   "scanButton": {
     "message": "Сканировать"
   },
+  "scanPageButton": {
+    "message": "Сканировать эту страницу"
+  },
+  "scanPageUnsupported": {
+    "message": "Эту страницу нельзя просканировать."
+  },
+  "scanPageHostname": {
+    "message": "Не удалось определить имя хоста страницы."
+  },
   "serverLabel": {
     "message": "Сервер"
   },

@@ -114,7 +114,37 @@ function runScan() {
   saveRecentTarget(target);
   start(target, server, apiKey);
 }
+async function runPageScan() {
+  const tabs = await chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  });
+
+  const tab = tabs[0];
+  if (!tab || !tab.url) return;
+
+  const url = new URL(tab.url);
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+  return fail(t("scanPageUnsupported", "This page cannot be scanned."));
+  }
+
+  const target = url.hostname;
+  if (!target) return fail(t("scanPageHostname", "Could not determine the page hostname."));
+
+  const server = baseUrl(urlInput.value);
+  const apiKey = keyInput.value.trim();
+
+  chrome.storage.sync.set({
+    instanceUrl: urlInput.value.trim(),
+    apiKey
+  });
+
+  saveRecentTarget(target);
+  start(target, server, apiKey);
+}
 $("scan").addEventListener("click", runScan);
+$("scanPage").addEventListener("click", runPageScan);
 targetInput.addEventListener("keydown", (e) => { if (e.key === "Enter") runScan(); });
 
 function setStatus(text, cls) { statusEl.textContent = text; statusEl.className = "status" + (cls ? " " + cls : ""); }

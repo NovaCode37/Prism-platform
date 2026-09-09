@@ -17,6 +17,15 @@
   "scanButton": {
     "message": "Skanuj"
   },
+  "scanPageButton": {
+    "message": "Skanuj tę stronę"
+  },
+  "scanPageUnsupported": {
+    "message": "Tej strony nie można przeskanować."
+  },
+  "scanPageHostname": {
+    "message": "Nie można określić nazwy hosta strony."
+  },
   "serverLabel": {
     "message": "Serwer"
   },

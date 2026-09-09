@@ -17,6 +17,15 @@
   "scanButton": {
     "message": "Scan"
   },
+  "scanPageButton": {
+    "message": "Scan this page"
+  },
+  "scanPageUnsupported": {
+    "message": "This page cannot be scanned."
+  },
+  "scanPageHostname": {
+    "message": "Could not determine the page hostname."
+  },
   "serverLabel": {
     "message": "Server"
   },

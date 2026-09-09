@@ -17,6 +17,15 @@
   "scanButton": {
     "message": "扫描"
   },
+  "scanPageButton": {
+    "message": "扫描此页面"
+  },
+  "scanPageUnsupported": {
+    "message": "无法扫描此页面。"
+  },
+  "scanPageHostname": {
+    "message": "无法确定页面主机名。"
+  },
   "serverLabel": {
     "message": "服务器"
   },
