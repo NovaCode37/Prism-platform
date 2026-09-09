@@ -18,6 +18,21 @@ def test_normalize_target(raw, expected):
     assert cli.normalize_target(raw) == expected
 
 
+@pytest.mark.parametrize(
+    ("target", "expected"),
+    [
+        ("user@example.com", "email"),
+        ("+1 555 000 0000", "phone"),
+        ("8.8.8.8", "ip"),
+        ("example.com", "domain"),
+        ("player1234567", "username"),
+        ("t.me/someuser", "telegram"),
+    ],
+)
+def test_detect_type(target, expected):
+    assert cli.detect_type(target) == expected
+
+
 def test_detect_type_after_normalization():
     normalized = cli.normalize_target(" https://Example.COM/ ")
 
