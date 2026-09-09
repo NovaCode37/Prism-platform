@@ -4,7 +4,7 @@ from phonenumbers import carrier, geocoder, timezone
 from typing import Dict, Any, Optional
 import sys
 sys.path.append('..')
-from config import NUMVERIFY_API_KEY, Colors
+from config import Colors, NUMVERIFY_API_KEY, USER_AGENT
 from modules import get_proxies
 
 
@@ -163,7 +163,7 @@ class HLRLookup:
             proxies = get_proxies()
             r = requests.get(
                 f"https://api.numlookupapi.com/v1/validate/{clean}",
-                headers={"User-Agent": "OSINT-Toolkit/2.0"},
+                headers={"User-Agent": USER_AGENT},
                 timeout=10,
                 proxies=proxies,  
             )

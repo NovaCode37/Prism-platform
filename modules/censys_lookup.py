@@ -1,4 +1,5 @@
 from __future__ import annotations
+from config import USER_AGENT
 
 import os
 from typing import Any, Dict
@@ -24,7 +25,7 @@ class CensysLookup:
         return {
             "Authorization": f"Bearer {self.pat}",
             "Accept": "application/json",
-            "User-Agent": "PRISM-OSINT/2.4",
+            "User-Agent": USER_AGENT,
         }
 
     def _params(self) -> Dict[str, str]:

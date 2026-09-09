@@ -3,7 +3,7 @@ import requests
 from typing import Dict, Any, List
 import sys
 sys.path.append('..')
-from config import Colors
+from config import Colors, USER_AGENT
 from modules.module_status import annotate, print_status_notice, OK, RATE_LIMITED, ERROR
 from modules import get_proxies
 
@@ -24,7 +24,7 @@ class GitHubRecon:
         self.token = GITHUB_TOKEN
 
     def _headers(self) -> Dict[str, str]:
-        headers = {"Accept": "application/vnd.github+json", "User-Agent": "PRISM-OSINT"}
+        headers = {"Accept": "application/vnd.github+json", "User-Agent": USER_AGENT}
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
         return headers

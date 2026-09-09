@@ -13,8 +13,9 @@ if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
 import config
+from config import PRISM_VERSION
 
-__version__ = "2.8.1"
+__version__ = PRISM_VERSION
 
 
 def normalize_target(target: str) -> str:

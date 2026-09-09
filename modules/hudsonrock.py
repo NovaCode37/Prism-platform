@@ -7,7 +7,7 @@ import requests
 
 sys.path.append("..")
 
-from config import Colors
+from config import Colors, USER_AGENT
 from modules.module_status import (
     annotate,
     print_status_notice,
@@ -38,7 +38,7 @@ class HudsonRockLookup:
     TIMEOUT = 25
 
     def _headers(self) -> Dict[str, str]:
-        return {"Accept": "application/json", "User-Agent": "PRISM-OSINT"}
+        return {"Accept": "application/json", "User-Agent": USER_AGENT}
 
     # def _proxies(self) -> Optional[Dict[str, str]]:
     #     proxy = os.getenv("MODULE_PROXY", "").strip()
