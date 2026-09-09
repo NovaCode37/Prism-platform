@@ -35,8 +35,7 @@ from modules.webhook_formatters import format_slack, format_discord
 logger = logging.getLogger("prism")
 
 def _server_error(e: Exception, context: str, status_code: int = 500) -> JSONResponse:
-    """Log the real exception and return a generic error to the client."""
-    logger.exception("%s failed: %s", context, str(e))
+    logger.exception("%s failed", context)
     return JSONResponse({"error": "Internal server error"}, status_code=status_code)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
@@ -1347,7 +1346,7 @@ async def ai_summary(request: Request, req: dict):
             return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
         return {"summary": outcome["text"], "model": outcome["model"], "provider": outcome["provider"]}
     except Exception as e:
-        return _server_error(e, "clear scan history")
+        return _server_error(e, "AI summary generation")
 
 @app.post("/api/ai/chat", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
@@ -1387,7 +1386,7 @@ async def ai_chat(request: Request, req: dict):
             return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
         return {"reply": outcome["text"], "model": outcome["model"], "provider": outcome["provider"]}
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return _server_error(e, "AI chat")
 
 @app.get("/api/scans", dependencies=[Depends(require_api_key)])
 @limiter.limit("30/minute")
