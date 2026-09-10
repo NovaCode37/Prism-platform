@@ -2,7 +2,6 @@ import pytest
 
 from modules.webhook_formatters import format_slack, format_discord, FIELD_VALUE_LIMIT
 
-
 class TestSlackFormatter:
     def test_completed_scan_payload(self):
         payload = {
@@ -95,7 +94,6 @@ class TestSlackFormatter:
 
         score_blocks = [b for b in result["blocks"] if b.get("text") and "*OPSEC Score:*" in b["text"]["text"]]
         assert len(score_blocks) == 0
-
 
 class TestDiscordFormatter:
     def test_completed_scan_payload(self):

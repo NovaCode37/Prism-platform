@@ -3,7 +3,6 @@ def _truncate(text: str, limit: int) -> str:
         return text
     return text[:limit - 3] + "..."
 
-
 def format_slack(payload: dict) -> dict:
     target = payload.get("target", "unknown")
     scan_type = payload.get("scan_type", "unknown")
@@ -24,7 +23,6 @@ def format_slack(payload: dict) -> dict:
         total = results["breaches"].get("total", "?")
         breaches_list = results["breaches"].get("breaches", [])
         if breaches_list:
-            # Show first few breach names
             names = [str(b.get("name") or b.get("title") or str(b)) for b in breaches_list[:3] if b]
             if names:
                 findings.append(f"Breaches: {total} found ({', '.join(names)}{'...' if len(breaches_list) > 3 else ''})")
@@ -69,9 +67,7 @@ def format_slack(payload: dict) -> dict:
 
     return {"blocks": blocks}
 
-
 FIELD_VALUE_LIMIT = 1024
-
 
 def format_discord(payload: dict) -> dict:
     target = payload.get("target", "unknown")
@@ -114,7 +110,6 @@ def format_discord(payload: dict) -> dict:
         total = results["breaches"].get("total", "?")
         breaches_list = results["breaches"].get("breaches", [])
         if breaches_list:
-            # Show first few breach names
             names = []
             for b in breaches_list[:3]:
                 if isinstance(b, dict):
