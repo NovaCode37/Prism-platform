@@ -9,12 +9,13 @@ import it from '@/messages/it.json';
 import pt from '@/messages/pt.json';
 import pl from '@/messages/pl.json';
 import zh from '@/messages/zh.json';
+import tr from '@/messages/tr.json';
 
-export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh';
+export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh' | 'tr';
 type Messages = typeof en;
 
-const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages };
-export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh'];
+const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages, tr: tr as Messages };
+export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh', 'tr'];
 export const STORAGE_KEY = 'prism_locale';
 
 interface I18nContextValue {
@@ -59,6 +60,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       else if (lang.startsWith('pt')) detected = 'pt';
       else if (lang.startsWith('pl')) detected = 'pl';
       else if (lang.startsWith('zh')) detected = 'zh';
+      else if (lang.startsWith('tr')) detected = 'tr';
       setLocaleState(detected);
       document.documentElement.lang = detected;
     } catch {}
@@ -86,4 +88,3 @@ export function useTranslations() {
   }
   return ctx;
 }
-
