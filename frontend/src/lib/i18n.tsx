@@ -14,7 +14,12 @@ import tr from '@/messages/tr.json';
 export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh' | 'tr';
 type Messages = typeof en;
 
-const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages, tr: tr as Messages };
+type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
+
+const MESSAGES: Record<Locale, DeepPartial<Messages>> = {
+  en,
+  ru, de, fr, es, it, pt, pl, zh, tr,
+};
 export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh', 'tr'];
 export const STORAGE_KEY = 'prism_locale';
 
@@ -26,17 +31,18 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function lookup(messages: Messages, key: string): string {
+function lookup(messages: DeepPartial<Messages>, key: string): string {
   const parts = key.split('.');
   let cur: unknown = messages;
   for (const p of parts) {
     if (cur && typeof cur === 'object' && p in (cur as Record<string, unknown>)) {
       cur = (cur as Record<string, unknown>)[p];
     } else {
-      return key;
+      // fall back to English so missing keys never render as raw paths
+      return lookup(en, key);
     }
   }
-  return typeof cur === 'string' ? cur : key;
+  return typeof cur === 'string' ? cur : lookup(en, key);
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
