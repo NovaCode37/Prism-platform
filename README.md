@@ -243,7 +243,7 @@ Nothing to clone and nothing to build:
 docker run -p 8080:8080 -e ALLOW_ANON_API=true ghcr.io/novacode37/prism-platform:latest
 ```
 
-Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.8`, `2.8.1`, plus `edge` built from `main`.
+Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.9`, `2.9.0`, plus `edge` built from `main`.
 
 To configure it, pass an env file instead:
 
@@ -668,8 +668,14 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 - [x] Every configured LLM provider tried in turn, with Ollama shipped in the compose file behind a profile
 - [x] Shodan falls back to the keyless InternetDB dataset when no paid key answers
 
-### v2.9 (planned)
-- [ ] Report translations for the six interface languages that still fall back to English ([#295](https://github.com/NovaCode37/Prism-platform/issues/295))
+### v2.9 (released)
+- [x] Report translations for the six interface languages that still fell back to English (#295)
+- [x] `MODULE_PROXY` honoured by every module that makes an outbound request, not just two
+- [x] Scan the current page from the browser extension
+- [x] HTML report follows the reader's dark mode
+- [x] One User-Agent across every module, built from the version
+
+### v2.10 (planned)
 - [ ] Username checks for the sites that serve identical HTML for every name: needs their APIs rather than page scraping
 - [ ] *(exploring)* AI OSINT agent: autonomous multi-module investigation
 

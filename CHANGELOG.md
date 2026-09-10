@@ -6,6 +6,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.9.0] — 2026-09-10
+
+Most of this release came from contributors. Names are on the pull requests.
+
+### Security
+- **`MODULE_PROXY` reached two modules out of twenty-two.** Everything else connected directly. Anyone who set a proxy so a target would not see where the request came from was getting that for Hudson Rock and Lunar, and their own address for the other twenty, while the readme said the setting covered outbound module requests. A shared helper now routes every module that makes an HTTP call, and a walk over the syntax tree of `modules/` confirms nothing is left out (#324, #331).
+- The dark-web lookups went through the same fix afterwards. They had been left out on the grounds that Tor needs a SOCKS proxy, but `onion_checker` never touches Tor: both of its requests go to ahmia.fi and darksearch.io over ordinary HTTPS, which is precisely the traffic someone sets a proxy to hide.
+- **Six handlers returned the text of whatever exception they caught.** Depending on what broke that could be a filesystem path, a library internal, or a third-party URL with a key in the query string. They log the detail and answer with a fixed message now. The 4xx responses are unchanged, since those messages are written for the caller and are safe (#323, #334).
+- Only `maigret` is still outside `MODULE_PROXY`, because it runs as a subprocess. That is written down in `SECURITY.md` rather than left for someone to discover.
+
+### Added
+- **Report translations for Spanish, French, Italian, Polish, Portuguese and Chinese.** Reports in those interfaces used to fall back to English. All nine locales now carry the same 57 keys (#295, #337).
+- **The HTML report follows the reader's dark mode**, with light as the base so it degrades correctly. The PDF, which is built from the same HTML by a converter that ignores media queries, now comes out light instead of dark (#303, #336).
+- **Scan the current page from the browser extension.** No extra permission was needed for it: the existing host permissions already cover reading the active tab's URL (#243, #332).
+- **A "copy all findings" button** on the OPSEC findings list (#236, #329).
+- **A `/` hint in the target field**, shown only while the field is empty (#234, #327).
+- RDAP registration lookups alongside WHOIS, and tests for `graph_builder`, `detect_type`, scan-target normalization and the Slack and Discord webhook formatters.
+
+### Fixed
+- **Discord webhooks were silently dropped when a scan found enough.** Discord rejects a field value over 1024 characters, and `_send_webhook` swallows the error, so a busy scan produced no notification and no complaint. Long values are truncated now (#321, #335).
+- **`<html lang>` was always `en`** whatever interface language was selected, so screen readers and translation tools were told the wrong language (#235, #328).
+- **RDAP reported `292` as the registrar for github.com.** jCard properties are `[name, params, type, value]`, so reading index 2 gave the type and every contact came back as `"text"`; the registrar was read from the entity handle, which is the IANA id rather than a name.
+- **Every `.ru` domain looked unregistered.** A `404` from rdap.org was read as "not registered", but plenty of zones serve no RDAP at all. The zone is checked against the bootstrap map first and the module reports `skipped`.
+- **A rate-limited request reached the browser as a CORS error** rather than a `429`, because `add_middleware` wraps from the inside out and CORS had ended up innermost.
+- **File work blocked the event loop in two routes**, stalling every other request including websocket scan progress while an upload was copied or the scan directory was read.
+- The four `react-hooks/exhaustive-deps` warnings are gone, each by a different fix, so the loading animation does not restart on a parent re-render (#322, #338).
+
+### Changed
+- **One User-Agent everywhere**, built from `PRISM_VERSION`, replacing ten strings whose versions had drifted between 2.0 and 2.4. The browser strings that certain sites require are deliberately kept. A test fails the build if a new module inlines one (#320, #333).
+- The container runs as uid 1000 rather than root, and CI checks it stays that way. Bind-mounted directories may need `chown -R 1000:1000`.
+- Leaflet is pinned with subresource integrity, using the hashes published on leafletjs.com.
+- The readme lost nine badges and the comparison table. Keeping accurate claims about four other projects is not a commitment worth making, and a table where one column is all green reads as advertising.
+
+### Tests
+- 326 to 387.
+
+---
+
 ## [2.8.1] — 2026-09-07
 
 ### Security

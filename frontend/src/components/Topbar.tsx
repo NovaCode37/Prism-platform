@@ -52,7 +52,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           className="text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded-full text-white"
           style={{ background: 'linear-gradient(135deg,#4f8ef7,#7c5cfc)' }}
         >
-          v2.8.1
+          v2.9.0
         </span>
       </button>
 
