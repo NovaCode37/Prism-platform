@@ -26,6 +26,16 @@ const ICONS: Record<ToolId, React.ElementType> = {
 const CAPS_KEYS = ['domain', 'email', 'phone', 'username'] as const;
 type CapsKey = typeof CAPS_KEYS[number];
 
+const TARGETS = [
+  'domain.com',
+  '192.168.1.1',
+  'user@example.com',
+  '@username',
+  '+1 555 000 0000',
+];
+
+const statValues = [22, 12, 5, 0];
+
 interface Props {
   onTool: (mode: ToolMode) => void;
   onScan: (target: string, type: ScanType, modules: string[]) => void;
@@ -48,9 +58,6 @@ export function IdleView({ onTool, onScan, isStarting = false }: Props) {
     const type = detectScanType(target);
     onScan(target, type, MODULE_MAP[type]);
   };
-
-  const statValues = [22, 12, 5, 0];
-  const TARGETS = ['domain.com', '192.168.1.1', 'user@example.com', '@username', '+1 555 000 0000'];
 
   useEffect(() => {
     const target = TARGETS[targetIdx];
@@ -143,19 +150,19 @@ export function IdleView({ onTool, onScan, isStarting = false }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-2xl mb-8">
         {CAPS_KEYS.map(capKey => (
-            <div key={capKey} className="card p-3 hover:border-border-3 transition-colors">
-              <div className="flex items-center gap-1.5 mb-2">
-                {capKey === 'domain' && <Globe size={10} className="text-blue shrink-0 opacity-80" />}
-                {capKey === 'email' && <User size={10} className="text-blue shrink-0 opacity-80" />}
-                {capKey === 'phone' && <Phone size={10} className="text-blue shrink-0 opacity-80" />}
-                {capKey === 'username' && <Shield size={10} className="text-blue shrink-0 opacity-80" />}
-                <div className="text-[10px] font-bold text-blue uppercase tracking-wider">{t(`idle.caps.${capKey}.title`)}</div>
-              </div>
-              <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item1`)}</div>
-              <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item2`)}</div>
-              {capKey !== 'phone' && <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item3`)}</div>}
+          <div key={capKey} className="card p-3 hover:border-border-3 transition-colors">
+            <div className="flex items-center gap-1.5 mb-2">
+              {capKey === 'domain' && <Globe size={10} className="text-blue shrink-0 opacity-80" />}
+              {capKey === 'email' && <User size={10} className="text-blue shrink-0 opacity-80" />}
+              {capKey === 'phone' && <Phone size={10} className="text-blue shrink-0 opacity-80" />}
+              {capKey === 'username' && <Shield size={10} className="text-blue shrink-0 opacity-80" />}
+              <div className="text-[10px] font-bold text-blue uppercase tracking-wider">{t(`idle.caps.${capKey}.title`)}</div>
             </div>
-          ))}
+            <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item1`)}</div>
+            <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item2`)}</div>
+            {capKey !== 'phone' && <div className="text-[11px] text-text-3 leading-relaxed">{t(`idle.caps.${capKey}.item3`)}</div>}
+          </div>
+        ))}
       </div>
 
       <div className="w-full max-w-2xl">
