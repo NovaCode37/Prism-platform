@@ -1,3 +1,9 @@
+def _truncate(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    return text[:limit - 3] + "..."
+
+
 def format_slack(payload: dict) -> dict:
     target = payload.get("target", "unknown")
     scan_type = payload.get("scan_type", "unknown")
@@ -16,7 +22,16 @@ def format_slack(payload: dict) -> dict:
         findings.append(f"VirusTotal: {results['virustotal']['malicious']} malicious detections")
     if results.get("breaches", {}).get("found"):
         total = results["breaches"].get("total", "?")
-        findings.append(f"Breaches: {total} found")
+        breaches_list = results["breaches"].get("breaches", [])
+        if breaches_list:
+            # Show first few breach names
+            names = [str(b.get("name") or b.get("title") or str(b)) for b in breaches_list[:3] if b]
+            if names:
+                findings.append(f"Breaches: {total} found ({', '.join(names)}{'...' if len(breaches_list) > 3 else ''})")
+            else:
+                findings.append(f"Breaches: {total} found")
+        else:
+            findings.append(f"Breaches: {total} found")
     if results.get("shodan", {}).get("vulns"):
         findings.append(f"Shodan: {len(results['shodan']['vulns'])} CVEs")
 
@@ -53,6 +68,9 @@ def format_slack(payload: dict) -> dict:
         })
 
     return {"blocks": blocks}
+
+
+FIELD_VALUE_LIMIT = 1024
 
 
 def format_discord(payload: dict) -> dict:
@@ -93,17 +111,42 @@ def format_discord(payload: dict) -> dict:
     if results.get("virustotal", {}).get("malicious", 0) > 0:
         findings.append(f"**VirusTotal:** {results['virustotal']['malicious']} malicious")
     if results.get("breaches", {}).get("found"):
-        findings.append(f"**Breaches:** {results['breaches'].get('total', '?')} found")
+        total = results["breaches"].get("total", "?")
+        breaches_list = results["breaches"].get("breaches", [])
+        if breaches_list:
+            # Show first few breach names
+            names = []
+            for b in breaches_list[:3]:
+                if isinstance(b, dict):
+                    name = b.get("name") or b.get("title") or str(b)
+                else:
+                    name = str(b)
+                if name:
+                    names.append(name)
+            if names:
+                suffix = "..." if len(breaches_list) > 3 else ""
+                findings.append(f"**Breaches:** {total} found ({', '.join(names)}{suffix})")
+            else:
+                findings.append(f"**Breaches:** {total} found")
+        else:
+            findings.append(f"**Breaches:** {total} found")
     if results.get("shodan", {}).get("vulns"):
         findings.append(f"**Shodan CVEs:** {len(results['shodan']['vulns'])}")
     if results.get("cert_transparency", {}).get("subdomains"):
         findings.append(f"**Subdomains:** {len(results['cert_transparency']['subdomains'])}")
 
     if findings:
-        fields.append({"name": "Notable Findings", "value": "\n".join(findings), "inline": False})
+        value = "\n".join(findings)
+        if len(value) > FIELD_VALUE_LIMIT:
+            value = value[:FIELD_VALUE_LIMIT - 3] + "..."
+        fields.append({
+            "name": "Notable Findings",
+            "value": value,
+            "inline": False,
+        })
 
     embed = {
-        "title": f"PRISM Scan - {target}",
+        "title": _truncate(f"PRISM Scan - {target}", 256),
         "color": color,
         "fields": fields,
         "footer": {"text": "PRISM OSINT Platform"},
@@ -113,3 +156,4 @@ def format_discord(payload: dict) -> dict:
         embed["timestamp"] = payload["completed_at"]
 
     return {"embeds": [embed]}
+
