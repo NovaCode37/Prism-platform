@@ -245,6 +245,8 @@ docker run -p 8080:8080 -e ALLOW_ANON_API=true ghcr.io/novacode37/prism-platform
 
 Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.9`, `2.9.0`, plus `edge` built from `main`.
 
+If you need somewhere to put it, [Timeweb Cloud](https://timeweb.cloud/?i=146939) rents plain Linux servers by the month. That is a referral link: same price to you, and it pays for this project's domain.
+
 To configure it, pass an env file instead:
 
 ```bash
