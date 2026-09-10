@@ -736,6 +736,13 @@ ETH:          0x0639476A71255FD2C15dceD53e167952DcddEE8A
   </tr>
 </table>
 
+### Costs you nothing
+
+These are referral links. Sign up through one and I get a cut, you pay the same as you would anyway.
+
+- **[StealthSurf VPN](https://t.me/stealthsurf_vpn_bot?start=cea5c4bf513a)** ([web](https://i.stealthsurf.net/cea5c4bf513a)), if you want one for OSINT work
+- **[Telegram Wallet](https://telegram.me/wallet/start?startapp=ref-3-MmWAj_vksZ0)**, for the crypto above without an exchange account
+
 **Want the browser extension in your store?** The [PRISM extension](extension/) is [live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/). Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store. If you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
 
 ---
