@@ -42,6 +42,7 @@
       "username": "Юзернейм"
     },
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -235,6 +236,11 @@
     "copyCurl": "Копировать как cURL",
     "scanAnother": "Новое сканирование",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Утечки через стилеры",
+      "lunar": "Утечки по домену",
       "findings": "Находки",
       "whois": "WHOIS",
       "dns": "DNS",

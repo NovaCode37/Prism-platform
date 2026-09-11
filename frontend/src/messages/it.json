@@ -42,6 +42,7 @@
       "username": "Username"
     },
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -235,6 +236,11 @@
     "copyCurl": "Copia come cURL",
     "scanAnother": "Nuova scansione",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Esposizione a infostealer",
+      "lunar": "Esposizione del dominio",
       "findings": "Risultati",
       "whois": "WHOIS",
       "dns": "DNS",

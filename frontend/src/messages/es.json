@@ -31,6 +31,7 @@
     "compareSelected": "Comparar seleccionados",
     "noHistory": "Sin historial",
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -46,8 +47,8 @@
       "smtp": "Verif. SMTP",
       "leaks": "Filtraciones",
       "gravatar": "Gravatar",
-      "hudsonrock": "Exposicion a infostealers",
-      "lunar": "Exposicion del dominio",
+      "hudsonrock": "Exposición a infostealers",
+      "lunar": "Exposición del dominio",
       "hlr": "Teléfono",
       "blackbird": "Blackbird",
       "maigret": "Maigret",
@@ -110,7 +111,7 @@
   "results": {
     "htmlReport": "Informe HTML", "pdfReport": "Informe PDF", "jsonReport": "Descargar JSON",
     "csvReport": "Descargar CSV", "mdReport": "Descargar Markdown", "copyCurl": "Copiar como cURL", "scanAnother": "Escanear otro",
-    "tabs": { "findings": "Hallazgos", "whois": "WHOIS", "dns": "DNS", "subdomains": "Subdominios", "accounts": "Cuentas", "threats": "Amenazas", "censys": "Censys", "darkweb": "Dark Web", "wayback": "Wayback", "email": "Correo", "dorks": "Dorks", "phone": "Teléfono", "telegram": "Telegram", "map": "Mapa", "graph": "Grafo", "json": "JSON", "ai": "IA" },
+    "tabs": { "rdap": "RDAP", "github": "GitHub", "gravatar": "Gravatar", "hudsonrock": "Exposición a infostealers", "lunar": "Exposición del dominio", "findings": "Hallazgos", "whois": "WHOIS", "dns": "DNS", "subdomains": "Subdominios", "accounts": "Cuentas", "threats": "Amenazas", "censys": "Censys", "darkweb": "Dark Web", "wayback": "Wayback", "email": "Correo", "dorks": "Dorks", "phone": "Teléfono", "telegram": "Telegram", "map": "Mapa", "graph": "Grafo", "json": "JSON", "ai": "IA" },
     "opsec": {
       "scoreLabel": "Puntuación OPSEC", "riskSuffix": "RIESGO",
       "data_exposure": { "label": "Exposición de datos", "tooltip": "Fugas de datos sensibles: credenciales filtradas, correos expuestos, información personal pública." },
