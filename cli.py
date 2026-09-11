@@ -33,6 +33,9 @@ def normalize_target(target: str) -> str:
 
 
 def detect_type(target: str) -> str:
+    # A leading @ with nothing in front means a Telegram-style username, not email
+    if target.startswith("@") and "@" not in target[1:]:
+        return "username"
     if "@" in target:
         return "email"
     stripped = target.replace("+", "").replace("-", "").replace(" ", "")
