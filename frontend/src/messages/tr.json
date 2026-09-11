@@ -42,6 +42,7 @@
       "username": "Kullanıcı Adı"
     },
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -235,6 +236,11 @@
     "copyCurl": "cURL olarak kopyala",
     "scanAnother": "Başka tara",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Bilgi hırsızı maruziyeti",
+      "lunar": "Alan adı maruziyeti",
       "findings": "Bulgular",
       "whois": "WHOIS",
       "dns": "DNS",
