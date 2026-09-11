@@ -12,6 +12,10 @@ import cli
         (" User@Example.COM ", "user@example.com"),
         ("+1 555 000 0000", "+1 555 000 0000"),
         ("@MixedCaseUser", "@MixedCaseUser"),
+        ("mailto:user@example.com", "user@example.com"),
+        ("MAILTO:USER@EXAMPLE.COM", "user@example.com"),
+        ("mailto:a@b.com?subject=x", "a@b.com"),
+        ("MAILTO:User@Example.COM?subject=hi&body=hello", "user@example.com"),
     ],
 )
 def test_normalize_target(raw, expected):
@@ -22,6 +26,8 @@ def test_normalize_target(raw, expected):
     ("target", "expected"),
     [
         ("user@example.com", "email"),
+        ("mailto:user@example.com", "email"),
+        ("mailto:a@b.com?subject=x", "email"),
         ("+1 555 000 0000", "phone"),
         ("8.8.8.8", "ip"),
         ("example.com", "domain"),
