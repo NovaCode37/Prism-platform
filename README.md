@@ -744,6 +744,7 @@ These are referral links. Sign up through one and I get a cut, you pay the same 
 
 - **[StealthSurf VPN](https://t.me/stealthsurf_vpn_bot?start=cea5c4bf513a)** ([web](https://i.stealthsurf.net/cea5c4bf513a)), if you want one for OSINT work
 - **[Telegram Wallet](https://telegram.me/wallet/start?startapp=ref-3-MmWAj_vksZ0)**, for the crypto above without an exchange account
+- **[YepShop](https://t.me/YepShopBot?start=ref_50D50292)**, VPN and proxy subscriptions, handy if you want a proxy for `MODULE_PROXY`
 
 **Want the browser extension in your store?** The [PRISM extension](extension/) is [live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/). Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store. If you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
 
