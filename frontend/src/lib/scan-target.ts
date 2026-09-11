@@ -3,6 +3,14 @@ import type { ScanType } from './types';
 export function normalizeScanTarget(value: string): string {
   let normalized = value.trim();
 
+  if (normalized.toLowerCase().startsWith('mailto:')) {
+    normalized = normalized.slice(7).trim();
+    const qIndex = normalized.indexOf('?');
+    if (qIndex !== -1) {
+      normalized = normalized.slice(0, qIndex).trim();
+    }
+  }
+
   const schemeSep = normalized.indexOf('://');
   if (schemeSep !== -1) {
     const scheme = normalized.slice(0, schemeSep).toLowerCase();

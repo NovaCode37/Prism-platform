@@ -50,13 +50,23 @@ try {
 
   assert.equal(
     normalizeScanTarget('mailto:user@example.com'),
-    'mailto:user@example.com',
-    'mailto: prefix should be preserved'
+    'user@example.com',
+    'mailto: prefix should be stripped'
   );
   assert.equal(
     normalizeScanTarget('MAILTO:USER@EXAMPLE.COM'),
-    'mailto:user@example.com',
-    'mailto: prefix should be lowercased and email lowercased'
+    'user@example.com',
+    'MAILTO: prefix should be stripped and email lowercased'
+  );
+  assert.equal(
+    normalizeScanTarget('mailto:a@b.com?subject=x'),
+    'a@b.com',
+    'mailto: prefix and query string should be stripped'
+  );
+  assert.equal(
+    normalizeScanTarget('MAILTO:User@Example.COM?subject=hi&body=hello'),
+    'user@example.com',
+    'case-insensitive mailto: and query string should be stripped and lowercased'
   );
 
   assert.equal(
@@ -149,6 +159,11 @@ try {
     detectScanType('MAILTO:USER@EXAMPLE.COM'),
     'email',
     'mailto: uppercase should detect as email'
+  );
+  assert.equal(
+    detectScanType('mailto:a@b.com?subject=x'),
+    'email',
+    'mailto: with query should detect as email'
   );
 
   assert.equal(

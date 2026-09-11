@@ -20,6 +20,11 @@ __version__ = PRISM_VERSION
 
 def normalize_target(target: str) -> str:
     normalized = target.strip()
+    if normalized.lower().startswith("mailto:"):
+        normalized = normalized[7:].strip()
+        q_pos = normalized.find("?")
+        if q_pos != -1:
+            normalized = normalized[:q_pos].strip()
     scheme_sep = normalized.find("://")
     if scheme_sep != -1 and normalized[:scheme_sep].lower() in {"http", "https"}:
         normalized = normalized[scheme_sep + 3:]
