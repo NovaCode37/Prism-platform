@@ -42,6 +42,7 @@
       "username": "Usuário"
     },
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -57,8 +58,8 @@
       "smtp": "Verificar SMTP",
       "leaks": "Vazamentos",
       "gravatar": "Gravatar",
-      "hudsonrock": "Exposicao a infostealers",
-      "lunar": "Exposicao do dominio",
+      "hudsonrock": "Exposição a infostealers",
+      "lunar": "Exposição do dominio",
       "hlr": "Consulta telefone",
       "blackbird": "Blackbird",
       "maigret": "Maigret",
@@ -235,6 +236,11 @@
     "copyCurl": "Copiar como cURL",
     "scanAnother": "Nova verificação",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Exposição a infostealers",
+      "lunar": "Exposição do dominio",
       "findings": "Resultados",
       "whois": "WHOIS",
       "dns": "DNS",

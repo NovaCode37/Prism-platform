@@ -31,6 +31,7 @@
     "compareSelected": "Comparer la sélection",
     "noHistory": "Aucun historique",
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -127,6 +128,11 @@
     "copyCurl": "Copier en tant que cURL",
     "scanAnother": "Nouvelle analyse",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Exposition aux infostealers",
+      "lunar": "Exposition du domaine",
       "findings": "Résultats",
       "whois": "WHOIS",
       "dns": "DNS",

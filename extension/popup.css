@@ -30,6 +30,7 @@ hr { border: none; border-top: 1px solid #21262d; margin: 18px 0; }
 .status { font-size: 11px; color: #8b949e; }
 .status.ok { color: #3fb950; }
 .status.err { color: #f85149; }
+.scan-server-info { font-size: 11px; color: #6e7681; margin-top: -8px; margin-bottom: 12px; text-align: center; }
 
 .bar-wrap { height: 4px; background: #161b22; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
 .bar { height: 100%; width: 0; background: linear-gradient(90deg,#4f8ef7,#7c5cfc); transition: width .3s ease; }

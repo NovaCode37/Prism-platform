@@ -155,12 +155,22 @@ function fail(msg) {
 }
 
 let seen;
-function resetScanUi(target) {
+function resetScanUi(target, server) {
   seen = new Set();
   clear(logEl); clear($("results")); $("error").hidden = true;
   barWrap.classList.remove("done"); bar.style.width = "0";
   $("scanTarget").textContent = target;
   $("scanTarget").title = target;
+
+  const serverInfoEl = $("scanServerInfo");
+  if (server) {
+    let host = server;
+    try { host = new URL(server).host; } catch (e) {}
+    serverInfoEl.textContent = `${t("serverLabel", "Server")}: ${host}`;
+    serverInfoEl.hidden = false;
+  } else {
+    serverInfoEl.hidden = true;
+  }
 }
 function pushLog(msg) {
   const key = `${msg.type}:${msg.module}`;
@@ -179,7 +189,7 @@ function pushLog(msg) {
 }
 
 async function start(target, server, apiKey) {
-  showScan(); resetScanUi(target); setStatus(t("scanning", "Scanning…"));
+  showScan(); resetScanUi(target, server); setStatus(t("scanning", "Scanning…"));
   const headers = { "Content-Type": "application/json" };
   if (apiKey) headers["X-API-Key"] = apiKey;
   let scanId;
@@ -199,7 +209,7 @@ async function start(target, server, apiKey) {
 }
 
 function resume(active) {
-  resetScanUi(active.target); setStatus(t("scanning", "Scanning…"));
+  resetScanUi(active.target, active.server); setStatus(t("scanning", "Scanning…"));
   poll(active);
 }
 

@@ -42,6 +42,7 @@
       "username": "用户名"
     },
     "modules": {
+      "rdap": "RDAP",
       "whois": "WHOIS",
       "dns": "DNS",
       "geoip": "GeoIP",
@@ -235,6 +236,11 @@
     "copyCurl": "复制为 cURL",
     "scanAnother": "扫描其他目标",
     "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "信息窃取程序暴露",
+      "lunar": "域名暴露",
       "findings": "发现",
       "whois": "WHOIS",
       "dns": "DNS",
