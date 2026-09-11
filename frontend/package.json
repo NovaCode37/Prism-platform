@@ -10,7 +10,8 @@
     "test:urls": "node scripts/test-api-url.mjs",
     "test:i18n": "node scripts/test-i18n-keys.mjs",
     "test:scan-target": "node scripts/test-scan-target.mjs",
-    "test:encoder": "node scripts/test-encoder.mjs"
+    "test:encoder": "node scripts/test-encoder.mjs",
+    "test:i18n-lookup": "node scripts/test-i18n-lookup.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

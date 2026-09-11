@@ -9,12 +9,19 @@ import it from '@/messages/it.json';
 import pt from '@/messages/pt.json';
 import pl from '@/messages/pl.json';
 import zh from '@/messages/zh.json';
+import tr from '@/messages/tr.json';
+import { makeLookup, type DeepPartial } from './i18n-lookup';
 
-export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh';
+export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh' | 'tr';
 type Messages = typeof en;
 
-const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages, it: it as Messages, pt: pt as Messages, pl: pl as Messages, zh: zh as Messages };
-export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh'];
+const lookup = makeLookup(en);
+
+const MESSAGES: Record<Locale, DeepPartial<Messages>> = {
+  en,
+  ru, de, fr, es, it, pt, pl, zh, tr,
+};
+export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'zh', 'tr'];
 export const STORAGE_KEY = 'prism_locale';
 
 interface I18nContextValue {
@@ -24,19 +31,6 @@ interface I18nContextValue {
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
-
-function lookup(messages: Messages, key: string): string {
-  const parts = key.split('.');
-  let cur: unknown = messages;
-  for (const p of parts) {
-    if (cur && typeof cur === 'object' && p in (cur as Record<string, unknown>)) {
-      cur = (cur as Record<string, unknown>)[p];
-    } else {
-      return key;
-    }
-  }
-  return typeof cur === 'string' ? cur : key;
-}
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en');
@@ -59,6 +53,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       else if (lang.startsWith('pt')) detected = 'pt';
       else if (lang.startsWith('pl')) detected = 'pl';
       else if (lang.startsWith('zh')) detected = 'zh';
+      else if (lang.startsWith('tr')) detected = 'tr';
       setLocaleState(detected);
       document.documentElement.lang = detected;
     } catch {}
@@ -86,4 +81,3 @@ export function useTranslations() {
   }
   return ctx;
 }
-

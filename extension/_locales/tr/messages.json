@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "Bir alan adına, IP'ye, e-postaya, telefona veya kullanıcı adına sağ tıklayarak PRISM örneğinizle tarayın."
+  },
+  "contextMenuTitle": {
+    "message": "“%s” öğesini PRISM ile tara"
+  },
+  "targetLabel": {
+    "message": "Hedef"
+  },
+  "targetPlaceholder": {
+    "message": "alan adı, IP, e-posta, telefon, kullanıcı adı"
+  },
+  "scanButton": {
+    "message": "Tara"
+  },
+  "scanPageButton": {
+    "message": "Bu sayfayı tara"
+  },
+  "scanPageUnsupported": {
+    "message": "Bu sayfa taranamaz."
+  },
+  "scanPageHostname": {
+    "message": "Sayfanın ana bilgisayar adı belirlenemedi."
+  },
+  "serverLabel": {
+    "message": "Sunucu"
+  },
+  "serverNote": {
+    "message": "PRISM adresiniz, hedef değil. Demo: getprism.su"
+  },
+  "saveButton": {
+    "message": "Kaydet"
+  },
+  "savedOk": {
+    "message": "Kaydedildi"
+  },
+  "clearRecent": {
+    "message": "Son hedefleri temizle"
+  },
+  "apiKeyLabel": {
+    "message": "API anahtarı (isteğe bağlı)"
+  },
+  "scanning": {
+    "message": "Taranıyor…"
+  },
+  "complete": {
+    "message": "Tamamlandı"
+  },
+  "failed": {
+    "message": "Tarama başarısız"
+  },
+  "opsecScore": {
+    "message": "OPSEC puanı"
+  },
+  "findings": {
+    "message": "Bulgular"
+  },
+  "noFindings": {
+    "message": "Önemli bulgu yok"
+  },
+  "openFull": {
+    "message": "Tam raporu aç"
+  },
+  "copy": {
+    "message": "Kopyala"
+  },
+  "copied": {
+    "message": "Kopyalandı ✓"
+  }
+}
