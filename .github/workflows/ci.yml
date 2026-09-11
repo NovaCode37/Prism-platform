@@ -87,6 +87,7 @@ jobs:
         run: |
           npm run test:urls
           npm run test:i18n
+          npm run test:i18n-lookup
           npm run test:scan-target
           npm run test:encoder
 

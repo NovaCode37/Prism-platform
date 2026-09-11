@@ -10,11 +10,12 @@ import pt from '@/messages/pt.json';
 import pl from '@/messages/pl.json';
 import zh from '@/messages/zh.json';
 import tr from '@/messages/tr.json';
+import { makeLookup, type DeepPartial } from './i18n-lookup';
 
 export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'pl' | 'zh' | 'tr';
 type Messages = typeof en;
 
-type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
+const lookup = makeLookup(en);
 
 const MESSAGES: Record<Locale, DeepPartial<Messages>> = {
   en,
@@ -30,20 +31,6 @@ interface I18nContextValue {
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
-
-function lookup(messages: DeepPartial<Messages>, key: string): string {
-  const parts = key.split('.');
-  let cur: unknown = messages;
-  for (const p of parts) {
-    if (cur && typeof cur === 'object' && p in (cur as Record<string, unknown>)) {
-      cur = (cur as Record<string, unknown>)[p];
-    } else {
-      // fall back to English so missing keys never render as raw paths
-      return lookup(en, key);
-    }
-  }
-  return typeof cur === 'string' ? cur : lookup(en, key);
-}
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en');
