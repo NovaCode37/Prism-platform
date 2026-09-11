@@ -164,15 +164,10 @@ function resetScanUi(target, server) {
 
   const serverInfoEl = $("scanServerInfo");
   if (server) {
-    try {
-      // Use new URL(server).host to get a compact representation like 'getprism.su' or 'localhost:8080'
-      serverInfoEl.textContent = `via ${new URL(server).host}`;
-      serverInfoEl.hidden = false;
-    } catch (e) {
-      // Fallback for invalid URLs, though baseUrl() should prevent this.
-      serverInfoEl.textContent = `via ${server}`;
-      serverInfoEl.hidden = false;
-    }
+    let host = server;
+    try { host = new URL(server).host; } catch (e) {}
+    serverInfoEl.textContent = `${t("serverLabel", "Server")}: ${host}`;
+    serverInfoEl.hidden = false;
   } else {
     serverInfoEl.hidden = true;
   }
