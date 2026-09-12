@@ -33,7 +33,7 @@ def normalize_target(target: str) -> str:
 
 
 def detect_type(target: str) -> str:
-    if "@" in target:
+    if "@" in target and not target.startswith("@"):
         return "email"
     stripped = target.replace("+", "").replace("-", "").replace(" ", "")
     if stripped.isdigit():
