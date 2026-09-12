@@ -27,6 +27,8 @@ def test_normalize_target(raw, expected):
         ("example.com", "domain"),
         ("player1234567", "username"),
         ("t.me/someuser", "telegram"),
+        ("@durov", "username"),
+        ("a@b.com", "email"),
     ],
 )
 def test_detect_type(target, expected):
