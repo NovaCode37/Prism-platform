@@ -20,6 +20,13 @@ __version__ = PRISM_VERSION
 
 def normalize_target(target: str) -> str:
     normalized = target.strip()
+    # mailto:someone@example.com?subject=hi -> someone@example.com
+    if normalized.lower().startswith("mailto:"):
+        normalized = normalized[7:]
+        q = normalized.find("?")
+        if q != -1:
+            normalized = normalized[:q]
+        normalized = normalized.strip()
     scheme_sep = normalized.find("://")
     if scheme_sep != -1 and normalized[:scheme_sep].lower() in {"http", "https"}:
         normalized = normalized[scheme_sep + 3:]
@@ -33,6 +40,12 @@ def normalize_target(target: str) -> str:
 
 
 def detect_type(target: str) -> str:
+    # Leading @ is a username/handle, not an email (e.g. @durov).
+    if target.startswith("@"):
+        t = target.lstrip("@")
+        if t.startswith("t.me/") or t.startswith("telegram.me/"):
+            return "telegram"
+        return "username"
     if "@" in target:
         return "email"
     stripped = target.replace("+", "").replace("-", "").replace(" ", "")
