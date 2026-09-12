@@ -4,7 +4,7 @@ Thanks for your interest in contributing! This document explains how to get star
 
 ## Getting Started
 
-1. **Fork** the repository
+1. **Fork** the repository (use the "Fork" button on GitHub)
 2. **Clone** your fork:
    ```bash
    git clone https://github.com/<your-nick>/Prism-platform.git
@@ -14,6 +14,13 @@ Thanks for your interest in contributing! This document explains how to get star
    ```bash
    git checkout -b feature/my-feature
    ```
+4. **Push** to your fork:
+   ```bash
+   git push origin feature/my-feature
+   ```
+5. **Open the PR** from your fork's branch to the `main` branch of this repository.
+
+> Note: pushing directly to this repository is refused for everyone without write access. A first-time PR needs a maintainer to approve the CI run before anything happens, so it may sit for a few minutes.
 
 ## Development Setup
 
@@ -87,12 +94,17 @@ pytest tests/ -v --cov=modules --cov-report=term-missing
 
 All new modules should include tests. Use `monkeypatch` to mock external API calls.
 
+## Scope
+
+A PR should do what its issue asks. If you find a bug along the way, open it as its own issue or its own PR, or flag it in the PR description — don't fold a fix for it into the same PR. This keeps review focused and avoids one PR changing two things at once.
+
 ## Pull Request Process
 
 1. Make sure tests pass: `pytest tests/ -v`
 2. Keep commits focused — one feature or fix per PR
 3. Write a clear PR description explaining **what** and **why**
-4. Link related issues if applicable
+4. Put `Closes #<issue-number>` in the PR description so the issue closes automatically on merge. Several issues have stayed open after their PR landed because this keyword was missing.
+5. Link related issues if applicable
 
 ## Reporting Issues
 
