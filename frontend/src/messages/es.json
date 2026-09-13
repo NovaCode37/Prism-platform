@@ -287,5 +287,17 @@
     "failedToToggle": "Error al actualizar la lista"
   },
   "common": { "copy": "Copiar", "copied": "¡Copiado!", "copyFailed": "Error al copiar", "loading": "Cargando…", "error": "Error", "backToTop": "Volver arriba" },
-  "lang": { "label": "Idioma", "en": "EN", "ru": "RU", "de": "DE", "fr": "FR", "es": "ES", "pl": "PL" }
+  "lang": {
+    "label": "Idioma",
+    "en": "EN",
+    "ru": "RU",
+    "de": "DE",
+    "fr": "FR",
+    "es": "ES",
+    "it": "IT",
+    "pt": "PT",
+    "pl": "PL",
+    "zh": "ZH",
+    "tr": "TR"
+  }
 }
