@@ -472,7 +472,7 @@ async def _run_module(scan_id: str, name: str, coro_or_func, *args, **kwargs) ->
         if asyncio.iscoroutinefunction(coro_or_func):
             result = await coro_or_func(*args, **kwargs)
         else:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(None, lambda: coro_or_func(*args, **kwargs))
         status = classify(result)
         if isinstance(result, dict) and "status" not in result:
@@ -1056,7 +1056,7 @@ async def download_report(request: Request, scan_id: str, lang: str = "en"):
     results = scan["results"]
     opsec = results.get("opsec_score")
     lang = _normalize_lang(lang)
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     report_path = await loop.run_in_executor(
         None,
         lambda: generate_html_report(scan["target"], scan["scan_type"], results, opsec, lang=lang),
@@ -1078,7 +1078,7 @@ async def download_report_pdf(request: Request, scan_id: str, lang: str = "en"):
     results = scan["results"]
     opsec = results.get("opsec_score")
     lang = _normalize_lang(lang)
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     try:
         pdf_path = await loop.run_in_executor(
             None,
@@ -1104,7 +1104,7 @@ async def scan_url(request: Request, req: dict):
         url = "https://" + url
     validate_url_not_private(url)
     from modules.url_scanner import URLScanner
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     result = await loop.run_in_executor(None, URLScanner().scan, url)
     return result
 
@@ -1149,7 +1149,7 @@ async def mac_lookup(request: Request, req: dict):
         return result
 
     try:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         def _fetch():
             resp = _requests.get(f"https://api.macvendors.com/{mac}", timeout=10)
             if resp.status_code == 200:
@@ -1177,7 +1177,7 @@ async def crypto_lookup(request: Request, req: dict):
     if not address or len(address) > 256:
         return JSONResponse({"error": "No address provided or address too long"}, status_code=400)
     from modules.crypto_lookup import CryptoLookup
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     result = await loop.run_in_executor(None, CryptoLookup().lookup, address)
     return result
 
@@ -1188,7 +1188,7 @@ async def darkweb_search(request: Request, req: dict):
     if not query or len(query) > 512:
         return JSONResponse({"error": "No query provided or query too long"}, status_code=400)
     from modules.darkweb_search import DarkWebSearch
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     result = await loop.run_in_executor(None, DarkWebSearch().search, query)
     return result
 
@@ -1200,7 +1200,7 @@ async def decode_qr(request: Request, file: UploadFile = File(...)):
     if len(data) > MAX_UPLOAD_BYTES:
         return JSONResponse({"error": "File too large"}, status_code=413)
     from modules.qr_decoder import QRDecoder
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     result = await loop.run_in_executor(None, QRDecoder().decode, data, file.filename)
     return result
 
@@ -1211,7 +1211,7 @@ async def analyze_email_headers(request: Request, req: dict):
     if not raw or len(raw) > 50000:
         return JSONResponse({"error": "No headers provided or input too large"}, status_code=400)
     from modules.email_header_analyzer import analyze_headers
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     result = await loop.run_in_executor(None, analyze_headers, raw)
     return result
 
@@ -1223,7 +1223,7 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
     suffix = os.path.splitext(file.filename or "")[1].lower()
     if suffix not in ALLOWED_EXTS:
         return JSONResponse({"error": f"Unsupported file type: {suffix}"}, status_code=400)
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
 
     def _spool() -> str:
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
@@ -1340,7 +1340,7 @@ async def ai_summary(request: Request, req: dict):
 
     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 1024}
     try:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         outcome = await loop.run_in_executor(None, lambda: _llm_complete(payload))
         if outcome.get("error"):
             return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
@@ -1380,7 +1380,7 @@ async def ai_chat(request: Request, req: dict):
         "max_tokens": 512,
     }
     try:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         outcome = await loop.run_in_executor(None, lambda: _llm_complete(payload))
         if outcome.get("error"):
             return JSONResponse({"error": outcome["error"], "tried": outcome.get("tried", [])}, status_code=400)
@@ -1434,7 +1434,7 @@ async def clear_scans(request: Request):
         return deleted
 
     try:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         deleted = await loop.run_in_executor(None, _purge)
         return {"deleted": deleted}
 
