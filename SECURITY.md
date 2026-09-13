@@ -67,6 +67,7 @@ PRISM ships with these on:
 ## Known limitations
 
 - Maigret runs as a subprocess, so `MODULE_PROXY` does not reach it. It uses the host's network directly. If the source address matters to you, route the whole container's egress rather than relying on the variable alone.
+- For detailed proxy configuration, verification methods, and troubleshooting, see [docs/proxies.md](docs/proxies.md).
 
 ## Deployment
 
