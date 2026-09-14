@@ -94,7 +94,8 @@ _FRONTEND_DIR = Path(os.getenv("PRISM_FRONTEND_DIR") or (_PROJECT_ROOT / "fronte
 _RESERVED_FRONTEND_PATHS = {"api", "ws", "healthz", "docs", "redoc", "openapi.json"}
 
 app = FastAPI(
-    title="OSINT Toolkit",
+    title="PRISM",
+    description="PRISM — Open Source Intelligence Platform",
     version=PRISM_VERSION,
     root_path=_BASE_PATH,
     docs_url=None if _disable_docs else "/docs",
