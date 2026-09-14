@@ -107,7 +107,8 @@ async def _lifespan(_app: FastAPI):
     yield
 
 app = FastAPI(
-    title="OSINT Toolkit",
+    title="PRISM",
+    description="PRISM — Open Source Intelligence Platform",
     lifespan=_lifespan,
     version=PRISM_VERSION,
     root_path=_BASE_PATH,
