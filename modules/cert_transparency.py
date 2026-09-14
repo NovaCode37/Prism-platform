@@ -3,7 +3,7 @@ from typing import Dict, Any, List
 import sys
 sys.path.append('..')
 from config import Colors, USER_AGENT
-from modules import get_proxies
+from modules import get_proxies, get_with_retry
 
 
 class CertTransparency:
@@ -21,7 +21,7 @@ class CertTransparency:
 
         try:
             proxies = get_proxies()
-            response = requests.get(
+            response = get_with_retry(
                 self.BASE_URL,
                 params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"},
                 timeout=30,

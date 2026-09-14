@@ -4,7 +4,7 @@ from datetime import datetime
 import sys
 sys.path.append('..')
 from config import Colors
-from modules import get_proxies
+from modules import get_proxies, get_with_retry
 
 
 class WaybackMachine:
@@ -32,7 +32,7 @@ class WaybackMachine:
                 "collapse": "timestamp:8",
             }
             proxies = get_proxies()
-            r = requests.get(
+            r = get_with_retry(
                 self.CDX_URL,
                 params=params,
                 timeout=45,
@@ -115,7 +115,7 @@ class WaybackMachine:
                 "filter": "statuscode:200",
             }
             proxies = get_proxies()
-            r = requests.get(
+            r = get_with_retry(
                 self.CDX_URL,
                 params=params,
                 timeout=25,
