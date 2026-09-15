@@ -9,8 +9,10 @@ from modules import get_proxies, get_with_retry
 class CertTransparency:
 
     BASE_URL = "https://crt.sh"
+    # Keyless and free, but limited to a few requests an hour: fallback only.
+    FALLBACK_URL = "https://api.certspotter.com/v1/issuances"
 
-    def search(self, domain: str) -> Dict[str, Any]:
+    def _search_crtsh(self, domain: str) -> Dict[str, Any]:
         result = {
             "domain": domain,
             "certificates": [],
@@ -81,6 +83,98 @@ class CertTransparency:
 
         return result
 
+    def search(self, domain: str) -> Dict[str, Any]:
+        """Look up subdomains in CT logs: crt.sh first, certspotter when it fails.
+
+        crt.sh stays the primary source. certspotter is only asked when crt.sh
+        returned an error, so a healthy crt.sh never spends the fallback's small
+        keyless quota. ``result["source"]`` names the source that answered.
+        """
+        result = self._search_crtsh(domain)
+        if not result["error"]:
+            result["source"] = "crt.sh"
+            return result
+
+        fallback = self._search_certspotter(domain)
+        if fallback["error"]:
+            # Report both, so a reader can tell the fallback was tried too.
+            result["error"] = f"{result['error']}; fallback certspotter: {fallback['error']}"
+            result["source"] = None
+            return result
+
+        fallback["fallback_reason"] = result["error"]
+        return fallback
+
+    def _search_certspotter(self, domain: str) -> Dict[str, Any]:
+        result = {
+            "domain": domain,
+            "certificates": [],
+            "subdomains": [],
+            "total_certs": 0,
+            "error": None,
+            "source": "certspotter",
+        }
+
+        try:
+            response = requests.get(
+                self.FALLBACK_URL,
+                params=[
+                    ("domain", domain),
+                    ("include_subdomains", "true"),
+                    ("expand", "dns_names"),
+                    ("expand", "issuer"),
+                ],
+                timeout=30,
+                headers={"User-Agent": USER_AGENT},
+                proxies=get_proxies(),
+            )
+            if response.status_code != 200:
+                result["error"] = f"certspotter returned status {response.status_code}"
+                return result
+            try:
+                issuances = response.json()
+            except Exception:
+                result["error"] = "Failed to parse certspotter response"
+                return result
+            if not isinstance(issuances, list):
+                result["error"] = "Unexpected certspotter response"
+                return result
+        except requests.Timeout:
+            result["error"] = "certspotter request timed out"
+            return result
+        except Exception as e:
+            result["error"] = str(e)
+            return result
+
+        result["total_certs"] = len(issuances)
+        subdomains: set = set()
+        cert_list: List[Dict] = []
+        for issuance in issuances:
+            names = issuance.get("dns_names") or []
+            for name in names:
+                name = str(name).strip().lower()
+                if name.startswith("*."):
+                    name = name[2:]
+                # A certificate can cover unrelated domains (example.com's also
+                # lists example.net and example.org), so keep only this domain.
+                if name == domain or name.endswith("." + domain):
+                    subdomains.add(name)
+            issuer = issuance.get("issuer") or {}
+            cert_list.append(
+                {
+                    "id": issuance.get("id"),
+                    "logged_at": None,  # certspotter's issuances do not carry a log time
+                    "not_before": issuance.get("not_before"),
+                    "not_after": issuance.get("not_after"),
+                    "common_name": names[0] if names else None,
+                    "issuer": issuer.get("friendly_name") or issuer.get("name") or "",
+                }
+            )
+
+        result["subdomains"] = sorted(subdomains)
+        result["certificates"] = cert_list[:20]
+        return result
+
     def print_result(self, result: Dict) -> None:
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
         print(f"{Colors.BOLD}Certificate Transparency: {result['domain']}{Colors.RESET}")
@@ -90,6 +184,8 @@ class CertTransparency:
             print(f"{Colors.RED}Error: {result['error']}{Colors.RESET}")
             return
 
+        if result.get("source") and result["source"] != "crt.sh":
+            print(f"{Colors.YELLOW}Source:{Colors.RESET} {result['source']} (crt.sh failed: {result.get('fallback_reason')})")
         print(f"{Colors.YELLOW}Total Certificates in CT logs:{Colors.RESET} {result['total_certs']}")
         print(f"{Colors.YELLOW}Unique Subdomains Discovered:{Colors.RESET} {len(result['subdomains'])}")
 
