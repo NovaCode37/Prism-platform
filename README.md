@@ -364,14 +364,14 @@ docker compose up -d --force-recreate
 | `SCAN_QUOTA_PER_DAY` | Daily scans per caller; `0`/unset = unlimited                            |
 | `HUDSONROCK_ENABLED` | `true` to enable the infostealer-exposure module (queries Hudson Rock) |
 | `LUNAR_ENABLED`      | `true` to enable the domain-exposure module (queries Lunar)             |
-| `MODULE_PROXY`       | Proxy for every outbound module request, `http(s)://` or `socks5://` |
+| `MODULE_PROXY`       | Proxy for every outbound module request, `http(s)://` or `socks5://` ([guide](docs/proxies.md)) |
 | `ALLOW_PRIVATE_TARGETS` | `true` to allow scanning private/internal addresses (default `false`) |
 | `WATCHLIST_SCHEDULER` | `true` to enable the watchlist background scheduler                     |
 | `WATCHLIST_POLL_SECONDS` | How often the scheduler checks for due watchlists (default `60`)     |
 | `LLM_BASE_URL`       | OpenAI-compatible chat-completions URL; overrides the provider default   |
 | `LLM_API_KEY`        | Key for `LLM_BASE_URL`; falls back to `OPENROUTER_API_KEY`/`GROQ_API_KEY`|
 | `LLM_MODEL`          | Model name for AI summary and chat; overrides the provider default       |
-| `LLM_PROXY`          | Optional `http(s)://` or `socks5://` proxy for outbound LLM requests     |
+| `LLM_PROXY`          | Optional `http(s)://` or `socks5://` proxy for outbound LLM requests ([guide](docs/proxies.md)) |
 
 ### Reverse proxy
 

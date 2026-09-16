@@ -59,7 +59,7 @@ PRISM ships with these on:
 - **HMAC-signed webhooks** when `WEBHOOK_SECRET` is set, in `X-Prism-Secret`.
 - **Response headers.** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
 - **Rate limiting.** `200/day` and `60/hour` globally, tighter per route, via slowapi. Keyed on the peer address unless proxy headers are explicitly trusted.
-- **Proxy headers off by default.** `TRUST_PROXY_HEADERS=true` trusts `X-Forwarded-*` only from the addresses in `FORWARDED_ALLOW_IPS`.
+- Outbound module/LLM proxies are documented in [docs/proxies.md](docs/proxies.md). **Proxy headers off by default.** `TRUST_PROXY_HEADERS=true` trusts `X-Forwarded-*` only from the addresses in `FORWARDED_ALLOW_IPS`.
 - **Input validation.** Length cap and shell metacharacter rejection in `validate_target`, UUID check on scan IDs.
 - **Non-root container.** The image runs as uid 1000. CI fails if that stops being true.
 - **`DISABLE_DOCS=true`** hides `/docs`, `/redoc` and `/openapi.json`.
