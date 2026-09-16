@@ -8,9 +8,10 @@ Set `MODULE_PROXY` to a proxy URL. Modules that call `get_proxies()` in `modules
 
 **Covers:** outbound HTTP(S) from modules that use the shared helper (HudsonRock, Lunar, and the other module clients wired through `get_with_retry` / `get_proxies`).
 
+**Also covers Maigret:** the wrapper passes `MODULE_PROXY` as `maigret --proxy` and sets `HTTP_PROXY` / `HTTPS_PROXY` so Maigret’s database updater (plain `requests`) uses the same egress.
+
 **Does not cover:**
 
-- **Maigret** — the Maigret integration does not read `MODULE_PROXY` yet (tracked separately).
 - **LLM / AI summary** — use `LLM_PROXY` for the model HTTP client, not `MODULE_PROXY`.
 - Browser / extension traffic from your machine (only the PRISM server’s outbound calls).
 
