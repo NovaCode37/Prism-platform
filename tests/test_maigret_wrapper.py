@@ -3,6 +3,8 @@ import sys
 import threading
 import time
 
+import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from modules.maigret_wrapper import MaigretWrapper
@@ -33,6 +35,25 @@ class _HangingProcess:
 def _wrapper(monkeypatch):
     monkeypatch.setattr(MaigretWrapper, "_find_maigret", lambda self: "maigret")
     return MaigretWrapper()
+
+
+def test_missing_maigret_is_skipped_without_installing(monkeypatch):
+    """A missing binary is reported as skipped (#394): scans never pip-install
+    maigret into the project (or the read-only image) at scan time."""
+    import modules.maigret_wrapper as mw
+    from modules.module_status import classify, SKIPPED
+
+    monkeypatch.setattr(MaigretWrapper, "_find_maigret", lambda self: None)
+    monkeypatch.setattr(
+        mw.subprocess, "Popen",
+        lambda *a, **k: pytest.fail("maigret must not be started when it is missing"),
+    )
+
+    result = MaigretWrapper().search("testuser")
+
+    assert classify(result) == SKIPPED
+    assert result["accounts"] == []
+    assert "not installed" in (result.get("status_reason") or "")
 
 
 def test_search_stops_a_hanging_maigret(monkeypatch):

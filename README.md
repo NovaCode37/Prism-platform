@@ -123,7 +123,7 @@ What PRISM does that those generally do not: results stream into a browser while
 | SMTP Verify | Mailbox existence check via SMTP handshake | none |
 | Breach Check | Email breach / credential leak lookup | Leak-Lookup |
 | Blackbird | Username presence across 50+ platforms (async) | none |
-| Maigret | Deep username search across 3000+ sites | none |
+| Maigret | Deep username search across 3000+ sites (not bundled in the Docker image) | none |
 | Telegram Lookup | Username/ID lookup via Bot API + scraping | Telegram |
 | Phone / HLR | Number validation, carrier, country, reverse lookup | Numverify |
 | Email Headers | SPF/DKIM/DMARC analysis, routing hops, spoofing detection | none |
@@ -825,7 +825,7 @@ PRISM is built by one person, with AI assistance as part of the workflow. Everyt
 PRISM stands on the shoulders of excellent open-source projects and public data sources.
 
 **Tools & techniques**
-- [Maigret](https://github.com/soxoj/maigret): username search across thousands of sites (run as a subprocess)
+- [Maigret](https://github.com/soxoj/maigret): username search across thousands of sites (run as a subprocess; included in requirements.txt, not in the Docker image, where the module reports itself as skipped)
 - Username heuristics inspired by [Sherlock](https://github.com/sherlock-project/sherlock) and [Blackbird](https://github.com/p1ngul1n0/blackbird)
 
 **Data sources & APIs**

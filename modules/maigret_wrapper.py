@@ -9,6 +9,7 @@ import sys
 sys.path.append('..')
 from config import OUTPUT_DIR, Colors
 from modules import get_proxies
+from modules.module_status import annotate, SKIPPED
 
 
 class MaigretWrapper:
@@ -40,37 +41,18 @@ class MaigretWrapper:
                 continue
         return None
 
-    def install_maigret(self) -> bool:
-        print(f"{Colors.YELLOW}Installing maigret into isolated venv...{Colors.RESET}")
-        try:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            venv_path = os.path.join(project_root, "venv-maigret")
-            if not os.path.isdir(venv_path):
-                subprocess.run([sys.executable, "-m", "venv", venv_path], check=True, timeout=30)
-            pip_bin = os.path.join(venv_path, "Scripts", "pip.exe") if sys.platform == "win32"\
-                else os.path.join(venv_path, "bin", "pip")
-            result = subprocess.run(
-                [pip_bin, "install", "maigret"],
-                capture_output=True, text=True, timeout=120,
-            )
-            if result.returncode == 0:
-                self.maigret_bin = self._find_maigret()
-                self.maigret_installed = self.maigret_bin is not None
-                print(f"{Colors.GREEN}Maigret installed successfully{Colors.RESET}")
-                return True
-            else:
-                print(f"{Colors.RED}Failed to install maigret: {result.stderr}{Colors.RESET}")
-                return False
-        except Exception as e:
-            print(f"{Colors.RED}Error installing maigret: {e}{Colors.RESET}")
-            return False
-
     def search(self, username: str, output_formats: List[str] = None,
                timeout: int = 30, top_sites: int = 500,
                max_runtime: Optional[int] = None) -> Dict[str, Any]:
         if not self.maigret_installed:
-            if not self.install_maigret():
-                return {"error": "Maigret not installed and installation failed"}
+            return annotate({
+                "username": username,
+                "timestamp": datetime.now().isoformat(),
+                "accounts": [],
+                "output_files": [],
+                "error": None,
+            }, SKIPPED, "maigret is not installed; install it with `pip install maigret` "
+                        "or set MAIGRET_BIN to a binary")
 
         if max_runtime is None:
             max_runtime = int(os.getenv("MAIGRET_MAX_RUNTIME") or "600")
