@@ -415,14 +415,6 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
             url, json=payload, headers=headers,
             timeout=10, allow_redirects=False,
         )
-    except TypeError:
-        try:
-            _requests.post(
-                url, json=payload, headers=headers,
-                timeout=10,
-            )
-        except Exception:
-            pass
     except Exception:
         pass
 

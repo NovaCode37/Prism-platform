@@ -43,10 +43,11 @@ class TestWebhookDelivery:
         from web import app as app_mod
         captured = {}
 
-        def fake_post(url, json=None, headers=None, timeout=None):
+        def fake_post(url, json=None, headers=None, timeout=None, allow_redirects=None):
             captured["url"] = url
             captured["json"] = json
             captured["headers"] = headers
+            captured["allow_redirects"] = allow_redirects
 
         monkeypatch.setattr(app_mod._requests, "post", fake_post)
         monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: None)
@@ -58,6 +59,7 @@ class TestWebhookDelivery:
         assert captured["json"] == payload
         assert captured["headers"]["X-Prism-Secret"] == "shh"
         assert captured["headers"]["Content-Type"] == "application/json"
+        assert captured["allow_redirects"] is False
 
     def test_swallows_post_errors(self, monkeypatch):
         from web import app as app_mod
@@ -92,7 +94,7 @@ class TestTestWebhookEndpoint:
     def test_returns_ok_on_success(self, monkeypatch):
         captured = {}
 
-        def fake_post(url, json=None, headers=None, timeout=None):
+        def fake_post(url, json=None, headers=None, timeout=None, allow_redirects=None):
             captured["url"] = url
             captured["json"] = json
 
@@ -147,7 +149,7 @@ class TestTestWebhookEndpoint:
     def test_payload_shape(self, monkeypatch):
         captured = {}
 
-        def fake_post(url, json=None, headers=None, timeout=None):
+        def fake_post(url, json=None, headers=None, timeout=None, allow_redirects=None):
             captured["json"] = json
 
         client = self._client(monkeypatch, fake_post)
