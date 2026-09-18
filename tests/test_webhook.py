@@ -162,6 +162,44 @@ class TestTestWebhookEndpoint:
         assert "added" in payload
         assert "changes" in payload
 
+    def test_delivery_failure_does_not_leak_exception_text(self, monkeypatch):
+        from web import app as app_mod
+
+        def boom(url, payload):
+            raise RuntimeError("connection to internal.example failed")
+
+        client = self._client(monkeypatch)
+        monkeypatch.setattr(app_mod, "_send_webhook", boom)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "https://hooks.example.com/prism"},
+            headers={"X-API-Key": "test-key"},
+        )
+        assert resp.status_code == 502
+        assert "internal.example" not in resp.text
+        assert "could not be delivered" in resp.json()["error"]
+
+    def test_delivery_failure_includes_http_status_when_available(self, monkeypatch):
+        from web import app as app_mod
+
+        class FakeDeliveryError(RuntimeError):
+            def __init__(self):
+                super().__init__("upstream refused")
+                self.response = type("Response", (), {"status_code": 503})()
+
+        def boom(url, payload):
+            raise FakeDeliveryError()
+
+        client = self._client(monkeypatch)
+        monkeypatch.setattr(app_mod, "_send_webhook", boom)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "https://hooks.example.com/prism"},
+            headers={"X-API-Key": "test-key"},
+        )
+        assert resp.status_code == 502
+        assert "(HTTP 503)" in resp.json()["error"]
+
 class TestWebhookResolutionGuard:
     def _blocked(self, monkeypatch, error):
         from web import app as app_mod

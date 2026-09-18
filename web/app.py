@@ -827,7 +827,12 @@ async def test_webhook(request: Request, req: TestWebhookRequest):
     try:
         _send_webhook(url, payload)
     except Exception as e:
-        return JSONResponse({"error": f"Webhook delivery failed: {e}"}, status_code=502)
+        logger.exception("Webhook delivery test failed")
+        status = getattr(getattr(e, "response", None), "status_code", None)
+        message = "Webhook could not be delivered"
+        if status is not None:
+            message += f" (HTTP {status})"
+        return JSONResponse({"error": message}, status_code=502)
     return {"ok": True, "url": url}
 
 @app.post("/api/scan", dependencies=[Depends(require_api_key)])
@@ -1449,10 +1454,7 @@ async def clear_scans(request: Request):
         return {"deleted": deleted}
 
     except Exception as e:
-        return JSONResponse(
-            {"error": str(e)},
-            status_code=500
-        )
+        return _server_error(e, "clear scans")
 
 
 
