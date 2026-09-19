@@ -48,7 +48,7 @@ class CensysLookup:
                 headers=self._headers(),
                 params=self._params(),
                 timeout=self.timeout,
-                proxies=proxies,  
+                proxies=proxies,
             )
             if r.status_code in (401, 403):
                 return annotate({"results": [], "total": 0}, ERROR, "Invalid Censys token or organization ID")

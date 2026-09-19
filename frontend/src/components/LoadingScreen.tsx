@@ -78,9 +78,6 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
   const [activeModules, setActiveModules] = useState<number[]>([]);
   const [bootLine, setBootLine] = useState('');
   const calledDone = useRef(false);
-  const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
-
   useEffect(() => {
     const progressTimer = setInterval(() => {
       setProgress(p => {
@@ -88,7 +85,7 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
           clearInterval(progressTimer);
           if (!calledDone.current) {
             calledDone.current = true;
-            setTimeout(() => onDoneRef.current(), 300);
+            setTimeout(() => onDone(), 300);
           }
           return 100;
         }
@@ -121,7 +118,7 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
       statusTimers.forEach(t => clearTimeout(t));
       clearInterval(typeTimer);
     };
-  }, []);
+  }, [onDone]);
 
   return (
     <div className={`prism-loading${fading ? ' fading' : ''}`}>

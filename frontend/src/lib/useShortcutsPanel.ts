@@ -26,7 +26,7 @@ export function useShortcutsPanel() {
         if (tag === 'INPUT' || tag === 'TEXTAREA' || (el as HTMLElement)?.isContentEditable) {
           return;
         }
-        
+
         e.preventDefault();
         setIsOpen(true);
       }
