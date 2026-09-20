@@ -21,7 +21,7 @@ slowapi>=0.1.10
 Pillow>=12.3.0
 pypdf>=6.18.0
 python-docx>=1.2.0
-xhtml2pdf>=0.2.18
+xhtml2pdf>=0.2.20
 
 pytest>=9.1.1
 pytest-cov>=7.1.0
