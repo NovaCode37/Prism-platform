@@ -462,38 +462,41 @@ const TABS = [
 interface Props { scan: ScanMeta & { results: ScanResults }; onHome: () => void; }
 
 class TabErrorBoundary extends React.Component<
-    { children: React.ReactNode },
-    { hasError: boolean }
+  {
+    children: React.ReactNode;
+    title: string;
+    message: string;
+  },
+  { hasError: boolean }
 > {
-    state = {
-        hasError: false,
-    };
+  state = {
+    hasError: false,
+  };
 
-    static getDerivedStateFromError() {
-        return { hasError: true };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-center p-8">
+          <AlertTriangle className="w-10 h-10 mb-4 text-yellow" />
+
+          <h2 className="text-lg font-semibold mb-2">
+            {this.props.title}
+          </h2>
+
+          <p className="text-sm text-text-2">
+            {this.props.message}
+          </p>
+        </div>
+      );
     }
 
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                    <AlertTriangle className="w-10 h-10 mb-4 text-yellow-500" />
-
-                    <h2 className="text-lg font-semibold mb-2">
-                        Unable to load this tab
-                    </h2>
-
-                    <p className="text-sm text-gray-400">
-                        An error occurred while loading this result.
-                    </p>
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
+    return this.props.children;
+  }
 }
-
 export function ScanResults({ scan, onHome }: Props) {
   const { t: i18n, locale } = useTranslations();
   const [tab, setTab] = useState('findings');
@@ -988,7 +991,11 @@ export function ScanResults({ scan, onHome }: Props) {
       </div>
 
       <div ref={contentRef} className={`flex-1 overflow-y-auto p-5 ${showBackToTop ? 'pb-24' : ''}`}>
-        <TabErrorBoundary key={tab}>
+        <TabErrorBoundary
+          key={tab}
+          title={i18n('common.tabErrorTitle')}
+          message={i18n('common.tabErrorMessage')}
+        >
         {tab === 'findings' && (
           <div>
             {opsec?.all_findings?.length ? (

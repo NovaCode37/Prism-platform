@@ -332,7 +332,9 @@
     "copyFailed": "复制失败",
     "loading": "加载中…",
     "error": "错误",
-    "backToTop": "返回顶部"
+    "backToTop": "返回顶部",
+    "tabErrorTitle": "无法加载此标签页",
+    "tabErrorMessage": "加载此结果时发生错误。"
   },
   "lang": {
     "label": "语言",

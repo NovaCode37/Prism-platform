@@ -332,7 +332,9 @@
     "copyFailed": "Copy failed",
     "loading": "Loading…",
     "error": "Error",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "tabErrorTitle": "Unable to load this tab",
+    "tabErrorMessage": "An error occurred while loading this result."
   },
   "lang": {
     "label": "Language",

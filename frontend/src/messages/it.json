@@ -326,13 +326,15 @@
     "paused": "In pausa",
     "failedToToggle": "Impossibile aggiornare la lista"
   },
-  "common": {
+    "common": {
     "copy": "Copia",
     "copied": "Copiato!",
     "copyFailed": "Copia non riuscita",
     "loading": "Caricamento…",
     "error": "Errore",
-    "backToTop": "Torna su"
+    "backToTop": "Torna su",
+    "tabErrorTitle": "Impossibile caricare questa scheda",
+    "tabErrorMessage": "Si è verificato un errore durante il caricamento di questo risultato."
   },
   "lang": {
     "label": "Lingua",

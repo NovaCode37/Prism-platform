@@ -332,7 +332,9 @@
     "copyFailed": "Falha ao copiar",
     "loading": "Carregando…",
     "error": "Erro",
-    "backToTop": "Voltar ao topo"
+    "backToTop": "Voltar ao topo",
+    "tabErrorTitle": "Não foi possível carregar esta aba",
+    "tabErrorMessage": "Ocorreu um erro ao carregar este resultado."
   },
   "lang": {
     "label": "Idioma",
