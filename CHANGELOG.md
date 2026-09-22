@@ -6,6 +6,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.10.0] — 2026-09-22
+
+Mostly contributor work. Names are on the pull requests.
+
+### Added
+- **SOCKS proxies work out of the box.** `MODULE_PROXY` and `LLM_PROXY` always accepted a `socks5://` URL, but `requests` only speaks SOCKS when PySocks is present, and it was in neither requirements file the image installs. Both now ask for `requests[socks]`, so a SOCKS proxy needs nothing extra (#377, #380).
+- **Certificate Transparency falls back to certspotter** when crt.sh fails, which it does often. crt.sh stays the primary source so the fallback's small keyless quota is not spent on a healthy day, and the result names whichever source answered (#379, #383).
+- **crt.sh and the Wayback CDX API retry** on `502`, `503`, `504` and timeouts, with backoff. A single blip used to mark the whole module failed for that scan. An answer, including a `404`, is never retried (#378, #381).
+- **`MODULE_PROXY` reaches maigret.** It runs as a subprocess, so it gets `--proxy` for the site checks, and `HTTP_PROXY` / `HTTPS_PROXY` in its environment for the database update, which uses plain `requests` and ignores the flag (#344, #372).
+- **Error boundaries.** A component that throws no longer blanks the page: there is a page-level `error.tsx` (#342, #384), and the results view wraps each tab, so a module returning something a tab does not expect costs you that tab rather than the findings, the graph, the map and the export buttons (#389, #410).
+- **`docs/proxies.md`**, covering what `MODULE_PROXY` reaches, the URL forms, and how to confirm traffic is really leaving through the proxy (#351, #385).
+
+### Changed
+- **Startup runs through a lifespan handler** instead of the deprecated `on_event`, and the watchlist scheduler is guarded across re-imports, so a fresh import no longer leaves a second thread looping next to the first (#361, #363).
+- **maigret is no longer pip-installed in the middle of a scan.** The old fallback built a venv under the project root and reached PyPI while the user waited, which cannot work in the published image and ignores `MODULE_PROXY` besides. A missing binary is now reported as `skipped` with a reason (#394, #397).
+- The API is called PRISM rather than OSINT Toolkit (#343, #375).
+- `asyncio.get_event_loop()` replaced with `get_running_loop()` in the async handlers (#362).
+- **The Russian interface, reports and extension strings were reviewed** by a native speaker, and the language switcher labels were missing entries in several locales (#346, #347, #370, #382).
+- Configuration moved out of the readme into `docs/CONFIGURATION.md`, and the roadmap no longer carries eight releases of history. The readme is 605 lines instead of 846.
+
+### Fixed
+- **A source install could not export a PDF.** `xhtml2pdf` was in `requirements-web.txt`, which the image installs, but missing from `requirements.txt`, which everything else installs. A test now fails if the two files disagree on a shared package (#394, #397).
+- **The webhook fallback followed redirects.** `_send_webhook` disables them deliberately, since a redirect is a way around the address check, but its `TypeError` fallback re-sent the request without the flag (#393, #396).
+- **Two 5xx handlers returned the text of whatever exception they caught**, which for a `requests` error includes the URL and connection internals. The 2.9.0 pass had missed them (#390, #395).
+- Every locale is compared against the full key set of `en.json` in CI, so a missing translation key fails the build instead of falling back silently (#346, #376).
+
+### Security
+- **Every GitHub Action is pinned to a commit SHA** rather than a moving tag (#373).
+- The CI workflow declares `permissions: contents: read`, which it had never set at all (#386, #398).
+
+---
+
 ## [2.9.2] — 2026-09-13
 
 ### Changed

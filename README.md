@@ -9,7 +9,7 @@ Scan a domain, IP, email, phone or username and get WHOIS, DNS, threat intel, br
 **[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Configuration](docs/CONFIGURATION.md)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)** · **[FAQ](#faq)**
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.9.2-7c5cfc?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.0-7c5cfc?style=flat-square)](CHANGELOG.md)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
 [![Firefox Add-on](https://img.shields.io/amo/v/prism-osint?style=flat-square&logo=firefoxbrowser&logoColor=white&label=Firefox%20Add-on&color=ff7139)](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
@@ -245,7 +245,7 @@ Nothing to clone and nothing to build:
 docker run -p 8080:8080 -e ALLOW_ANON_API=true ghcr.io/novacode37/prism-platform:latest
 ```
 
-Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.9`, `2.9.2`, plus `edge` built from `main`.
+Images are published for `linux/amd64` and `linux/arm64`, so this works on a Raspberry Pi or an ARM VPS as well. Tags follow releases: `latest`, `2.10`, `2.10.0`, plus `edge` built from `main`.
 
 If you need somewhere to put it, [Timeweb Cloud](https://timeweb.cloud/?i=146939) rents plain Linux servers by the month. That is a referral link: same price to you, and it pays for this project's domain.
 
@@ -435,10 +435,10 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
 ## Roadmap
 
-Everything through **2.9** has shipped. The full history, release by
+Everything through **2.10** has shipped. The full history, release by
 release, is in the [changelog](CHANGELOG.md).
 
-### v2.10 (planned)
+### v2.11 (planned)
 - [ ] Username checks for the sites that serve identical HTML for every name: needs their APIs rather than page scraping
 - [ ] *(exploring)* AI OSINT agent: autonomous multi-module investigation
 
