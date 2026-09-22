@@ -326,13 +326,15 @@
     "paused": "Pausiert",
     "failedToToggle": "Watchlist konnte nicht aktualisiert werden"
   },
-  "common": {
+    "common": {
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "copyFailed": "Kopieren fehlgeschlagen",
     "loading": "Lädt…",
     "error": "Fehler",
-    "backToTop": "Nach oben"
+    "backToTop": "Nach oben",
+    "tabErrorTitle": "Tab konnte nicht geladen werden",
+    "tabErrorMessage": "Beim Laden dieses Ergebnisses ist ein Fehler aufgetreten."
   },
   "lang": {
     "label": "Sprache",

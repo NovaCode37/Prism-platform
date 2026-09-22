@@ -325,14 +325,16 @@
     "resume": "Reprendre la liste",
     "paused": "Suspendu",
     "failedToToggle": "Échec de la mise à jour de la liste"
-  },
+    },
   "common": {
     "copy": "Copier",
     "copied": "Copié !",
     "copyFailed": "Échec de la copie",
     "loading": "Chargement…",
     "error": "Erreur",
-    "backToTop": "Retour en haut"
+    "backToTop": "Retour en haut",
+    "tabErrorTitle": "Impossible de charger cet onglet",
+    "tabErrorMessage": "Une erreur s’est produite lors du chargement de ce résultat."
   },
   "lang": {
     "label": "Langue",

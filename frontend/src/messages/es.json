@@ -286,7 +286,16 @@
     "paused": "Pausado",
     "failedToToggle": "Error al actualizar la lista"
   },
-  "common": { "copy": "Copiar", "copied": "¡Copiado!", "copyFailed": "Error al copiar", "loading": "Cargando…", "error": "Error", "backToTop": "Volver arriba" },
+ "common": {
+  "copy": "Copiar",
+  "copied": "¡Copiado!",
+  "copyFailed": "Error al copiar",
+  "loading": "Cargando…",
+  "error": "Error",
+  "backToTop": "Volver arriba",
+  "tabErrorTitle": "No se puede cargar esta pestaña",
+  "tabErrorMessage": "Se produjo un error al cargar este resultado."
+  },
   "lang": {
     "label": "Idioma",
     "en": "EN",

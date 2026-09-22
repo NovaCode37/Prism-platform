@@ -332,7 +332,9 @@
     "copyFailed": "Kopyalama başarısız",
     "loading": "Yükleniyor…",
     "error": "Hata",
-    "backToTop": "Başa dön"
+    "backToTop": "Başa dön",
+    "tabErrorTitle": "Bu sekme yüklenemiyor",
+    "tabErrorMessage": "Bu sonuç yüklenirken bir hata oluştu."
   },
   "lang": {
     "label": "Dil",

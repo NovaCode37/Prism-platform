@@ -326,11 +326,11 @@
       }
     },
     "common": {
-      "yes": "Tak",
-      "no": "Nie",
-      "unknown": "Nieznane",
-      "points": "pkt"
-    },
+    "yes": "Tak",
+    "no": "Nie",
+    "unknown": "Nieznane",
+    "points": "pkt"
+  },
     "findings": {
       "title": "Wykryte zagrożenia",
       "none": "Brak zagrożeń"
@@ -523,12 +523,14 @@
     "failedToToggle": "Nie udało się zaktualizować listy"
   },
   "common": {
-    "copy": "Kopiuj",
-    "copied": "Skopiowano!",
-    "copyFailed": "Kopiowanie nie powiodło się",
-    "loading": "Ładowanie…",
-    "error": "Błąd",
-    "backToTop": "Powrót do góry"
+  "copy": "Kopiuj",
+  "copied": "Skopiowano!",
+  "copyFailed": "Kopiowanie nie powiodło się",
+  "loading": "Ładowanie…",
+  "error": "Błąd",
+  "backToTop": "Powrót do góry",
+  "tabErrorTitle": "Nie można załadować tej karty",
+  "tabErrorMessage": "Wystąpił błąd podczas ładowania tego wyniku."
   },
   "lang": {
     "label": "Język",
