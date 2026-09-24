@@ -28,7 +28,7 @@ class CertTransparency:
                 params = {"q": f"%.{domain}", "output": "json", "deduplicate": "Y"},
                 timeout=30,
                 headers={"User-Agent": USER_AGENT},
-                proxies=proxies,  
+                proxies=proxies,
             )
 
 

@@ -79,8 +79,9 @@ function LoadingScreen({ fading, onDone }: { fading: boolean; onDone: () => void
   const [bootLine, setBootLine] = useState('');
   const calledDone = useRef(false);
   const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
-
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  });
   useEffect(() => {
     const progressTimer = setInterval(() => {
       setProgress(p => {
