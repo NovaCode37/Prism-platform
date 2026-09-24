@@ -69,8 +69,10 @@ export function IdleView({ onTool, onScan, isStarting = false }: Props) {
     } else if (deleting && displayed.length > 0) {
       timer = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35);
     } else {
-      setDeleting(false);
-      setTargetIdx(i => (i + 1) % TARGETS.length);
+      timer = setTimeout(() => {
+        setDeleting(false);
+        setTargetIdx(i => (i + 1) % TARGETS.length);
+      }, 0);
     }
     return () => clearTimeout(timer);
   }, [displayed, deleting, targetIdx]);

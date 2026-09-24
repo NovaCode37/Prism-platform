@@ -431,6 +431,7 @@ function JwtPanel() {
   const { t } = useTranslations();
   const [token, setToken] = useState('');
   const [result, setResult] = useState<import('@/lib/types').JwtResult | null>(null);
+  const [isExpired, setIsExpired] = useState(false);
 
   const run = () => {
     const trimmed = token.trim();
@@ -438,6 +439,7 @@ function JwtPanel() {
     const parts = trimmed.split('.');
     if (parts.length !== 3) {
       setResult({ error: t('toolPanels.jwt.invalid') });
+      setIsExpired(false);
       return;
     }
     try {
@@ -450,12 +452,12 @@ function JwtPanel() {
         exp: formatTimestamp(payload.exp),
         nbf: formatTimestamp(payload.nbf),
       });
+      setIsExpired(typeof payload.exp === 'number' && payload.exp * 1000 < Date.now());
     } catch {
       setResult({ error: t('toolPanels.jwt.invalid') });
+      setIsExpired(false);
     }
   };
-
-  const isExpired = result?.payload && typeof result.payload.exp === 'number' && result.payload.exp * 1000 < Date.now();
 
   return (
     <div>
