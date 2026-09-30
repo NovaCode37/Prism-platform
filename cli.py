@@ -17,6 +17,52 @@ from config import PRISM_VERSION
 
 __version__ = PRISM_VERSION
 
+MODULES_BY_TARGET_TYPE: Dict[str, tuple[str, ...]] = {
+    "domain": (
+        "whois",
+        "rdap",
+        "dns",
+        "geoip",
+        "cert_transparency",
+        "website",
+        "wayback",
+        "shodan",
+        "virustotal",
+        "onion",
+        "censys",
+        "hudsonrock",
+        "lunar",
+    ),
+    "ip": (
+        "geoip",
+        "shodan",
+        "virustotal",
+        "abuseipdb",
+        "censys",
+    ),
+    "email": (
+        "smtp",
+        "leaks",
+        "emailrep",
+        "hudsonrock",
+    ),
+    "phone": (
+        "hlr",
+    ),
+    "telegram": (
+        "telegram",
+    ),
+    "username": (
+        "blackbird",
+        "maigret",
+        "hudsonrock",
+    ),
+}
+
+ALL_MODULES = tuple(
+    dict.fromkeys(m for mods in MODULES_BY_TARGET_TYPE.values() for m in mods)
+)
+
 
 def normalize_target(target: str) -> str:
     normalized = target.strip()
@@ -63,8 +109,11 @@ async def run_scan(
     results: Dict[str, Any] = {}
     selected = set(modules) if modules else set()
     all_modules = not selected
+    applicable_modules = set(MODULES_BY_TARGET_TYPE.get(scan_type, ()))
 
     def want(name: str) -> bool:
+        if name not in applicable_modules:
+            return False
         return all_modules or name in selected
 
     def _log(msg: str) -> None:
@@ -213,12 +262,13 @@ async def run_scan(
             }
 
     elif scan_type == "telegram":
-        _log("Running telegram ...")
-        from modules.telegram_lookup import TelegramLookup
-        from config import TELEGRAM_BOT_TOKEN
-        tg = TelegramLookup()
-        tg_target = target.lstrip("@").replace("t.me/", "").replace("telegram.me/", "").strip()
-        results["telegram"] = await _invoke(tg.run_lookup, tg_target, TELEGRAM_BOT_TOKEN or None)
+        if want("telegram"):
+            _log("Running telegram ...")
+            from modules.telegram_lookup import TelegramLookup
+            from config import TELEGRAM_BOT_TOKEN
+            tg = TelegramLookup()
+            tg_target = target.lstrip("@").replace("t.me/", "").replace("telegram.me/", "").strip()
+            results["telegram"] = await _invoke(tg.run_lookup, tg_target, TELEGRAM_BOT_TOKEN or None)
 
     elif scan_type == "username":
         if want("blackbird"):
@@ -438,6 +488,26 @@ def main(argv: Optional[List[str]] = None) -> None:
         target = normalize_target(args.target)
         scan_type = args.scan_type or detect_type(target)
         modules = [m.strip() for m in args.modules.split(",") if m.strip()] if args.modules else None
+
+        if modules:
+            all_known = set(ALL_MODULES)
+            unknown = [m for m in modules if m not in all_known]
+            if unknown:
+                valid_for_type = MODULES_BY_TARGET_TYPE.get(scan_type, ())
+                print(
+                    f"Unknown module(s): {', '.join(unknown)}\n"
+                    f"Valid modules for {scan_type}: {', '.join(valid_for_type)}",
+                    file=sys.stderr,
+                )
+                sys.exit(2)
+
+            valid_for_type = set(MODULES_BY_TARGET_TYPE.get(scan_type, ()))
+            inapplicable = [m for m in modules if m not in valid_for_type]
+            if inapplicable:
+                print(
+                    f"Warning: module(s) {', '.join(inapplicable)} do not apply to target type '{scan_type}'",
+                    file=sys.stderr,
+                )
 
         verbose = args.verbose and not args.quiet
 
