@@ -327,34 +327,28 @@ def _serialisable(results: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
-def output_graphml(target: str, scan_type: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
-    from modules.graph_export import to_graphml
+def _output_graph(fmt_name: str, ext: str, to_func, target: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
     import re
-    xml = to_graphml(results.get("graph", {}))
+    xml = to_func(results.get("graph", {}))
     if path is None:
         results_dir = os.path.join(_PROJECT_ROOT, "results")
         os.makedirs(results_dir, exist_ok=True)
         safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = os.path.join(results_dir, f"graph_{safe_target}_{ts}.graphml")
+        path = os.path.join(results_dir, f"graph_{safe_target}_{ts}.{ext}")
     with open(path, "w", encoding="utf-8") as f:
         f.write(xml)
-    print(f"GraphML export saved to {path}", file=sys.stderr)
+    print(f"{fmt_name} export saved to {path}", file=sys.stderr)
+
+
+def output_graphml(target: str, scan_type: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
+    from modules.graph_export import to_graphml
+    _output_graph("GraphML", "graphml", to_graphml, target, results, path)
 
 
 def output_gexf(target: str, scan_type: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
     from modules.graph_export import to_gexf
-    import re
-    xml = to_gexf(results.get("graph", {}))
-    if path is None:
-        results_dir = os.path.join(_PROJECT_ROOT, "results")
-        os.makedirs(results_dir, exist_ok=True)
-        safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = os.path.join(results_dir, f"graph_{safe_target}_{ts}.gexf")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(xml)
-    print(f"GEXF export saved to {path}", file=sys.stderr)
+    _output_graph("GEXF", "gexf", to_gexf, target, results, path)
 
 
 def output_json(results: Dict[str, Any], path: Optional[str] = None) -> None:
