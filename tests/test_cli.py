@@ -1,3 +1,6 @@
+import os
+import glob
+from unittest.mock import patch, AsyncMock
 import pytest
 import sys
 
@@ -98,3 +101,67 @@ def test_run_scan_respects_applicable_modules(monkeypatch):
     results = asyncio.run(cli.run_scan("user@example.com", "email", modules=["whois"]))
     assert "whois" not in results
     assert whois_called == []
+
+
+@patch("cli.run_scan", new_callable=AsyncMock)
+def test_cli_graphml_export(mock_run_scan, tmp_path):
+    mock_run_scan.return_value = {
+        "graph": {
+            "nodes": [{"id": "1", "label": "example.com", "type": "domain", "color": "#a29bfe"}],
+            "edges": []
+        }
+    }
+    
+    out_file = tmp_path / "out.graphml"
+    
+    with pytest.raises(SystemExit) as e:
+        cli.main(["scan", "example.com", "--graphml", "-o", str(out_file), "--quiet"])
+    
+    assert e.value.code == 0
+    assert out_file.exists()
+    
+    content = out_file.read_text(encoding="utf-8")
+    assert "<graphml" in content
+    assert "example.com" in content
+
+
+@patch("cli.run_scan", new_callable=AsyncMock)
+def test_cli_gexf_export(mock_run_scan, tmp_path):
+    mock_run_scan.return_value = {
+        "graph": {
+            "nodes": [{"id": "1", "label": "example.com", "type": "domain", "color": "#a29bfe"}],
+            "edges": []
+        }
+    }
+    
+    out_file = tmp_path / "out.gexf"
+    
+    with pytest.raises(SystemExit) as e:
+        cli.main(["scan", "example.com", "--gexf", "-o", str(out_file), "--quiet"])
+    
+    assert e.value.code == 0
+    assert out_file.exists()
+    
+    content = out_file.read_text(encoding="utf-8")
+    assert "<gexf" in content
+    assert "example.com" in content
+
+
+@patch("cli.run_scan", new_callable=AsyncMock)
+def test_cli_multiple_exports_overwrite_prevention(mock_run_scan, tmp_path):
+    mock_run_scan.return_value = {
+        "graph": {
+            "nodes": [{"id": "1", "label": "example.com", "type": "domain", "color": "#a29bfe"}],
+            "edges": []
+        }
+    }
+    
+    out_file = tmp_path / "out.json" # user specifies generic out file
+    
+    with pytest.raises(SystemExit) as e:
+        cli.main(["scan", "example.com", "--graphml", "--gexf", "--html", "-o", str(out_file), "--quiet"])
+    
+    assert e.value.code == 0
+    assert (tmp_path / "out.graphml").exists()
+    assert (tmp_path / "out.gexf").exists()
+    assert (tmp_path / "out.html").exists()

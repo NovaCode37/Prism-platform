@@ -327,6 +327,36 @@ def _serialisable(results: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
+def output_graphml(target: str, scan_type: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
+    from modules.graph_export import to_graphml
+    import re
+    xml = to_graphml(results.get("graph", {}))
+    if path is None:
+        results_dir = os.path.join(_PROJECT_ROOT, "results")
+        os.makedirs(results_dir, exist_ok=True)
+        safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = os.path.join(results_dir, f"graph_{safe_target}_{ts}.graphml")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(xml)
+    print(f"GraphML export saved to {path}", file=sys.stderr)
+
+
+def output_gexf(target: str, scan_type: str, results: Dict[str, Any], path: Optional[str] = None) -> None:
+    from modules.graph_export import to_gexf
+    import re
+    xml = to_gexf(results.get("graph", {}))
+    if path is None:
+        results_dir = os.path.join(_PROJECT_ROOT, "results")
+        os.makedirs(results_dir, exist_ok=True)
+        safe_target = re.sub(r'[^a-zA-Z0-9._\-]', '_', target)[:80]
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = os.path.join(results_dir, f"graph_{safe_target}_{ts}.gexf")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(xml)
+    print(f"GEXF export saved to {path}", file=sys.stderr)
+
+
 def output_json(results: Dict[str, Any], path: Optional[str] = None) -> None:
     text = json.dumps(_serialisable(results), indent=2, default=str, ensure_ascii=False)
     if path:
@@ -376,6 +406,8 @@ def build_parser() -> argparse.ArgumentParser:
     scan_p.add_argument("--json", dest="fmt_json", action="store_true", default=False, help="Output JSON (default)")
     scan_p.add_argument("--html", dest="fmt_html", action="store_true", default=False, help="Generate HTML report")
     scan_p.add_argument("--pdf", dest="fmt_pdf", action="store_true", default=False, help="Generate PDF report")
+    scan_p.add_argument("--graphml", dest="fmt_graphml", action="store_true", default=False, help="Export graph as GraphML")
+    scan_p.add_argument("--gexf", dest="fmt_gexf", action="store_true", default=False, help="Export graph as GEXF")
     scan_p.add_argument("--output", "-o", default=None, help="Output file path")
     scan_p.add_argument("--verbose", "-v", action="store_true", default=False, help="Print progress to stderr")
     scan_p.add_argument("--quiet", "-q", action="store_true", default=False, help="Print only the result (suppress banners and progress)")
@@ -528,13 +560,25 @@ def main(argv: Optional[List[str]] = None) -> None:
             sys.exit(1)
 
         output_path = args.output
+        formats_requested = sum([args.fmt_html, args.fmt_pdf, args.fmt_graphml, args.fmt_gexf, args.fmt_json])
+
+        def get_out_path(ext: str) -> Optional[str]:
+            if not output_path or formats_requested <= 1:
+                return output_path
+            base, _ = os.path.splitext(output_path)
+            return f"{base}.{ext}"
+
+        if args.fmt_graphml:
+            output_graphml(target, scan_type, results, path=get_out_path("graphml"))
+        if args.fmt_gexf:
+            output_gexf(target, scan_type, results, path=get_out_path("gexf"))
 
         if args.fmt_html:
-            output_html(target, scan_type, results, path=output_path)
+            output_html(target, scan_type, results, path=get_out_path("html"))
         elif args.fmt_pdf:
-            output_pdf(target, scan_type, results, path=output_path)
-        else:
-            output_json(results, path=output_path)
+            output_pdf(target, scan_type, results, path=get_out_path("pdf"))
+        elif not (args.fmt_graphml or args.fmt_gexf) or args.fmt_json:
+            output_json(results, path=get_out_path("json"))
 
         if not args.quiet:
             print(
