@@ -99,7 +99,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
         <button
           onClick={onWatchlist}
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2 text-[11px]"
-          title="Watchlists"
+          title={t('component.watchlists')}
           aria-label="Watchlists"
         >
           <Eye size={15} />
@@ -139,7 +139,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-[#ff7139] transition-colors text-[11px]"
-          title="Get the Firefox extension"
+          title={t('component.getTheFirefoxExtension')}
           aria-label="Get the Firefox extension"
         >
           <Puzzle size={15} />
@@ -150,7 +150,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           target="_blank"
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
-          title="API Documentation"
+          title={t('component.apiDocumentation')}
           aria-label="API Documentation"
         >
           <Book size={15} />
@@ -160,7 +160,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors text-[11px]"
-          title="Report an issue"
+          title={t('component.reportAnIssue')}
           aria-label="Report an issue"
         >
           <AlertCircle size={15} />
@@ -171,7 +171,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors text-[11px]"
-          title="Star on GitHub"
+          title={t('component.starOnGithub')}
           aria-label="Star on GitHub"
         >
           <Star size={15} />
@@ -182,7 +182,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           target="_blank"
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
-          title="GitHub"
+          title={t('component.github')}
           aria-label="GitHub repository"
         >
           <Github size={15} />
