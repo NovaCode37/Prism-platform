@@ -1,0 +1,22 @@
+services:
+  prism-demo:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_BASE_PATH: ${NEXT_PUBLIC_BASE_PATH:-}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ALLOW_ANON_API=true
+      - PRISM_DEMO_MODE=true
+    volumes:
+      - ./demo/scan_data:/app/scan_data:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "host=\"$${HEALTHCHECK_HOST:-$${TRUSTED_HOSTS%%,*}}\"; if [ -z \"$$host\" ] || [ \"$$host\" = \"*\" ]; then host=localhost; fi; curl -f -H \"Host: $$host\" http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

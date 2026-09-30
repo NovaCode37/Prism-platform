@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "PRISM — Open Source Intelligence Platform"
+abstract: "Self-hosted OSINT platform with 22+ modules, OPSEC scoring, AI summary, entity graphs, GeoIP map, and HTML/PDF reports."
+authors:
+  - family-names: Golubev
+    given-names: Savelii
+repository-code: "https://github.com/NovaCode37/Prism-platform"
+url: "https://getprism.su"
+license: MIT
+version: "2.3.0"
+date-released: "2026-06-03"
+keywords:
+  - osint
+  - reconnaissance
+  - threat-intelligence
+  - self-hosted
+  - security

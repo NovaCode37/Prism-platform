@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Live Demo
+    url: https://getprism.su
+    about: Try PRISM in your browser before filing an issue.
+  - name: Questions & Discussions
+    url: https://github.com/NovaCode37/Prism-platform/discussions
+    about: Ask questions, share ideas, or get help here.

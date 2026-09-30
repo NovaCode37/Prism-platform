@@ -1,0 +1,121 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+.page { max-width: 820px; margin: 0 auto; padding: 28px 20px 60px; }
+
+.head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.brand { font-weight: 700; letter-spacing: .04em; color: #adbac7; }
+.target { font-family: ui-monospace, monospace; font-size: 18px; font-weight: 600; color: #fff; }
+.status { margin-left: auto; font-size: 12px; color: #8b949e; }
+.status.ok { color: #3fb950; }
+.status.err { color: #f85149; }
+
+.bar-wrap { height: 4px; background: #161b22; border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
+.bar { height: 100%; width: 0; background: linear-gradient(90deg,#4f8ef7,#7c5cfc); transition: width .3s ease; }
+.bar-wrap.done { opacity: 0; height: 0; margin: 0; transition: all .4s ease; }
+
+.log { font-family: ui-monospace, monospace; font-size: 11px; color: #6e7681; line-height: 1.7; margin-bottom: 20px; max-height: 160px; overflow: auto; }
+.log .ok { color: #3fb950; }
+.log .skip { color: #8b949e; }
+.log .rl { color: #d29922; }
+.log .err { color: #f85149; }
+
+.opsec { display: flex; align-items: center; gap: 18px; background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+.score { font-size: 40px; font-weight: 800; line-height: 1; }
+.opsec .meta { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: .06em; }
+.opsec .risk { font-size: 15px; font-weight: 700; margin-top: 2px; }
+
+.section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #8b949e; margin: 22px 0 10px; }
+
+.finding { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #161b22; font-size: 13px; }
+.finding:last-child { border-bottom: none; }
+.sev { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0; }
+.sev.CRITICAL, .sev.HIGH { background: #3d1518; color: #ff7b72; }
+.sev.MEDIUM { background: #3a2d0f; color: #e3b341; }
+.sev.LOW, .sev.INFO { background: #182635; color: #79c0ff; }
+.empty { color: #6e7681; font-size: 13px; padding: 10px 0; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.card { background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px; }
+.card h3 { margin: 0 0 10px; font-size: 13px; color: #e6edf3; }
+.row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; font-size: 12px; }
+.row .k { color: #8b949e; flex-shrink: 0; }
+.row .v { color: #e6edf3; text-align: right; font-family: ui-monospace, monospace; word-break: break-word; }
+.tag { display: inline-block; background: #21262d; border-radius: 4px; padding: 1px 6px; margin: 2px 2px 0 0; font-size: 11px; font-family: ui-monospace, monospace; }
+.tag.red { background: #3d1518; color: #ff7b72; }
+
+.full { display: inline-block; margin-top: 26px; padding: 9px 16px; background: #21262d; color: #adbac7; border-radius: 6px; text-decoration: none; font-size: 13px; }
+.full:hover { background: #2d333b; color: #fff; }
+.error { color: #f85149; background: #161b22; border: 1px solid #3d1518; border-radius: 8px; padding: 14px; font-size: 13px; }
+@media (prefers-color-scheme: light) {
+
+  body {
+    background: #ffffff;
+    color: #24292f;
+  }
+
+  .brand,
+  .section-title,
+  .status,
+  .row .k,
+  .opsec .meta,
+  .log,
+  .empty {
+    color: #656d76;
+  }
+
+  .target,
+  .card h3,
+  .row .v {
+    color: #24292f;
+  }
+
+  .bar-wrap,
+  .card,
+  .opsec,
+  .error {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+  }
+
+  .finding {
+    border-bottom-color: #d8dee4;
+  }
+
+  .sev.CRITICAL,
+  .sev.HIGH {
+    background: #ffebe9;
+    color: #cf222e;
+  }
+
+  .sev.MEDIUM {
+    background: #fff8c5;
+    color: #9a6700;
+  }
+
+  .sev.LOW,
+  .sev.INFO {
+    background: #ddf4ff;
+    color: #0969da;
+  }
+
+  .tag {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .full {
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .full:hover {
+    background: #d8dee4;
+    color: #24292f;
+  }
+}

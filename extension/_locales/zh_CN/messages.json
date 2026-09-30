@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "右键点击域名、IP、邮箱、电话或用户名，用你的 PRISM 扫描它。"
+  },
+  "contextMenuTitle": {
+    "message": "用 PRISM 扫描 “%s”"
+  },
+  "targetLabel": {
+    "message": "目标"
+  },
+  "targetPlaceholder": {
+    "message": "域名、IP、邮箱、电话、用户名"
+  },
+  "scanButton": {
+    "message": "扫描"
+  },
+  "scanPageButton": {
+    "message": "扫描此页面"
+  },
+  "scanPageUnsupported": {
+    "message": "无法扫描此页面。"
+  },
+  "scanPageHostname": {
+    "message": "无法确定页面主机名。"
+  },
+  "serverLabel": {
+    "message": "服务器"
+  },
+  "serverNote": {
+    "message": "你的 PRISM 地址，不是目标。演示：getprism.su"
+  },
+  "saveButton": {
+    "message": "保存"
+  },
+  "savedOk": {
+    "message": "已保存"
+  },
+  "clearRecent": {
+    "message": "清除最近目标"
+  },
+  "apiKeyLabel": {
+    "message": "API 密钥（可选）"
+  },
+  "scanning": {
+    "message": "扫描中…"
+  },
+  "complete": {
+    "message": "完成"
+  },
+  "failed": {
+    "message": "扫描失败"
+  },
+  "opsecScore": {
+    "message": "OPSEC 评分"
+  },
+  "findings": {
+    "message": "发现"
+  },
+  "noFindings": {
+    "message": "无明显发现"
+  },
+  "openFull": {
+    "message": "打开完整报告"
+  },
+  "copy": {
+    "message": "复制"
+  },
+  "copied": {
+    "message": "已复制 ✓"
+  }
+}

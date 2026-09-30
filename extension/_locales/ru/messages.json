@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "Нажмите правой кнопкой мыши на домен, IP, email, телефон или имя пользователя, чтобы просканировать его в вашем PRISM."
+  },
+  "contextMenuTitle": {
+    "message": "Сканировать «%s» в PRISM"
+  },
+  "targetLabel": {
+    "message": "Цель"
+  },
+  "targetPlaceholder": {
+    "message": "домен, IP, email, телефон, имя пользователя"
+  },
+  "scanButton": {
+    "message": "Сканировать"
+  },
+  "scanPageButton": {
+    "message": "Сканировать эту страницу"
+  },
+  "scanPageUnsupported": {
+    "message": "Эту страницу нельзя просканировать."
+  },
+  "scanPageHostname": {
+    "message": "Не удалось определить имя хоста страницы."
+  },
+  "serverLabel": {
+    "message": "Сервер"
+  },
+  "serverNote": {
+    "message": "Адрес вашего сервера PRISM, а не цели. Демо: getprism.su"
+  },
+  "saveButton": {
+    "message": "Сохранить"
+  },
+  "savedOk": {
+    "message": "Сохранено"
+  },
+  "clearRecent": {
+    "message": "Очистить недавние цели"
+  },
+  "apiKeyLabel": {
+    "message": "API-ключ (необязательно)"
+  },
+  "scanning": {
+    "message": "Сканирование…"
+  },
+  "complete": {
+    "message": "Готово"
+  },
+  "failed": {
+    "message": "Сканирование не удалось"
+  },
+  "opsecScore": {
+    "message": "OPSEC-оценка"
+  },
+  "findings": {
+    "message": "Замечания"
+  },
+  "noFindings": {
+    "message": "Ничего значимого не найдено"
+  },
+  "openFull": {
+    "message": "Открыть полный отчёт"
+  },
+  "copy": {
+    "message": "Скопировать"
+  },
+  "copied": {
+    "message": "Скопировано ✓"
+  }
+}

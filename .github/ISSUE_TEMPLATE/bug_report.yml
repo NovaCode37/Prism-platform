@@ -1,0 +1,62 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in PRISM
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug! Please fill out the sections below so it can be reproduced.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: How are you running PRISM?
+      options:
+        - Docker (docker compose)
+        - Manual (Python backend + Next.js frontend)
+        - One-command demo (docker-compose.demo.yml)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: PRISM version
+      placeholder: "e.g. v2.3.0"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        - OS: [e.g. Windows 11, Ubuntu 22.04]
+        - Python: [e.g. 3.11]
+        - Node: [e.g. 20]
+        - Browser: [e.g. Chrome 120]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Paste relevant logs or attach screenshots if applicable.

@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "Clic droit sur un domaine, une IP, un e-mail, un téléphone ou un nom d'utilisateur pour le scanner avec votre PRISM."
+  },
+  "contextMenuTitle": {
+    "message": "Scanner « %s » avec PRISM"
+  },
+  "targetLabel": {
+    "message": "Cible"
+  },
+  "targetPlaceholder": {
+    "message": "domaine, IP, e-mail, téléphone, nom d'utilisateur"
+  },
+  "scanButton": {
+    "message": "Scanner"
+  },
+  "scanPageButton": {
+    "message": "Analyser cette page"
+  },
+  "scanPageUnsupported": {
+    "message": "Cette page ne peut pas être analysée."
+  },
+  "scanPageHostname": {
+    "message": "Impossible de déterminer le nom d’hôte de la page."
+  },
+  "serverLabel": {
+    "message": "Serveur"
+  },
+  "serverNote": {
+    "message": "L'adresse de votre PRISM, pas la cible. Démo : getprism.su"
+  },
+  "saveButton": {
+    "message": "Enregistrer"
+  },
+  "savedOk": {
+    "message": "Enregistré"
+  },
+  "clearRecent": {
+    "message": "Effacer les cibles récentes"
+  },
+  "apiKeyLabel": {
+    "message": "Clé API (facultatif)"
+  },
+  "scanning": {
+    "message": "Analyse…"
+  },
+  "complete": {
+    "message": "Terminé"
+  },
+  "failed": {
+    "message": "Échec de l'analyse"
+  },
+  "opsecScore": {
+    "message": "Score OPSEC"
+  },
+  "findings": {
+    "message": "Résultats"
+  },
+  "noFindings": {
+    "message": "Aucun résultat notable"
+  },
+  "openFull": {
+    "message": "Ouvrir le rapport complet"
+  },
+  "copy": {
+    "message": "Copier"
+  },
+  "copied": {
+    "message": "Copié ✓"
+  }
+}

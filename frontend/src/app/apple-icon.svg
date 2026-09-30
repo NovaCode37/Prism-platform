@@ -1,0 +1,17 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="36" fill="#060a12"/>
+  <path d="M22 90C22 90 50 45 90 45C130 45 158 90 158 90C158 90 130 135 90 135C50 135 22 90 22 90Z" stroke="url(#ag)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="90" cy="90" r="28" stroke="url(#ag)" stroke-width="5"/>
+  <circle cx="90" cy="90" r="14" stroke="url(#ag)" stroke-width="3" opacity="0.6"/>
+  <circle cx="90" cy="90" r="7" fill="url(#ag)"/>
+  <line x1="90" y1="62" x2="90" y2="72" stroke="url(#ag)" stroke-width="4" stroke-linecap="round"/>
+  <line x1="90" y1="108" x2="90" y2="118" stroke="url(#ag)" stroke-width="4" stroke-linecap="round"/>
+  <line x1="62" y1="90" x2="72" y2="90" stroke="url(#ag)" stroke-width="4" stroke-linecap="round"/>
+  <line x1="108" y1="90" x2="118" y2="90" stroke="url(#ag)" stroke-width="4" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="ag" x1="22" y1="45" x2="158" y2="135" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f8ef7"/>
+      <stop offset="100%" stop-color="#7c5cfc"/>
+    </linearGradient>
+  </defs>
+</svg>

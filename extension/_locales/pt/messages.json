@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "Clique com o botão direito num domínio, IP, e-mail, telefone ou nome de usuário para verificá-lo com o seu PRISM."
+  },
+  "contextMenuTitle": {
+    "message": "Verificar \"%s\" com PRISM"
+  },
+  "targetLabel": {
+    "message": "Alvo"
+  },
+  "targetPlaceholder": {
+    "message": "domínio, IP, e-mail, telefone, usuário"
+  },
+  "scanButton": {
+    "message": "Verificar"
+  },
+  "scanPageButton": {
+    "message": "Verificar esta página"
+  },
+  "scanPageUnsupported": {
+    "message": "Esta página não pode ser verificada."
+  },
+  "scanPageHostname": {
+    "message": "Não foi possível determinar o nome do host da página."
+  },
+  "serverLabel": {
+    "message": "Servidor"
+  },
+  "serverNote": {
+    "message": "O endereço do seu PRISM, não o alvo. Demo: getprism.su"
+  },
+  "saveButton": {
+    "message": "Salvar"
+  },
+  "savedOk": {
+    "message": "Salvo"
+  },
+  "clearRecent": {
+    "message": "Limpar alvos recentes"
+  },
+  "apiKeyLabel": {
+    "message": "Chave de API (opcional)"
+  },
+  "scanning": {
+    "message": "Verificando…"
+  },
+  "complete": {
+    "message": "Concluído"
+  },
+  "failed": {
+    "message": "Falha na verificação"
+  },
+  "opsecScore": {
+    "message": "Pontuação OPSEC"
+  },
+  "findings": {
+    "message": "Resultados"
+  },
+  "noFindings": {
+    "message": "Nenhum resultado relevante"
+  },
+  "openFull": {
+    "message": "Abrir relatório completo"
+  },
+  "copy": {
+    "message": "Copiar"
+  },
+  "copied": {
+    "message": "Copiado ✓"
+  }
+}

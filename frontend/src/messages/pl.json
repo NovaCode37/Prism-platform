@@ -1,0 +1,548 @@
+{
+  "shortcuts": {
+    "title": "Skróty klawiszowe",
+    "close": "Zamknij",
+    "groupNavigation": "Nawigacja",
+    "groupAppearance": "Wygląd",
+    "groupResults": "Wyniki",
+    "focusSearch": "Przejdź do pola wyszukiwania",
+    "showShortcuts": "Pokaż ten panel",
+    "toggleTheme": "Motyw jasny lub ciemny",
+    "prevTab": "Poprzednia karta wyników",
+    "nextTab": "Następna karta wyników"
+  },
+  "topbar": {
+    "tagline": "Open Source Intelligence",
+    "scanning": "Skanowanie",
+    "complete": "Ukończono",
+    "failed": "Błąd",
+    "toggleTheme": "Zmień motyw",
+    "github": "GitHub",
+    "apiDocs": "Dokumentacja API",
+    "remainingScans": "Pozostałe skany"
+  },
+  "sidebar": {
+    "target": "Cel",
+    "targetPlaceholder": "domena, IP, email, telefon…",
+    "scanType": "Typ skanu",
+    "modulesTitle": "Moduły",
+    "history": "Historia",
+    "compare": "Porównaj",
+    "compareSelected": "Porównaj zaznaczone",
+    "noHistory": "Brak historii skanowania",
+    "runScan": "Skanuj",
+    "scanning": "Skanowanie…",
+    "recent": "Ostatnie",
+    "noRecent": "Brak ostatnich skanów",
+    "scanTypes": {
+      "domain": "Domena",
+      "ip": "IP",
+      "email": "Email",
+      "phone": "Telefon",
+      "username": "Nazwa użytkownika"
+    },
+    "modules": {
+      "rdap": "RDAP",
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "geoip": "GeoIP",
+      "cert_transparency": "Certyfikaty CT",
+      "website": "Strona WWW",
+      "wayback": "Wayback",
+      "shodan": "Shodan",
+      "virustotal": "VirusTotal",
+      "abuseipdb": "AbuseIPDB",
+      "censys": "Censys",
+      "onion": "Dark Web",
+      "emailrep": "Reputacja Email",
+      "smtp": "Weryfikacja SMTP",
+      "leaks": "Wycieki Danych",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Ekspozycja na infostealery",
+      "lunar": "Ekspozycja domeny",
+      "hlr": "Informacje o Telefonie",
+      "blackbird": "Blackbird",
+      "maigret": "Maigret",
+      "github": "GitHub"
+    },
+    "tips": [
+      "Skanuj domeny, adresy IP, e-maile, telefony i nazwy użytkowników",
+      "Przełączaj moduły, aby dostosować każdy skan",
+      "Pobieraj raporty HTML z wyników skanowania",
+      "Zakładka Graf pokazuje relacje między podmiotami",
+      "Zakładka Mapa pokazuje dane lokalizacyjne GeoIP",
+      "Użyj modułu Dorks, aby znaleźć ujawnione pliki",
+      "Wynik OPSEC ocenia ryzyko ujawnienia celu",
+      "Eksportuj skany jako CSV lub Markdown",
+      "Porównaj dwa skany z Historii"
+    ]
+  },
+  "idle": {
+    "title": "PRISM",
+    "subtitle": "Zaawansowana Platforma OSINT",
+    "stats": {
+      "modules": "Moduły",
+      "sources": "Źródła",
+      "scanTypes": "Typy skanów",
+      "status": "Status",
+      "online": "ONLINE"
+    },
+    "caps": {
+      "domain": {
+        "title": "Domena / IP",
+        "item1": "WHOIS · DNS · GeoIP",
+        "item2": "Subdomeny · Shodan",
+        "item3": "VirusTotal · Wayback"
+      },
+      "email": {
+        "title": "Email",
+        "item1": "Reputacja DNS · SMTP",
+        "item2": "Wycieki · Jednorazowe",
+        "item3": "SPF · DKIM · DMARC"
+      },
+      "phone": {
+        "title": "Telefon",
+        "item1": "Weryfikacja · Operator",
+        "item2": "Kraj · Wyszukiwanie wsteczne"
+      },
+      "username": {
+        "title": "Użytkownik",
+        "item1": "Blackbird · Maigret",
+        "item2": "50+ / 3000+ platform",
+        "item3": "Ocena OPSEC"
+      }
+    },
+    "standaloneTools": "Samodzielne Narzędzia",
+    "tools": {
+      "metadata": {
+        "label": "Metadane Pliku",
+        "desc": "EXIF, GPS, PDF, DOCX"
+      },
+      "headers": {
+        "label": "Nagłówki Email",
+        "desc": "SPF, DKIM, trasy routingu"
+      },
+      "crypto": {
+        "label": "Adres Krypto",
+        "desc": "Bitcoin i Ethereum"
+      },
+      "qr": {
+        "label": "Dekoder QR",
+        "desc": "Dekodowanie i analiza"
+      },
+      "mac": {
+        "label": "Sprawdź MAC",
+        "desc": "Identyfikacja producenta"
+      },
+      "subnet": {
+        "label": "Kalkulator Podsieci",
+        "desc": "Zakresy sieci i CIDR"
+      },
+      "hash": {
+        "label": "Identyfikator Hashy",
+        "desc": "Rozpoznawanie typów hashy"
+      },
+      "encoder": {
+        "label": "Base64 / URL",
+        "desc": "Kodowanie i dekodowanie"
+      },
+      "jwt": {
+        "label": "Dekoder JWT",
+        "desc": "Dekodowanie tokenów JWT"
+      }
+    },
+    "demo": {
+      "line1": "To jest publiczna wersja demo z ograniczonymi limitami API. Niektóre moduły (Shodan, VirusTotal) mogą być limitowane.",
+      "line2Prefix": "Aby uzyskać pełny dostęp,",
+      "selfHost": "uruchom własną instancję PRISM",
+      "line2Suffix": "z własnymi kluczami API.",
+      "line3": "Moduły zależne od usług zewnętrznych (crt.sh, Wayback Machine) mogą zwracać błędy 5xx, gdy te usługi są niedostępne lub ograniczają liczbę zapytań. Analiza AI działa w tym demo, ale może być wolna: OpenRouter i Groq blokują region hostingu demo, więc żądania idą przez proxy. Przy własnym hostingu wszystko działa normalnie, a AI odpowiada z pełną szybkością."
+    }
+  },
+  "toolPanels": {
+    "back": "Wróć",
+    "error": "Błąd",
+    "running": "Działanie…",
+    "crypto": {
+      "title": "Wyszukiwanie Adresu Krypto · Bitcoin i Ethereum",
+      "placeholder": "1A1zP1…  /  0x742d…  /  bc1q…",
+      "lookup": "Szukaj",
+      "type": "Typ",
+      "address": "Adres",
+      "balance": "Saldo",
+      "usd": "≈ USD",
+      "totalReceived": "Otrzymano",
+      "totalSent": "Wysłano",
+      "transactions": "Transakcje",
+      "openExplorer": "Otwórz w Eksploratorze",
+      "notFound": "Nie znaleziono"
+    },
+    "qr": {
+      "title": "Dekoder Kodów QR",
+      "hint": "Obsługiwane formaty: PNG, JPG, WEBP",
+      "decode": "Dekoduj QR",
+      "dropFile": "Upuść plik lub",
+      "browse": "przeglądaj",
+      "clickToChange": "kliknij, aby zmienić",
+      "content": "Treść",
+      "type": "Typ",
+      "openUrl": "Otwórz URL"
+    },
+    "metadata": {
+      "title": "Metadane Pliku i GEOINT",
+      "extract": "Pobierz metadane",
+      "filename": "Nazwa pliku",
+      "fileType": "Typ",
+      "size": "Rozmiar",
+      "dimensions": "Wymiary",
+      "author": "Autor / Prawa autorskie",
+      "software": "Oprogramowanie",
+      "fileInfo": "Informacje o pliku",
+      "timestamps": "Znaczniki czasu",
+      "camera": "Aparat",
+      "gpsLocation": "Lokalizacja GPS",
+      "latitude": "Szerokość geograficzna",
+      "longitude": "Długość geograficzna",
+      "altitude": "Wysokość n.p.m.",
+      "openInMaps": "Otwórz w Mapach",
+      "exifData": "Dane EXIF / XMP"
+    },
+    "mac": {
+      "title": "Wyszukiwanie Producenta po MAC",
+      "placeholder": "00:00:5e:00:53:af",
+      "lookup": "Szukaj",
+      "macAddress": "Adres MAC",
+      "vendor": "Producent",
+      "notFound": "Nie znaleziono"
+    },
+    "headers": {
+      "title": "Analiza Nagłówków · Wklej treść",
+      "placeholder": "Wklej nagłówki e-mail (Gmail: 3 kropki → Pokaż oryginał)…",
+      "analyse": "Analizuj",
+      "messageMetadata": "Metadane Wiadomości",
+      "from": "Od",
+      "to": "Do",
+      "subject": "Temat",
+      "date": "Data",
+      "replyTo": "Odpowiedz-Do",
+      "xMailer": "X-Mailer",
+      "authentication": "Uwierzytelnianie",
+      "spf": "SPF",
+      "dkim": "DKIM",
+      "dmarc": "DMARC",
+      "origin": "Pochodzenie",
+      "rdns": "rDNS",
+      "city": "Miasto",
+      "country": "Kraj",
+      "org": "Organizacja",
+      "spoofingIndicators": "⚠ Potencjalny spoofing"
+    },
+    "hash": {
+      "title": "Identyfikator Hashy",
+      "placeholder": "Wklej hash (MD5, SHA-1, SHA-256, SHA-512)…",
+      "detected": "Wykryty Typ",
+      "length": "Długość",
+      "invalidHex": "Nieprawidłowe znaki hex. Hashe zawierają tylko 0-9 i a-f.",
+      "unsupportedLength": "Nieobsługiwana długość hasha. Oczekiwano: 32 (MD5), 40 (SHA-1), 64 (SHA-256) lub 128 (SHA-512) znaków."
+    },
+    "encoder": {
+      "title": "Koder Base64 i URL",
+      "placeholder": "Wprowadź tekst do zakodowania lub zdekodowania…",
+      "encode": "Zakoduj",
+      "decode": "Zdekoduj",
+      "output": "Wynik",
+      "invalid": "Nieprawidłowe dane wejściowe dla wybranego trybu."
+    },
+    "jwt": {
+      "title": "Dekoder JWT",
+      "placeholder": "Wklej token JWT (eyJ...)…",
+      "decode": "Dekoduj",
+      "header": "Nagłówek",
+      "payload": "Payload",
+      "issuedAt": "Wydano",
+      "expiresAt": "Wygasa",
+      "notBefore": "Not Before (nbf)",
+      "expired": "⚠ Token wygasł",
+      "noSignatureWarning": "Podpis nie jest weryfikowany — to narzędzie tylko dekoduje.",
+      "invalid": "Nieprawidłowy format JWT. Oczekiwano trzech części oddzielonych kropkami: header.payload.signature"
+    }
+  },
+  "progress": {
+    "modulesLabel": "moduły",
+    "initializing": "Inicjalizowanie skanu…",
+    "running": "Skanowanie…",
+    "log": "Log Postępu"
+  },
+  "results": {
+    "htmlReport": "Raport HTML",
+    "pdfReport": "Raport PDF",
+    "jsonReport": "Pobierz JSON",
+    "csvReport": "Pobierz CSV",
+    "mdReport": "Pobierz Markdown",
+    "copyCurl": "Kopiuj jako cURL",
+    "scanAnother": "Skanuj kolejny cel",
+    "tabs": {
+      "rdap": "RDAP",
+      "github": "GitHub",
+      "gravatar": "Gravatar",
+      "hudsonrock": "Ekspozycja na infostealery",
+      "lunar": "Ekspozycja domeny",
+      "findings": "Wyniki analizy",
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "subdomains": "Subdomeny",
+      "accounts": "Konta",
+      "threats": "Zagrożenia",
+      "censys": "Censys",
+      "darkweb": "Dark Web",
+      "wayback": "Wayback",
+      "email": "Email",
+      "dorks": "Dorks",
+      "phone": "Telefon",
+      "telegram": "Telegram",
+      "map": "Mapa",
+      "graph": "Graf",
+      "json": "JSON",
+      "ai": "AI"
+    },
+    "opsec": {
+      "scoreLabel": "Ocena OPSEC",
+      "riskSuffix": "RYZYKO",
+      "data_exposure": {
+        "label": "Wyciek danych",
+        "tooltip": "Wycieki poufnych danych: przejęte hasła, ujawnione e-maile, publiczne dane osobowe (PII)."
+      },
+      "identity_opsec": {
+        "label": "OPSEC Tożsamości",
+        "tooltip": "Ponowne użycie identyfikatorów na różnych platformach: ten sam użytkownik/email na wielu stronach."
+      },
+      "infrastructure": {
+        "label": "Infrastruktura",
+        "tooltip": "Wystawione usługi, otwarte porty, słaba higiena DNS/WHOIS, trafienia Threat Intel."
+      },
+      "web_security": {
+        "label": "Bezpieczeństwo Web",
+        "tooltip": "TLS, nagłówki bezpieczeństwa, Certificate Transparency, zarchiwizowane wrażliwe ścieżki."
+      }
+    },
+    "common": {
+    "yes": "Tak",
+    "no": "Nie",
+    "unknown": "Nieznane",
+    "points": "pkt"
+  },
+    "findings": {
+      "title": "Wykryte zagrożenia",
+      "none": "Brak zagrożeń"
+    },
+    "whois": {
+      "title": "Rejestracja WHOIS",
+      "registrar": "Rejestrator",
+      "organization": "Organizacja",
+      "country": "Kraj",
+      "created": "Utworzono",
+      "expires": "Wygasa",
+      "emails": "E-maile",
+      "nameServers": "Serwery DNS"
+    },
+    "dns": {
+      "title": "Rekordy DNS"
+    },
+    "subdomains": {
+      "titleFmt": "Certificate Transparency (CT) — {n} subdomen",
+      "certsAnalysed": "{n} certyfikat(ów) przeanalizowanych"
+    },
+    "accounts": {
+      "title": "Wyszukiwanie Nazwy Użytkownika",
+      "platform": "Platforma",
+      "url": "URL",
+      "time": "Czas"
+    },
+    "virustotal": {
+      "title": "VirusTotal",
+      "malicious": "Złośliwe",
+      "suspicious": "Podejrzane",
+      "harmless": "Nieszkodliwe",
+      "undetected": "Niewykryte",
+      "country": "Kraj",
+      "asn": "ASN"
+    },
+    "abuseipdb": {
+      "title": "AbuseIPDB",
+      "abuseScore": "Wynik Nadużyć",
+      "totalReports": "Suma Zgłoszeń",
+      "isp": "Dostawca Internetu (ISP)",
+      "usageType": "Typ Użycia",
+      "torExit": "⚠ TOR Exit Node"
+    },
+    "shodan": {
+      "title": "Shodan",
+      "openPorts": "Otwarte Porty",
+      "cves": "Znalezione CVE"
+    },
+    "censys": {
+      "titleCert": "Censys — Certyfikaty",
+      "titleHost": "Censys — Host",
+      "ip": "IP",
+      "asn": "ASN",
+      "location": "Lokalizacja",
+      "openPorts": "Otwarte Porty",
+      "subdomainsFmt": "Subdomeny ({n})",
+      "services": "Usługi",
+      "port": "Port",
+      "service": "Usługa",
+      "software": "Oprogramowanie"
+    },
+    "darkweb": {
+      "titleFmt": "Mirrory Dark Web: {n}",
+      "sources": "Źródła"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "summaryFmt": "{n} zrzutów · Pierwszy: {first} · Ostatni: {last}",
+      "recent": "Ostatnie Zrzuty",
+      "sensitive": "Wrażliwe URL z Wayback"
+    },
+    "emailrep": {
+      "title": "Reputacja Email",
+      "reputation": "Reputacja",
+      "suspicious": "Podejrzany",
+      "validMx": "Prawidłowe MX",
+      "deliverable": "Dostarczalny",
+      "spf": "SPF",
+      "dmarc": "DMARC",
+      "domainRep": "Reputacja Domeny",
+      "mxRecords": "Rekordy MX",
+      "disposableWarn": "⚠ Wykryto tymczasowy e-mail (disposable)",
+      "spoofableWarn": "⚠ Domena podatna na spoofing (brak SPF/DMARC)",
+      "freeProvider": "Darmowy dostawca e-mail"
+    },
+    "smtp": {
+      "title": "Weryfikacja SMTP",
+      "exists": "Istnieje",
+      "connect": "Połączenie SMTP",
+      "catchAllWarn": "⚠ Serwer typu catch-all (akceptuje każdy adres)",
+      "details": "Szczegóły"
+    },
+    "breaches": {
+      "title": "Wycieki Danych",
+      "found": "Znalezione Wycieki",
+      "breachedServices": "Skompromitowane serwisy",
+      "total": "Suma Wycieków"
+    },
+    "dorks": {
+      "title": "Google Dorks"
+    },
+    "phone": {
+      "title": "Wywiad Telefoniczny",
+      "valid": "Prawidłowy",
+      "country": "Kraj",
+      "countryCode": "Kod Kraju",
+      "region": "Region",
+      "carrier": "Operator",
+      "lineType": "Typ Linii",
+      "timezones": "Strefy Czasowe",
+      "ownerName": "Imię Właściciela",
+      "address": "Adres"
+    },
+    "telegram": {
+      "title": "Profil Telegram",
+      "found": "Znaleziono",
+      "username": "Użytkownik",
+      "name": "Imię",
+      "bio": "Bio",
+      "type": "Typ",
+      "followers": "Obserwujący"
+    },
+    "map": {
+      "title": "Mapa Geolokalizacji IP",
+      "ip": "IP",
+      "location": "Lokalizacja",
+      "organization": "Organizacja",
+      "coordinates": "Koordynaty",
+      "loading": "Ładowanie mapy…",
+      "noData": "Brak danych geolokalizacyjnych",
+      "moreFmt": "znaleziono {n} lokalizacji",
+      "precision": "Precyzja",
+      "approximate": "Przybliżona lokalizacja"
+    },
+    "graph": {
+      "title": "Graf Podmiotów",
+      "loading": "Ładowanie grafu…",
+      "empty": "Brak danych do grafu dla tego skanu"
+    },
+    "json": {
+      "title": "Surowe Wyniki JSON",
+      "show": "Pokaż JSON",
+      "hide": "Ukryj JSON"
+    },
+    "ai": {
+      "title": "Analiza AI OSINT · Nvidia Nemotron",
+      "chatTitle": "Zapytaj AI",
+      "generate": "Wygeneruj Podsumowanie AI",
+      "generating": "Generowanie analizy…",
+      "model": "Model",
+      "regenerate": "Wygeneruj ponownie",
+      "placeholder": "Zapytaj o cokolwiek na temat tego skanu…"
+    },
+    "duration": "Ukończono w {duration}",
+    "copyAllFindings": "Skopiuj wszystkie wyniki",
+    "copyAllEmails": "Skopiuj wszystkie e-maile",
+    "emailsCopied": "E-maile skopiowane!",
+    "filterPlatforms": "Filtruj platformy..."
+  },
+  "watchlist": {
+    "title": "Listy obserwowanych",
+    "description": "Ponowne skanowanie celu według harmonogramu z powiadomieniami o zmianach wyników (nowe porty, subdomeny, wycieki, rekordy DNS…). Ustaw webhook dla zewnętrznych powiadomień.",
+    "target": "Cel",
+    "targetPlaceholder": "domena, IP, e-mail, telefon…",
+    "scanType": "Typ skanu",
+    "intervalHours": "Interwał (godziny)",
+    "webhookUrl": "URL webhooka (opcjonalnie)",
+    "adding": "Dodawanie…",
+    "addToWatchlist": "Dodaj do listy",
+    "loading": "Ładowanie…",
+    "emptyState": "Brak list obserwowanych. Dodaj cel powyżej.",
+    "everyNHours": "co {n}h",
+    "runCount": "{n} uruchomień",
+    "runCountOne": "{n} uruchomienie",
+    "lastRun": "ostatni",
+    "nextRun": "następny",
+    "changes": "zmian",
+    "noAlerts": "Brak alertów — dane bazowe są przechwytywane przy pierwszym uruchomieniu.",
+    "failedToLoad": "Nie udało się załadować list",
+    "failedToCreate": "Nie udało się utworzyć listy",
+    "failedToDelete": "Nie udało się usunąć",
+    "back": "Wstecz",
+    "refresh": "Odśwież",
+    "alerts": "Alerty",
+    "delete": "Usuń listę",
+    "pause": "Wstrzymaj listę",
+    "resume": "Wznów listę",
+    "paused": "Wstrzymano",
+    "failedToToggle": "Nie udało się zaktualizować listy"
+  },
+  "common": {
+  "copy": "Kopiuj",
+  "copied": "Skopiowano!",
+  "copyFailed": "Kopiowanie nie powiodło się",
+  "loading": "Ładowanie…",
+  "error": "Błąd",
+  "backToTop": "Powrót do góry",
+  "tabErrorTitle": "Nie można załadować tej karty",
+  "tabErrorMessage": "Wystąpił błąd podczas ładowania tego wyniku."
+  },
+  "lang": {
+    "label": "Język",
+    "en": "EN",
+    "ru": "RU",
+    "de": "DE",
+    "fr": "FR",
+    "es": "ES",
+    "it": "IT",
+    "pt": "PT",
+    "pl": "PL",
+    "zh": "ZH",
+    "tr": "TR"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "PRISM OSINT"
+  },
+  "extDescription": {
+    "message": "Right-click a domain, IP, email, phone, or username to scan it with your PRISM instance."
+  },
+  "contextMenuTitle": {
+    "message": "Scan \"%s\" with PRISM"
+  },
+  "targetLabel": {
+    "message": "Target"
+  },
+  "targetPlaceholder": {
+    "message": "domain, IP, email, phone, username"
+  },
+  "scanButton": {
+    "message": "Scan"
+  },
+  "scanPageButton": {
+    "message": "Scan this page"
+  },
+  "scanPageUnsupported": {
+    "message": "This page cannot be scanned."
+  },
+  "scanPageHostname": {
+    "message": "Could not determine the page hostname."
+  },
+  "serverLabel": {
+    "message": "Server"
+  },
+  "serverNote": {
+    "message": "Your PRISM address, not the target. Demo: getprism.su"
+  },
+  "saveButton": {
+    "message": "Save"
+  },
+  "savedOk": {
+    "message": "Saved"
+  },
+  "clearRecent": {
+    "message": "Clear recent targets"
+  },
+  "apiKeyLabel": {
+    "message": "API key (optional)"
+  },
+  "scanning": {
+    "message": "Scanning…"
+  },
+  "complete": {
+    "message": "Complete"
+  },
+  "failed": {
+    "message": "Scan failed"
+  },
+  "opsecScore": {
+    "message": "OPSEC score"
+  },
+  "findings": {
+    "message": "Findings"
+  },
+  "noFindings": {
+    "message": "No notable findings"
+  },
+  "openFull": {
+    "message": "Open full report"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "copied": {
+    "message": "Copied ✓"
+  }
+}

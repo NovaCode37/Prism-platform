@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- FORM -->
+    <section id="formView">
+      <div class="brand">PRISM OSINT</div>
+
+      <label for="target" data-i18n="targetLabel">Target</label>
+      <input id="target" data-i18n-ph="targetPlaceholder" placeholder="domain, IP, email, phone, username" />
+      <div id="recentTargets" class="recent-targets" hidden></div>
+      <button id="scan" class="primary" data-i18n="scanButton">Scan</button>
+      <button id="scanPage" class="ghost" data-i18n="scanPageButton">Scan this page</button>
+      <hr />
+
+      <label for="url" data-i18n="serverLabel">Server</label>
+      <input id="url" placeholder="http://localhost:8080" />
+      <p class="note" data-i18n="serverNote">Your PRISM address, not the target. Demo: getprism.su</p>
+
+      <label for="apikey" style="margin-top:12px" data-i18n="apiKeyLabel">API key (optional)</label>
+      <input id="apikey" type="password" placeholder="X-API-Key" />
+
+      <button id="save" class="ghost" data-i18n="saveButton">Save</button>
+      <div class="ok" id="saved"></div>
+    </section>
+
+    <!-- SCAN -->
+    <section id="scanView" hidden>
+      <div class="scan-head">
+        <button id="back" class="back" aria-label="Back">←</button>
+        <span class="scan-target" id="scanTarget"></span>
+        <span class="status" id="status"></span>
+      </div>
+      <div id="scanServerInfo" class="scan-server-info" hidden></div>
+      <div class="bar-wrap" id="barWrap"><div class="bar" id="bar"></div></div>
+      <div class="log" id="log"></div>
+      <div id="results"></div>
+      <div class="error" id="error" hidden></div>
+    </section>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio flake8
+
+      - name: Lint with flake8 (critical errors only)
+        run: |
+          # Stop the build on syntax errors or undefined names
+          flake8 modules/ web/ --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=__pycache__
+          # Treat everything else as warnings (does not fail the build)
+          flake8 modules/ web/ --count --max-line-length=120 --ignore=E501,W503,E203,E302,E305,E306,E402,E221,E231,E241,E201,E401,F401,F841,W391 --exit-zero --statistics --exclude=__pycache__
+
+      - name: Run tests with coverage
+        env:
+          NUMVERIFY_API_KEY: ""
+          LEAK_LOOKUP_API_KEY: ""
+          IPINFO_API_KEY: ""
+          VIRUSTOTAL_API_KEY: ""
+          ABUSEIPDB_API_KEY: ""
+          SHODAN_API_KEY: ""
+        run: |
+          pytest tests/ -v --cov=modules --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
+        if: matrix.python-version == '3.11'
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Frontend tests
+        run: |
+          npm run test:urls
+          npm run test:i18n
+          npm run test:i18n-lookup
+          npm run test:scan-target
+          npm run test:encoder
+
+      - name: Build
+        run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Build Docker image
+        run: docker build -t osint-toolkit:${{ github.sha }} .
+
+      - name: Smoke test Docker image
+        run: |
+          docker run -d --name osint-test -p 8080:8080 -e ALLOW_ANON_API=true osint-toolkit:${{ github.sha }}
+          sleep 10
+          curl --fail http://localhost:8080/ || (docker logs osint-test && exit 1)
+          docker stop osint-test
+
+      - name: Check the image runs unprivileged
+        run: |
+          uid=$(docker run --rm osint-toolkit:${{ github.sha }} id -u)
+          test "$uid" != "0" || (echo "container runs as root (uid $uid)" && exit 1)
+          docker run --rm osint-toolkit:${{ github.sha }} \
+            sh -c 'touch results/.probe scan_data/.probe module_cache/.probe watchlist_data/.probe'

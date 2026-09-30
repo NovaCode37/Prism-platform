@@ -1,0 +1,279 @@
+{
+  "scan_id": "59b20386-8905-4521-a340-1014c6ebb457",
+  "target": "45.83.64.12",
+  "scan_type": "ip",
+  "status": "completed",
+  "owner": "anonymous",
+  "started_at": "2026-06-03T14:07:00",
+  "completed_at": "2026-06-03T14:07:18",
+  "progress": [],
+  "results": {
+    "geoip": {
+      "ip": "45.83.64.12",
+      "city": "Amsterdam",
+      "region": "North Holland",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "loc": "52.3740,4.8897",
+      "org": "AS209103 Example Hosting B.V.",
+      "timezone": "Europe/Amsterdam",
+      "error": null
+    },
+    "shodan": {
+      "ip": "45.83.64.12",
+      "open_ports": [
+        22,
+        80,
+        443,
+        3306,
+        6379
+      ],
+      "vulns": [
+        "CVE-2021-44228",
+        "CVE-2022-0778"
+      ],
+      "services": [
+        {
+          "port": 22,
+          "transport": "tcp",
+          "product": "OpenSSH",
+          "version": "7.4"
+        },
+        {
+          "port": 80,
+          "transport": "tcp",
+          "product": "nginx",
+          "version": "1.18.0"
+        },
+        {
+          "port": 443,
+          "transport": "tcp",
+          "product": "nginx",
+          "version": "1.18.0"
+        },
+        {
+          "port": 3306,
+          "transport": "tcp",
+          "product": "MySQL",
+          "version": "5.7.38"
+        },
+        {
+          "port": 6379,
+          "transport": "tcp",
+          "product": "Redis",
+          "version": "6.2.6"
+        }
+      ],
+      "error": null
+    },
+    "virustotal": {
+      "malicious": 3,
+      "suspicious": 1,
+      "harmless": 62,
+      "undetected": 8,
+      "country": "NL",
+      "as_owner": "Example Hosting B.V.",
+      "error": null
+    },
+    "abuseipdb": {
+      "abuse_score": 64,
+      "total_reports": 38,
+      "isp": "Example Hosting B.V.",
+      "usage_type": "Data Center/Web Hosting/Transit",
+      "is_tor": false,
+      "error": null
+    },
+    "opsec_score": {
+      "score": 40,
+      "risk_level": "HIGH",
+      "categories": {
+        "data_exposure": {
+          "score": 0,
+          "max": 35,
+          "percent": 0,
+          "findings": [
+            {
+              "severity": "HIGH",
+              "message": "Flagged as malicious by 3 VirusTotal engines",
+              "deduction": 20
+            },
+            {
+              "severity": "HIGH",
+              "message": "AbuseIPDB confidence score: 64/100",
+              "deduction": 15
+            }
+          ]
+        },
+        "identity_opsec": {
+          "score": 25,
+          "max": 25,
+          "percent": 100,
+          "findings": []
+        },
+        "infrastructure": {
+          "score": 0,
+          "max": 25,
+          "percent": 0,
+          "findings": [
+            {
+              "severity": "CRITICAL",
+              "message": "Shodan found 2 known CVE(s): CVE-2021-44228, CVE-2022-0778",
+              "deduction": 20
+            },
+            {
+              "severity": "MEDIUM",
+              "message": "5 open ports detected via Shodan",
+              "deduction": 5
+            },
+            {
+              "severity": "HIGH",
+              "message": "Sensitive services exposed: 22, 3306, 6379",
+              "deduction": 0
+            }
+          ]
+        },
+        "web_security": {
+          "score": 15,
+          "max": 15,
+          "percent": 100,
+          "findings": []
+        }
+      },
+      "all_findings": [
+        {
+          "category": "infrastructure",
+          "severity": "CRITICAL",
+          "message": "Shodan found 2 known CVE(s): CVE-2021-44228, CVE-2022-0778",
+          "deduction": 20
+        },
+        {
+          "category": "data_exposure",
+          "severity": "HIGH",
+          "message": "Flagged as malicious by 3 VirusTotal engines",
+          "deduction": 20
+        },
+        {
+          "category": "data_exposure",
+          "severity": "HIGH",
+          "message": "AbuseIPDB confidence score: 64/100",
+          "deduction": 15
+        },
+        {
+          "category": "infrastructure",
+          "severity": "HIGH",
+          "message": "Sensitive services exposed: 22, 3306, 6379",
+          "deduction": 0
+        },
+        {
+          "category": "infrastructure",
+          "severity": "MEDIUM",
+          "message": "5 open ports detected via Shodan",
+          "deduction": 5
+        }
+      ]
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "target::45.83.64.12",
+          "label": "45.83.64.12",
+          "full_label": "45.83.64.12",
+          "type": "target",
+          "color": "#00d4ff",
+          "title": "Target: 45.83.64.12",
+          "shape": "star"
+        },
+        {
+          "id": "ip::45.83.64.12",
+          "label": "45.83.64.12",
+          "full_label": "45.83.64.12",
+          "type": "ip",
+          "color": "#fd79a8",
+          "title": "IP: 45.83.64.12 | Amsterdam, NL | AS209103 Example Hosting B.V.",
+          "shape": "diamond"
+        },
+        {
+          "id": "org::AS209103 Example Hosting B.V.",
+          "label": "AS209103 Example Hosting B.V.",
+          "full_label": "AS209103 Example Hosting B.V.",
+          "type": "organization",
+          "color": "#fdcb6e",
+          "title": "ISP/ASN: AS209103 Example Hosting B.V.",
+          "shape": "hexagon"
+        },
+        {
+          "id": "vuln::CVE-2021-44228",
+          "label": "CVE-2021-44228",
+          "full_label": "CVE-2021-44228",
+          "type": "vulnerability",
+          "color": "#d63031",
+          "title": "CVE: CVE-2021-44228",
+          "shape": "triangleDown"
+        },
+        {
+          "id": "vuln::CVE-2022-0778",
+          "label": "CVE-2022-0778",
+          "full_label": "CVE-2022-0778",
+          "type": "vulnerability",
+          "color": "#d63031",
+          "title": "CVE: CVE-2022-0778",
+          "shape": "triangleDown"
+        }
+      ],
+      "edges": [
+        {
+          "from": "target::45.83.64.12",
+          "to": "ip::45.83.64.12",
+          "label": "resolves to",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "ip::45.83.64.12",
+          "to": "org::AS209103 Example Hosting B.V.",
+          "label": "hosted by",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "ip::45.83.64.12",
+          "to": "vuln::CVE-2021-44228",
+          "label": "vulnerable to",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "ip::45.83.64.12",
+          "to": "vuln::CVE-2022-0778",
+          "label": "vulnerable to",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        }
+      ]
+    }
+  }
+}

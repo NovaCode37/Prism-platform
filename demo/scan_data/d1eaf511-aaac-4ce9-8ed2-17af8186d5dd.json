@@ -1,0 +1,833 @@
+{
+  "scan_id": "d1eaf511-aaac-4ce9-8ed2-17af8186d5dd",
+  "target": "example-corp.com",
+  "scan_type": "domain",
+  "status": "completed",
+  "owner": "anonymous",
+  "started_at": "2026-06-03T14:00:00",
+  "completed_at": "2026-06-03T14:00:18",
+  "progress": [],
+  "results": {
+    "whois": {
+      "registrar": "NameCheap, Inc.",
+      "org": "Example Corp Ltd",
+      "country": "US",
+      "creation_date": "2014-03-21T00:00:00",
+      "expiration_date": "2026-03-21T00:00:00",
+      "name_servers": [
+        "ns1.examplehost.com",
+        "ns2.examplehost.com"
+      ],
+      "emails": [
+        "admin@example-corp.com",
+        "abuse@example-corp.com"
+      ],
+      "error": null
+    },
+    "dns": {
+      "records": {
+        "A": [
+          "93.184.216.34"
+        ],
+        "MX": [
+          "10 mail.example-corp.com"
+        ],
+        "NS": [
+          "ns1.examplehost.com",
+          "ns2.examplehost.com"
+        ],
+        "TXT": [
+          "v=spf1 include:_spf.google.com ~all"
+        ]
+      },
+      "error": null
+    },
+    "geoip": {
+      "ip": "93.184.216.34",
+      "city": "Norwell",
+      "region": "Massachusetts",
+      "country": "US",
+      "country_name": "United States",
+      "loc": "42.1596,-70.8203",
+      "org": "AS15133 Edgecast Inc.",
+      "timezone": "America/New_York",
+      "error": null
+    },
+    "cert_transparency": {
+      "subdomains": [
+        "www.example-corp.com",
+        "mail.example-corp.com",
+        "vpn.example-corp.com",
+        "dev.example-corp.com",
+        "staging.example-corp.com",
+        "api.example-corp.com",
+        "admin.example-corp.com",
+        "git.example-corp.com",
+        "ci.example-corp.com",
+        "jenkins.example-corp.com",
+        "grafana.example-corp.com",
+        "vault.example-corp.com"
+      ],
+      "total_certs": 47,
+      "error": null
+    },
+    "website": {
+      "url": "https://example-corp.com",
+      "title": "Example Corp — Enterprise Solutions",
+      "technologies": [
+        "nginx",
+        "WordPress",
+        "jQuery",
+        "Cloudflare"
+      ],
+      "emails": [
+        "contact@example-corp.com",
+        "careers@example-corp.com"
+      ],
+      "headers": {
+        "Server": "nginx",
+        "Strict-Transport-Security": "max-age=31536000"
+      },
+      "social_links": [
+        {
+          "platform": "twitter",
+          "username": "examplecorp"
+        },
+        {
+          "platform": "linkedin",
+          "username": "example-corp"
+        }
+      ],
+      "error": null
+    },
+    "wayback": {
+      "total_snapshots": 1284,
+      "first_snapshot": "2014-05-02",
+      "last_snapshot": "2026-05-30",
+      "interesting": [
+        "https://example-corp.com/.env.bak",
+        "https://example-corp.com/admin/config.old"
+      ]
+    },
+    "opsec_score": {
+      "score": 72,
+      "risk_level": "LOW",
+      "categories": {
+        "data_exposure": {
+          "score": 35,
+          "max": 35,
+          "percent": 100,
+          "findings": []
+        },
+        "identity_opsec": {
+          "score": 25,
+          "max": 25,
+          "percent": 100,
+          "findings": []
+        },
+        "infrastructure": {
+          "score": 11,
+          "max": 25,
+          "percent": 44,
+          "findings": [
+            {
+              "severity": "MEDIUM",
+              "message": "WHOIS exposes 2 contact email(s) — registrar privacy not used",
+              "deduction": 8
+            },
+            {
+              "severity": "INFO",
+              "message": "WHOIS exposes organization: Example Corp Ltd",
+              "deduction": 3
+            },
+            {
+              "severity": "LOW",
+              "message": "Certificate transparency reveals 12 subdomains",
+              "deduction": 3
+            }
+          ]
+        },
+        "web_security": {
+          "score": 1,
+          "max": 15,
+          "percent": 7,
+          "findings": [
+            {
+              "severity": "LOW",
+              "message": "Missing security headers: X-Frame-Options / CSP, X-Content-Type-Options",
+              "deduction": 5
+            },
+            {
+              "severity": "LOW",
+              "message": "2 email address(es) found in website HTML",
+              "deduction": 2
+            },
+            {
+              "severity": "INFO",
+              "message": "Potentially outdated technologies detected: jquery",
+              "deduction": 3
+            },
+            {
+              "severity": "MEDIUM",
+              "message": "Wayback Machine reveals 2 sensitive URL(s) in history",
+              "deduction": 4
+            }
+          ]
+        }
+      },
+      "all_findings": [
+        {
+          "category": "infrastructure",
+          "severity": "MEDIUM",
+          "message": "WHOIS exposes 2 contact email(s) — registrar privacy not used",
+          "deduction": 8
+        },
+        {
+          "category": "web_security",
+          "severity": "MEDIUM",
+          "message": "Wayback Machine reveals 2 sensitive URL(s) in history",
+          "deduction": 4
+        },
+        {
+          "category": "infrastructure",
+          "severity": "LOW",
+          "message": "Certificate transparency reveals 12 subdomains",
+          "deduction": 3
+        },
+        {
+          "category": "web_security",
+          "severity": "LOW",
+          "message": "Missing security headers: X-Frame-Options / CSP, X-Content-Type-Options",
+          "deduction": 5
+        },
+        {
+          "category": "web_security",
+          "severity": "LOW",
+          "message": "2 email address(es) found in website HTML",
+          "deduction": 2
+        },
+        {
+          "category": "infrastructure",
+          "severity": "INFO",
+          "message": "WHOIS exposes organization: Example Corp Ltd",
+          "deduction": 3
+        },
+        {
+          "category": "web_security",
+          "severity": "INFO",
+          "message": "Potentially outdated technologies detected: jquery",
+          "deduction": 3
+        }
+      ]
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "target::example-corp.com",
+          "label": "example-corp.com",
+          "full_label": "example-corp.com",
+          "type": "target",
+          "color": "#00d4ff",
+          "title": "Target: example-corp.com",
+          "shape": "star"
+        },
+        {
+          "id": "org::Example Corp Ltd",
+          "label": "Example Corp Ltd",
+          "full_label": "Example Corp Ltd",
+          "type": "organization",
+          "color": "#fdcb6e",
+          "title": "Org: Example Corp Ltd",
+          "shape": "hexagon"
+        },
+        {
+          "id": "email::admin@example-corp.com",
+          "label": "admin@example-corp.com",
+          "full_label": "admin@example-corp.com",
+          "type": "email",
+          "color": "#ff9f43",
+          "title": "WHOIS email: admin@example-corp.com",
+          "shape": "ellipse"
+        },
+        {
+          "id": "email::abuse@example-corp.com",
+          "label": "abuse@example-corp.com",
+          "full_label": "abuse@example-corp.com",
+          "type": "email",
+          "color": "#ff9f43",
+          "title": "WHOIS email: abuse@example-corp.com",
+          "shape": "ellipse"
+        },
+        {
+          "id": "domain::ns1.examplehost.com",
+          "label": "ns1.examplehost.com",
+          "full_label": "ns1.examplehost.com",
+          "type": "domain",
+          "color": "#a29bfe",
+          "title": "Name Server: ns1.examplehost.com",
+          "shape": "box"
+        },
+        {
+          "id": "domain::ns2.examplehost.com",
+          "label": "ns2.examplehost.com",
+          "full_label": "ns2.examplehost.com",
+          "type": "domain",
+          "color": "#a29bfe",
+          "title": "Name Server: ns2.examplehost.com",
+          "shape": "box"
+        },
+        {
+          "id": "ip::93.184.216.34",
+          "label": "93.184.216.34",
+          "full_label": "93.184.216.34",
+          "type": "ip",
+          "color": "#fd79a8",
+          "title": "IP: 93.184.216.34 | Norwell, US | AS15133 Edgecast Inc.",
+          "shape": "diamond"
+        },
+        {
+          "id": "org::AS15133 Edgecast Inc.",
+          "label": "AS15133 Edgecast Inc.",
+          "full_label": "AS15133 Edgecast Inc.",
+          "type": "organization",
+          "color": "#fdcb6e",
+          "title": "ISP/ASN: AS15133 Edgecast Inc.",
+          "shape": "hexagon"
+        },
+        {
+          "id": "subdomain::www.example-corp.com",
+          "label": "www.example-corp.com",
+          "full_label": "www.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): www.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::mail.example-corp.com",
+          "label": "mail.example-corp.com",
+          "full_label": "mail.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): mail.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::vpn.example-corp.com",
+          "label": "vpn.example-corp.com",
+          "full_label": "vpn.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): vpn.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::dev.example-corp.com",
+          "label": "dev.example-corp.com",
+          "full_label": "dev.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): dev.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::staging.example-corp.com",
+          "label": "staging.example-corp.com",
+          "full_label": "staging.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): staging.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::api.example-corp.com",
+          "label": "api.example-corp.com",
+          "full_label": "api.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): api.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::admin.example-corp.com",
+          "label": "admin.example-corp.com",
+          "full_label": "admin.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): admin.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::git.example-corp.com",
+          "label": "git.example-corp.com",
+          "full_label": "git.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): git.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::ci.example-corp.com",
+          "label": "ci.example-corp.com",
+          "full_label": "ci.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): ci.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::jenkins.example-corp.com",
+          "label": "jenkins.example-corp.com",
+          "full_label": "jenkins.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): jenkins.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::grafana.example-corp.com",
+          "label": "grafana.example-corp.com",
+          "full_label": "grafana.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): grafana.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "subdomain::vault.example-corp.com",
+          "label": "vault.example-corp.com",
+          "full_label": "vault.example-corp.com",
+          "type": "subdomain",
+          "color": "#74b9ff",
+          "title": "Subdomain (CT logs): vault.example-corp.com",
+          "shape": "box"
+        },
+        {
+          "id": "email::contact@example-corp.com",
+          "label": "contact@example-corp.com",
+          "full_label": "contact@example-corp.com",
+          "type": "email",
+          "color": "#ff9f43",
+          "title": "Found in HTML: contact@example-corp.com",
+          "shape": "ellipse"
+        },
+        {
+          "id": "email::careers@example-corp.com",
+          "label": "careers@example-corp.com",
+          "full_label": "careers@example-corp.com",
+          "type": "email",
+          "color": "#ff9f43",
+          "title": "Found in HTML: careers@example-corp.com",
+          "shape": "ellipse"
+        },
+        {
+          "id": "tech::nginx",
+          "label": "nginx",
+          "full_label": "nginx",
+          "type": "technology",
+          "color": "#636e72",
+          "title": "Technology: nginx",
+          "shape": "triangle"
+        },
+        {
+          "id": "tech::WordPress",
+          "label": "WordPress",
+          "full_label": "WordPress",
+          "type": "technology",
+          "color": "#636e72",
+          "title": "Technology: WordPress",
+          "shape": "triangle"
+        },
+        {
+          "id": "tech::jQuery",
+          "label": "jQuery",
+          "full_label": "jQuery",
+          "type": "technology",
+          "color": "#636e72",
+          "title": "Technology: jQuery",
+          "shape": "triangle"
+        },
+        {
+          "id": "tech::Cloudflare",
+          "label": "Cloudflare",
+          "full_label": "Cloudflare",
+          "type": "technology",
+          "color": "#636e72",
+          "title": "Technology: Cloudflare",
+          "shape": "triangle"
+        },
+        {
+          "id": "account::twitter/@examplecorp",
+          "label": "twitter/@examplecorp",
+          "full_label": "twitter/@examplecorp",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Social: twitter/@examplecorp",
+          "shape": "dot"
+        },
+        {
+          "id": "account::linkedin/@example-corp",
+          "label": "linkedin/@example-corp",
+          "full_label": "linkedin/@example-corp",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Social: linkedin/@example-corp",
+          "shape": "dot"
+        }
+      ],
+      "edges": [
+        {
+          "from": "target::example-corp.com",
+          "to": "org::Example Corp Ltd",
+          "label": "registered by",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "email::admin@example-corp.com",
+          "label": "WHOIS contact",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "email::abuse@example-corp.com",
+          "label": "WHOIS contact",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "domain::ns1.examplehost.com",
+          "label": "nameserver",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "domain::ns2.examplehost.com",
+          "label": "nameserver",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "ip::93.184.216.34",
+          "label": "resolves to",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "ip::93.184.216.34",
+          "to": "org::AS15133 Edgecast Inc.",
+          "label": "hosted by",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::www.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::mail.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::vpn.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::dev.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::staging.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::api.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::admin.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::git.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::ci.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::jenkins.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::grafana.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "subdomain::vault.example-corp.com",
+          "label": "subdomain",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "email::contact@example-corp.com",
+          "label": "on website",
+          "dashes": true,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "email::careers@example-corp.com",
+          "label": "on website",
+          "dashes": true,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "tech::nginx",
+          "label": "uses",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "tech::WordPress",
+          "label": "uses",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "tech::jQuery",
+          "label": "uses",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "tech::Cloudflare",
+          "label": "uses",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "account::twitter/@examplecorp",
+          "label": "social",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::example-corp.com",
+          "to": "account::linkedin/@example-corp",
+          "label": "social",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        }
+      ]
+    }
+  }
+}

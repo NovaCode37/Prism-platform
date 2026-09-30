@@ -1,0 +1,275 @@
+{
+  "scan_id": "16f4f8c5-de0c-4ae9-a400-0765e5a111ee",
+  "target": "johndoe",
+  "scan_type": "username",
+  "status": "completed",
+  "owner": "anonymous",
+  "started_at": "2026-06-03T14:14:00",
+  "completed_at": "2026-06-03T14:14:18",
+  "progress": [],
+  "results": {
+    "blackbird": [
+      {
+        "site": "GitHub",
+        "url": "https://github.com/johndoe",
+        "status": "found",
+        "response_time": 0.41
+      },
+      {
+        "site": "Reddit",
+        "url": "https://reddit.com/user/johndoe",
+        "status": "found",
+        "response_time": 0.55
+      },
+      {
+        "site": "Twitter",
+        "url": "https://twitter.com/johndoe",
+        "status": "found",
+        "response_time": 0.62
+      },
+      {
+        "site": "Instagram",
+        "url": "https://instagram.com/johndoe",
+        "status": "found",
+        "response_time": 0.71
+      },
+      {
+        "site": "Steam",
+        "url": "https://steamcommunity.com/id/johndoe",
+        "status": "found",
+        "response_time": 0.48
+      },
+      {
+        "site": "GitLab",
+        "url": "https://gitlab.com/johndoe",
+        "status": "found",
+        "response_time": 0.53
+      },
+      {
+        "site": "Pinterest",
+        "url": "https://pinterest.com/johndoe",
+        "status": "found",
+        "response_time": 0.66
+      },
+      {
+        "site": "TikTok",
+        "url": "https://tiktok.com/@johndoe",
+        "status": "not_found",
+        "response_time": 0.39
+      }
+    ],
+    "opsec_score": {
+      "score": 93,
+      "risk_level": "MINIMAL",
+      "categories": {
+        "data_exposure": {
+          "score": 35,
+          "max": 35,
+          "percent": 100,
+          "findings": []
+        },
+        "identity_opsec": {
+          "score": 18,
+          "max": 25,
+          "percent": 72,
+          "findings": [
+            {
+              "severity": "LOW",
+              "message": "Username found on 7 platforms",
+              "deduction": 7
+            }
+          ]
+        },
+        "infrastructure": {
+          "score": 25,
+          "max": 25,
+          "percent": 100,
+          "findings": []
+        },
+        "web_security": {
+          "score": 15,
+          "max": 15,
+          "percent": 100,
+          "findings": []
+        }
+      },
+      "all_findings": [
+        {
+          "category": "identity_opsec",
+          "severity": "LOW",
+          "message": "Username found on 7 platforms",
+          "deduction": 7
+        }
+      ]
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "target::johndoe",
+          "label": "johndoe",
+          "full_label": "johndoe",
+          "type": "target",
+          "color": "#00d4ff",
+          "title": "Target: johndoe",
+          "shape": "star"
+        },
+        {
+          "id": "account::GitHub",
+          "label": "GitHub",
+          "full_label": "GitHub",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://github.com/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::Reddit",
+          "label": "Reddit",
+          "full_label": "Reddit",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://reddit.com/user/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::Twitter",
+          "label": "Twitter",
+          "full_label": "Twitter",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://twitter.com/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::Instagram",
+          "label": "Instagram",
+          "full_label": "Instagram",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://instagram.com/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::Steam",
+          "label": "Steam",
+          "full_label": "Steam",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://steamcommunity.com/id/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::GitLab",
+          "label": "GitLab",
+          "full_label": "GitLab",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://gitlab.com/johndoe",
+          "shape": "dot"
+        },
+        {
+          "id": "account::Pinterest",
+          "label": "Pinterest",
+          "full_label": "Pinterest",
+          "type": "account",
+          "color": "#55efc4",
+          "title": "Account: https://pinterest.com/johndoe",
+          "shape": "dot"
+        }
+      ],
+      "edges": [
+        {
+          "from": "target::johndoe",
+          "to": "account::GitHub",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::Reddit",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::Twitter",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::Instagram",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::Steam",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::GitLab",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        },
+        {
+          "from": "target::johndoe",
+          "to": "account::Pinterest",
+          "label": "profile",
+          "dashes": false,
+          "color": {
+            "color": "#636e72",
+            "highlight": "#00d4ff"
+          },
+          "smooth": {
+            "type": "dynamic"
+          }
+        }
+      ]
+    }
+  }
+}
