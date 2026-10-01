@@ -1,5 +1,7 @@
 import re
 import requests
+import time
+import threading
 from typing import Dict, Any
 from modules import get_proxies
 
@@ -21,11 +23,9 @@ class CryptoLookup:
     _prices_cache = None
     _prices_error = None
     _prices_timestamp = 0.0
-    import threading
     _prices_lock = threading.Lock()
 
     def _fetch_prices(self) -> None:
-        import time
         now = time.time()
         if CryptoLookup._prices_cache is not None and (now - CryptoLookup._prices_timestamp < 3600):
             return
@@ -33,39 +33,38 @@ class CryptoLookup:
             return
 
         with CryptoLookup._prices_lock:
-            # Double-checked locking to prevent cache stampede
             now = time.time()
             if CryptoLookup._prices_cache is not None and (now - CryptoLookup._prices_timestamp < 3600):
                 return
             if CryptoLookup._prices_error is not None and (now - CryptoLookup._prices_timestamp < 60):
                 return
 
-        try:
-            proxies = get_proxies()
-            r = requests.get(
-                "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd",
-                timeout=6,
-                proxies=proxies,
-            )
-            if r.status_code == 200:
-                data = r.json()
-                CryptoLookup._prices_cache = {
-                    "bitcoin": data.get("bitcoin", {}).get("usd", 0.0),
-                    "ethereum": data.get("ethereum", {}).get("usd", 0.0),
-                    "litecoin": data.get("litecoin", {}).get("usd", 0.0),
-                }
-                CryptoLookup._prices_error = None
-            elif r.status_code == 429:
-                CryptoLookup._prices_error = "CoinGecko returned 429"
+            try:
+                proxies = get_proxies()
+                r = requests.get(
+                    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd",
+                    timeout=6,
+                    proxies=proxies,
+                )
+                if r.status_code == 200:
+                    data = r.json()
+                    CryptoLookup._prices_cache = {
+                        "bitcoin": data.get("bitcoin", {}).get("usd", 0.0),
+                        "ethereum": data.get("ethereum", {}).get("usd", 0.0),
+                        "litecoin": data.get("litecoin", {}).get("usd", 0.0),
+                    }
+                    CryptoLookup._prices_error = None
+                elif r.status_code == 429:
+                    CryptoLookup._prices_error = "CoinGecko returned 429"
+                    CryptoLookup._prices_cache = None
+                else:
+                    CryptoLookup._prices_error = f"CoinGecko returned {r.status_code}"
+                    CryptoLookup._prices_cache = None
+            except Exception as e:
+                CryptoLookup._prices_error = str(e)
                 CryptoLookup._prices_cache = None
-            else:
-                CryptoLookup._prices_error = f"CoinGecko returned {r.status_code}"
-                CryptoLookup._prices_cache = None
-        except Exception as e:
-            CryptoLookup._prices_error = str(e)
-            CryptoLookup._prices_cache = None
-        finally:
-            CryptoLookup._prices_timestamp = time.time()
+            finally:
+                CryptoLookup._prices_timestamp = time.time()
 
     def _get_price(self, coin_id: str) -> float:
         self._fetch_prices()
