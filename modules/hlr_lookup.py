@@ -198,7 +198,6 @@ class HLRLookup:
             ]:
                 try:
                     import re
-                    import requests_circuit_breaker
                     proxies = get_proxies()
                     r = requests.get(
                         site_url,
