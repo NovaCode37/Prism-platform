@@ -1233,8 +1233,20 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
     loop = asyncio.get_running_loop()
 
     def _spool() -> str:
+        from web.security import MAX_UPLOAD_BYTES
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            shutil.copyfileobj(file.file, tmp)
+            bytes_written = 0
+            while True:
+                chunk = file.file.read(8192)
+                if not chunk:
+                    break
+                bytes_written += len(chunk)
+                if bytes_written > MAX_UPLOAD_BYTES:
+                    tmp.close()
+                    os.unlink(tmp.name)
+                    from fastapi import HTTPException
+                    raise HTTPException(status_code=413, detail=f"File too large. Max {MAX_UPLOAD_BYTES // (1024*1024)} MB allowed.")
+                tmp.write(chunk)
             return tmp.name
 
     tmp_path = await loop.run_in_executor(None, _spool)

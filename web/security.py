@@ -172,11 +172,18 @@ def validate_target(target: str) -> str:
 
 async def check_upload_size(request: Request) -> None:
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > MAX_UPLOAD_BYTES:
-        raise HTTPException(
-            status_code=413,
-            detail=f"File too large. Max {MAX_UPLOAD_BYTES // (1024*1024)} MB allowed.",
-        )
+    if content_length:
+        try:
+            length = int(content_length)
+            if length < 0:
+                raise ValueError()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid Content-Length header.")
+        if length > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File too large. Max {MAX_UPLOAD_BYTES // (1024*1024)} MB allowed.",
+            )
 
 def validate_scan_id(scan_id: str) -> str:
     import uuid
