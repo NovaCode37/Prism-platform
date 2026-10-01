@@ -141,6 +141,7 @@
       "totalSent": "Всего отправлено",
       "transactions": "Транзакций",
       "openExplorer": "Открыть в обозревателе блоков",
+      "priceUnavailable": "Цена недоступна",
       "notFound": "Не найдено"
     },
     "qr": {

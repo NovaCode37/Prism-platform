@@ -83,7 +83,18 @@ function CryptoPanel() {
             <Row label={t('toolPanels.crypto.type')} value={result.type} />
             <Row label={t('toolPanels.crypto.address')} value={result.address} />
             <Row label={t('toolPanels.crypto.balance')} value={result.balance} />
-            <Row label={t('toolPanels.crypto.usd')} value={result.balance_usd} />
+            {!result.balance_usd && result.price_unavailable ? (
+              <div className="flex gap-3 text-[12px] py-1 border-b border-border-1 last:border-0">
+                <span className="text-text-3 w-36 shrink-0 truncate" title={t('toolPanels.crypto.usd')}>
+                  {t('toolPanels.crypto.usd')}
+                </span>
+                <span className="text-text-3 break-all">
+                  {t('toolPanels.crypto.priceUnavailable')}: {result.price_unavailable}
+                </span>
+              </div>
+            ) : (
+              <Row label={t('toolPanels.crypto.usd')} value={result.balance_usd} />
+            )}
             <Row label={t('toolPanels.crypto.totalReceived')} value={result.total_received} />
             <Row label={t('toolPanels.crypto.totalSent')} value={result.total_sent} />
             <Row label={t('toolPanels.crypto.transactions')} value={result.tx_count} />

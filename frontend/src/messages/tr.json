@@ -141,6 +141,7 @@
       "totalSent": "Toplam Gönderilen",
       "transactions": "İşlemler",
       "openExplorer": "Gezgini Aç",
+      "priceUnavailable": "Fiyat kullanılamıyor",
       "notFound": "Bulunamadı"
     },
     "qr": {

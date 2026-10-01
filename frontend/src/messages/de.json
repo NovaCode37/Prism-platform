@@ -141,6 +141,7 @@
       "totalSent": "Gesamt gesendet",
       "transactions": "Transaktionen",
       "openExplorer": "Explorer öffnen",
+      "priceUnavailable": "Preis nicht verfügbar",
       "notFound": "Nicht gefunden"
     },
     "qr": {

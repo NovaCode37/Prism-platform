@@ -141,6 +141,7 @@
       "totalSent": "总发送",
       "transactions": "交易数",
       "openExplorer": "打开区块浏览器",
+      "priceUnavailable": "价格不可用",
       "notFound": "未找到"
     },
     "qr": {

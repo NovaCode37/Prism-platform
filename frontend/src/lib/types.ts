@@ -369,6 +369,7 @@ export interface CryptoResult {
   type?: string;
   balance?: string;
   balance_usd?: string;
+  price_unavailable?: string;
   total_received?: string;
   total_sent?: string;
   tx_count?: number;
