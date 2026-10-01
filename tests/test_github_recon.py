@@ -52,6 +52,7 @@ def test_lookup_success(monkeypatch):
     assert r["top_languages"][0]["language"] == "Python"
     assert "octo@example.com" in r["emails"]
     assert "dev@example.com" in r["emails"]
+    assert r["commit_emails_checked"] is True
     # noreply emails are filtered out
     assert all("noreply" not in e for e in r["emails"])
 
@@ -106,7 +107,7 @@ def test_lookup_repos_rate_limited_keeps_profile(monkeypatch):
     assert r["emails"] == ["octo@example.com", "dev@example.com"]
 
 
-def test_lookup_events_rate_limited_leaves_emails_unchecked(monkeypatch):
+def test_lookup_events_rate_limited_preserves_profile_email_and_marks_unchecked(monkeypatch):
     import requests
     monkeypatch.setattr(requests, "get", _profile_then(
         _Resp(200, [{"language": "Go", "stargazers_count": 2}]),
@@ -119,7 +120,8 @@ def test_lookup_events_rate_limited_leaves_emails_unchecked(monkeypatch):
     assert r["profile"]["public_repos"] == 42
     assert r["repo_count"] == 1
     assert r["total_stars"] == 2
-    assert r["emails"] is None
+    assert r["emails"] == ["octo@example.com"]
+    assert r["commit_emails_checked"] is False
 
 
 def test_lookup_followup_error_keeps_profile(monkeypatch):
@@ -149,7 +151,8 @@ def test_lookup_followup_exception_is_an_error(monkeypatch):
     assert "connection reset" in r["error"]
     assert r["profile"]["public_repos"] == 42
     assert r["repo_count"] is None
-    assert r["emails"] is None
+    assert r["emails"] == []
+    assert r["commit_emails_checked"] is False
 
 
 def test_lookup_no_emails_found_is_ok_and_empty(monkeypatch):

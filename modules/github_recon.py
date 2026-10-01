@@ -38,6 +38,7 @@ class GitHubRecon:
             "total_stars": 0,
             "top_languages": [],
             "emails": [],
+            "commit_emails_checked": None,
             "error": None,
         }
 
@@ -80,6 +81,7 @@ class GitHubRecon:
             }
             if u.get("email"):
                 result["emails"].append(u["email"])
+            result["commit_emails_checked"] = False
 
             repos, repos_failure = self._get_repos(username)
             result["repo_count"] = None if repos_failure else len(repos)
@@ -97,11 +99,11 @@ class GitHubRecon:
             ]
 
             commit_emails, events_failure = self._emails_from_events(username)
-            if events_failure:
-                result["emails"] = None
-            for email in commit_emails or []:
-                if email not in result["emails"]:
-                    result["emails"].append(email)
+            if not events_failure:
+                for email in commit_emails or []:
+                    if email not in result["emails"]:
+                        result["emails"].append(email)
+                result["commit_emails_checked"] = True
 
             failure = repos_failure or events_failure
             if failure:
