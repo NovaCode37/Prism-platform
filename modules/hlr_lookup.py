@@ -160,7 +160,6 @@ class HLRLookup:
         }
 
         clean = phone.replace("+", "").replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
-        total_sources_attempted = 1
 
         try:
             proxies = get_proxies()
@@ -191,7 +190,6 @@ class HLRLookup:
             else:
                 ru_num = clean
 
-            total_sources_attempted += 2
             for site_url, site_name in [
                 (f"https://kto-zvonil.ru/nomer/7{ru_num}/", "kto-zvonil.ru"),
                 (f"https://zvonili.com/phone/7{ru_num}/", "zvonili.com"),
@@ -228,7 +226,7 @@ class HLRLookup:
                 except Exception as e:
                     result["sources_failed"].append({"source": site_name, "reason": type(e).__name__})
                     
-        if len(result["sources_failed"]) == total_sources_attempted:
+        if result["sources_failed"] and not result["sources"]:
             annotate(result, ERROR, "All reverse lookup sources failed")
 
         return result
