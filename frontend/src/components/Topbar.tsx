@@ -39,7 +39,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
-      <button onClick={onMenuToggle} className="md:hidden text-text-3 hover:text-text-1 transition-colors p-1 -ml-1" aria-label="Toggle menu">
+      <button onClick={onMenuToggle} className="md:hidden text-text-3 hover:text-text-1 transition-colors p-1 -ml-1" aria-label={t('topbar.toggleMenu')}>
         <Menu size={18} />
       </button>
 
@@ -100,7 +100,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           onClick={onWatchlist}
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2 text-[11px]"
           title={t('topbar.watchlists')}
-          aria-label="Watchlists"
+          aria-label={t('topbar.watchlists')}
         >
           <Eye size={15} />
           <span className="hidden sm:inline">Watch</span>
@@ -113,7 +113,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           }}
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2 text-[10px] font-bold uppercase tracking-wider"
           title={t('lang.label')}
-          aria-label="Toggle language"
+          aria-label={t('topbar.toggleLanguage')}
         >
           <Languages size={13} />
           <span className="hidden sm:inline">{locale.toUpperCase()}</span>
@@ -130,7 +130,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           onClick={toggleTheme}
           className="text-text-3 hover:text-text-1 transition-colors p-1.5 rounded-sm hover:bg-surface-2"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme (Alt+T)`}
-          aria-label="Toggle theme"
+          aria-label={t('topbar.toggleTheme')}
         >
           {mounted ? (theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} />}
         </button>
@@ -140,7 +140,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-[#ff7139] transition-colors text-[11px]"
           title={t('topbar.getFirefoxExtension')}
-          aria-label="Get the Firefox extension"
+          aria-label={t('topbar.getFirefoxExtension')}
         >
           <Puzzle size={15} />
           <span className="hidden sm:inline">Extension</span>
@@ -151,7 +151,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
           title={t('topbar.apiDocs')}
-          aria-label="API Documentation"
+          aria-label={t('topbar.apiDocs')}
         >
           <Book size={15} />
         </a>
@@ -161,7 +161,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors text-[11px]"
           title={t('topbar.reportIssue')}
-          aria-label="Report an issue"
+          aria-label={t('topbar.reportIssue')}
         >
           <AlertCircle size={15} />
           <span className="hidden sm:inline">Report</span>
@@ -172,7 +172,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors text-[11px]"
           title={t('topbar.starOnGithub')}
-          aria-label="Star on GitHub"
+          aria-label={t('topbar.starOnGithub')}
         >
           <Star size={15} />
           <span className="hidden sm:inline">Star</span>
@@ -183,7 +183,7 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onSho
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
           title={t('topbar.github')}
-          aria-label="GitHub repository"
+          aria-label={t('topbar.githubRepository')}
         >
           <Github size={15} />
         </a>

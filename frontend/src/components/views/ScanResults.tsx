@@ -1735,7 +1735,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   <code className="font-mono text-[11px] text-text-1 flex-1 truncate">{d}</code>
                   <a href={`https://www.google.com/search?q=${encodeURIComponent(d)}`} target="_blank" rel="noreferrer"
                     className="text-blue hover:text-white transition-colors flex-shrink-0"
-                    aria-label="Search on Google">
+                    aria-label={i18n('results.searchGoogle')}>
                     <ExternalLink size={11} />
                   </a>
                 </div>
@@ -1822,7 +1822,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 onClick={() => copyValue(JSON.stringify(r, null, 2))}
                 className="flex items-center gap-1 text-[11px] text-text-3 hover:text-text-1 transition-colors p-1 rounded-sm hover:bg-surface-2"
                 title={i18n('results.json.copyRawJson')}
-                aria-label="Copy raw JSON"
+                aria-label={i18n('results.json.copyRawJson')}
               >
                 <Copy size={12} /> Copy
               </button>
@@ -1927,7 +1927,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   onClick={sendChat}
                   disabled={!chatInput.trim() || chatLoading}
                   className="btn-primary px-3 h-9 shrink-0"
-                  aria-label="Send message"
+                  aria-label={i18n('results.sendMessage')}
                 >
                   <SendHorizontal size={13} />
                 </button>
@@ -1946,7 +1946,7 @@ export function ScanResults({ scan, onHome }: Props) {
               if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
               else window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            aria-label="Back to top"
+            aria-label={i18n('common.backToTop')}
             title={i18n('common.backToTop')}
             className="flex items-center justify-center w-12 h-12 rounded-full bg-blue hover:bg-blue/90 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue/50 focus:ring-offset-2 focus:ring-offset-surface-1 transition-all duration-200 hover:scale-110 active:scale-95"
           >

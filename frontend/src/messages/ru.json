@@ -23,7 +23,10 @@
     "watchlists": "Watchlists",
     "getFirefoxExtension": "Get the Firefox extension",
     "reportIssue": "Report an issue",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "toggleMenu": "Открыть или закрыть меню",
+    "toggleLanguage": "Сменить язык",
+    "githubRepository": "Репозиторий на GitHub"
   },
   "sidebar": {
     "target": "Цель",
@@ -38,6 +41,11 @@
     "scanning": "Сканирование…",
     "recent": "Недавние",
     "noRecent": "Недавних сканирований нет",
+    "closeSidebar": "Закрыть боковую панель",
+    "clearTarget": "Очистить цель",
+    "clearRecent": "Очистить недавние сканирования",
+    "clearHistory": "Очистить историю сканирований",
+    "refreshHistory": "Обновить историю",
     "scanTypes": {
       "domain": "Домен",
       "ip": "IP",
@@ -297,7 +305,9 @@
     "copyAllFindings": "Скопировать все замечания",
     "copyAllEmails": "Скопировать все адреса почты",
     "emailsCopied": "Адреса почты скопированы!",
-    "filterPlatforms": "Фильтр по платформам…"
+    "filterPlatforms": "Фильтр по платформам…",
+    "searchGoogle": "Искать в Google",
+    "sendMessage": "Отправить сообщение"
   },
   "watchlist": {
     "title": "Списки наблюдения",

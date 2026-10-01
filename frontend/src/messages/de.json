@@ -23,7 +23,10 @@
     "watchlists": "Watchlists",
     "getFirefoxExtension": "Get the Firefox extension",
     "reportIssue": "Report an issue",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "toggleMenu": "Menü umschalten",
+    "toggleLanguage": "Sprache wechseln",
+    "githubRepository": "GitHub-Repository"
   },
   "sidebar": {
     "target": "Ziel",
@@ -38,6 +41,11 @@
     "scanning": "Scanne…",
     "recent": "Zuletzt",
     "noRecent": "Keine kürzlichen Scans",
+    "closeSidebar": "Seitenleiste schließen",
+    "clearTarget": "Ziel löschen",
+    "clearRecent": "Letzte Scans löschen",
+    "clearHistory": "Scan-Verlauf löschen",
+    "refreshHistory": "Verlauf aktualisieren",
     "scanTypes": {
       "domain": "Domain",
       "ip": "IP",
@@ -297,7 +305,9 @@
     "copyAllFindings": "Alle Funde kopieren",
     "copyAllEmails": "Alle E-Mails kopieren",
     "emailsCopied": "E-Mails kopiert!",
-    "filterPlatforms": "Plattformen filtern..."
+    "filterPlatforms": "Plattformen filtern...",
+    "searchGoogle": "Bei Google suchen",
+    "sendMessage": "Nachricht senden"
   },
   "watchlist": {
     "title": "Watchlists",

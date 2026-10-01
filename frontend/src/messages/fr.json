@@ -23,7 +23,10 @@
     "watchlists": "Watchlists",
     "getFirefoxExtension": "Get the Firefox extension",
     "reportIssue": "Report an issue",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "toggleMenu": "Afficher ou masquer le menu",
+    "toggleLanguage": "Changer de langue",
+    "githubRepository": "Dépôt GitHub"
   },
   "sidebar": {
     "target": "Cible",
@@ -62,6 +65,11 @@
     "scanning": "Analyse en cours…",
     "recent": "Récents",
     "noRecent": "Aucune analyse récente",
+    "closeSidebar": "Fermer la barre latérale",
+    "clearTarget": "Effacer la cible",
+    "clearRecent": "Effacer les analyses récentes",
+    "clearHistory": "Effacer l'historique des analyses",
+    "refreshHistory": "Actualiser l'historique",
     "scanTypes": {
       "domain": "Domaine",
       "ip": "IP",
@@ -189,7 +197,9 @@
     "copyAllFindings": "Copier tous les résultats",
     "copyAllEmails": "Copier tous les e-mails",
     "emailsCopied": "E-mails copiés !",
-    "filterPlatforms": "Filtrer les plateformes..."
+    "filterPlatforms": "Filtrer les plateformes...",
+    "searchGoogle": "Rechercher sur Google",
+    "sendMessage": "Envoyer le message"
   },
   "toolPanels": {
     "back": "Retour",

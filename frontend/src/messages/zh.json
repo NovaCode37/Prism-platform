@@ -23,7 +23,10 @@
     "watchlists": "Watchlists",
     "getFirefoxExtension": "Get the Firefox extension",
     "reportIssue": "Report an issue",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "toggleMenu": "切换菜单",
+    "toggleLanguage": "切换语言",
+    "githubRepository": "GitHub 仓库"
   },
   "sidebar": {
     "target": "目标",
@@ -38,6 +41,11 @@
     "scanning": "扫描中…",
     "recent": "最近",
     "noRecent": "暂无最近扫描",
+    "closeSidebar": "关闭侧边栏",
+    "clearTarget": "清除目标",
+    "clearRecent": "清除最近扫描",
+    "clearHistory": "清除扫描历史",
+    "refreshHistory": "刷新历史",
     "scanTypes": {
       "domain": "域名",
       "ip": "IP",
@@ -297,7 +305,9 @@
     "copyAllFindings": "复制所有发现",
     "copyAllEmails": "复制所有邮箱",
     "emailsCopied": "邮箱已复制！",
-    "filterPlatforms": "筛选平台..."
+    "filterPlatforms": "筛选平台...",
+    "searchGoogle": "在 Google 上搜索",
+    "sendMessage": "发送消息"
   },
   "watchlist": {
     "title": "监视列表",

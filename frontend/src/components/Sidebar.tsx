@@ -189,7 +189,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
 
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface-1 border-r border-border-1 flex flex-col h-screen transform transition-transform duration-200 ease-in-out md:relative md:z-auto md:transform-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-      <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1" aria-label="Close sidebar">✕</button>
+      <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1" aria-label={t('sidebar.closeSidebar')}>✕</button>
       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-3">
         <div>
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.target')}</label>
@@ -207,7 +207,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
               <button
                 type="button"
                 onClick={() => setTarget('')}
-                aria-label="Clear target"
+                aria-label={t('sidebar.clearTarget')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-text-3 hover:text-text-1 transition-colors"
               >
                 <X size={12} />
@@ -290,7 +290,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
               {t('sidebar.recent')}
             </div>
             {recents.length > 0 && (
-              <button onClick={clearRecents} className="text-text-3 hover:text-red transition-colors" aria-label="Clear recent scans">
+              <button onClick={clearRecents} className="text-text-3 hover:text-red transition-colors" aria-label={t('sidebar.clearRecent')}>
                 <Trash2 size={10} />
               </button>
             )}
@@ -353,13 +353,13 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
   <button
     onClick={handleClearHistory}
     className="text-text-3 hover:text-red transition-colors"
-    aria-label="Clear scan history"
+    aria-label={t('sidebar.clearHistory')}
   >
     <Trash2 size={10} />
   </button>
 
 
-              <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto" aria-label="Refresh history">
+              <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto" aria-label={t('sidebar.refreshHistory')}>
                 <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
               </button>
             </div>

@@ -23,7 +23,10 @@
     "watchlists": "Watchlists",
     "getFirefoxExtension": "Get the Firefox extension",
     "reportIssue": "Report an issue",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "toggleMenu": "Menüyü aç/kapat",
+    "toggleLanguage": "Dili değiştir",
+    "githubRepository": "GitHub deposu"
   },
   "sidebar": {
     "target": "Hedef",
@@ -38,6 +41,11 @@
     "scanning": "Taranıyor…",
     "recent": "Son",
     "noRecent": "Son tarama yok",
+    "closeSidebar": "Kenar çubuğunu kapat",
+    "clearTarget": "Hedefi temizle",
+    "clearRecent": "Son taramaları temizle",
+    "clearHistory": "Tarama geçmişini temizle",
+    "refreshHistory": "Geçmişi yenile",
     "scanTypes": {
       "domain": "Alan Adı",
       "ip": "IP",
@@ -297,7 +305,9 @@
     "copyAllFindings": "Tüm bulguları kopyala",
     "copyAllEmails": "Tüm e-postaları kopyala",
     "emailsCopied": "E-postalar kopyalandı!",
-    "filterPlatforms": "Platformları filtrele..."
+    "filterPlatforms": "Platformları filtrele...",
+    "searchGoogle": "Google'da ara",
+    "sendMessage": "Mesaj gönder"
   },
   "watchlist": {
     "title": "İzleme Listeleri",
