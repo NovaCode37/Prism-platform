@@ -663,6 +663,51 @@ class TestCryptoLookup:
         assert cl.detect_type("not_a_crypto_address") == "unknown"
         assert cl.detect_type("") == "unknown"
 
+    @pytest.fixture(autouse=True)
+    def reset_cache(self):
+        from modules.crypto_lookup import CryptoLookup
+        CryptoLookup._prices_cache = None
+        CryptoLookup._prices_error = None
+        yield
+        CryptoLookup._prices_cache = None
+        CryptoLookup._prices_error = None
+
+    def test_single_price_request_and_429(self, monkeypatch):
+        import requests
+        from modules.crypto_lookup import CryptoLookup
+
+        price_calls = 0
+
+        class MockResp:
+            def __init__(self, status_code, json_data=None):
+                self.status_code = status_code
+                self._json = json_data or {}
+            def json(self):
+                return self._json
+
+        def mock_get(url, **kwargs):
+            nonlocal price_calls
+            if "coingecko.com" in url:
+                price_calls += 1
+                return MockResp(429)
+            if "blockchain.info" in url:
+                return MockResp(200, {"final_balance": 100000000, "total_received": 100000000, "total_sent": 0, "n_tx": 1})
+            if "ethplorer.io" in url:
+                return MockResp(200, {"ETH": {"balance": 1.5, "txCount": 2}})
+            return MockResp(404)
+
+        monkeypatch.setattr(requests, "get", mock_get)
+
+        cl = CryptoLookup()
+        btc_res = cl.lookup("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")
+        eth_res = cl.lookup("0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68")
+
+        assert price_calls == 1
+        assert btc_res["balance_usd"] is None
+        assert btc_res["price_unavailable"] == "CoinGecko returned 429"
+        assert eth_res["balance_usd"] is None
+        assert eth_res["price_unavailable"] == "CoinGecko returned 429"
+
 class TestEmailHeaderAnalyzer:
     def test_parse_received_ip_skips_private(self):
         from modules.email_header_analyzer import _parse_received_ip

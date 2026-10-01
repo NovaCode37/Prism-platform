@@ -18,47 +18,39 @@ class CryptoLookup:
             return "litecoin"
         return "unknown"
 
-    def _btc_price(self) -> float:
-        try:
-            proxies = get_proxies()
-            r = requests.get(
-                "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-                timeout=6,
-                proxies=proxies,
-            )
-            if r.status_code == 200:
-                return r.json().get("bitcoin", {}).get("usd", 0)
-        except Exception:
-            pass
-        return 0
+    _prices_cache = None
+    _prices_error = None
 
-    def _eth_price(self) -> float:
-        try:
-            proxies = get_proxies()
-            r = requests.get(
-                "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
-                timeout=6,
-                proxies=proxies,
-            )
-            if r.status_code == 200:
-                return r.json().get("ethereum", {}).get("usd", 0)
-        except Exception:
-            pass
-        return 0
+    def _fetch_prices(self) -> None:
+        if CryptoLookup._prices_cache is not None or CryptoLookup._prices_error is not None:
+            return
 
-    def _ltc_price(self) -> float:
         try:
             proxies = get_proxies()
             r = requests.get(
-                "https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd",
+                "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd",
                 timeout=6,
                 proxies=proxies,
             )
             if r.status_code == 200:
-                return r.json().get("litecoin", {}).get("usd", 0)
-        except Exception:
-            pass
-        return 0
+                data = r.json()
+                CryptoLookup._prices_cache = {
+                    "bitcoin": data.get("bitcoin", {}).get("usd", 0.0),
+                    "ethereum": data.get("ethereum", {}).get("usd", 0.0),
+                    "litecoin": data.get("litecoin", {}).get("usd", 0.0),
+                }
+            elif r.status_code == 429:
+                CryptoLookup._prices_error = "CoinGecko returned 429"
+            else:
+                CryptoLookup._prices_error = f"CoinGecko returned {r.status_code}"
+        except Exception as e:
+            CryptoLookup._prices_error = str(e)
+
+    def _get_price(self, coin_id: str) -> float:
+        self._fetch_prices()
+        if CryptoLookup._prices_cache:
+            return CryptoLookup._prices_cache.get(coin_id, 0.0)
+        return 0.0
 
     def lookup_bitcoin(self, address: str) -> Dict[str, Any]:
         result = {
@@ -87,9 +79,11 @@ class CryptoLookup:
                 result["total_received"] = f"{data.get('total_received', 0) / sat:.8f} BTC"
                 result["total_sent"] = f"{data.get('total_sent', 0) / sat:.8f} BTC"
                 result["tx_count"] = data.get("n_tx", 0)
-                price = self._btc_price()
+                price = self._get_price("bitcoin")
                 if price:
                     result["balance_usd"] = f"${balance_btc * price:,.2f}"
+                elif CryptoLookup._prices_error:
+                    result["price_unavailable"] = CryptoLookup._prices_error
             else:
                 result["error"] = f"API returned HTTP {r.status_code}"
         except Exception as e:
@@ -121,9 +115,11 @@ class CryptoLookup:
                 balance_eth = float(eth.get("balance", 0))
                 result["balance"] = f"{balance_eth:.6f} ETH"
                 result["tx_count"] = eth.get("txCount", None)
-                price = self._eth_price()
+                price = self._get_price("ethereum")
                 if price:
                     result["balance_usd"] = f"${balance_eth * price:,.2f}"
+                elif CryptoLookup._prices_error:
+                    result["price_unavailable"] = CryptoLookup._prices_error
             else:
                 result["error"] = f"API returned HTTP {r.status_code}"
         except Exception as e:
@@ -157,9 +153,11 @@ class CryptoLookup:
                 result["total_received"] = f"{data.get('total_received', 0) / sat:.8f} LTC"
                 result["total_sent"] = f"{data.get('total_sent', 0) / sat:.8f} LTC"
                 result["tx_count"] = data.get("n_tx", 0)
-                price = self._ltc_price()
+                price = self._get_price("litecoin")
                 if price:
                     result["balance_usd"] = f"${balance_ltc * price:,.2f}"
+                elif CryptoLookup._prices_error:
+                    result["price_unavailable"] = CryptoLookup._prices_error
             else:
                 result["error"] = f"API returned HTTP {r.status_code}"
         except Exception as e:
