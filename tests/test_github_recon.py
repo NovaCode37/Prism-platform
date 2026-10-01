@@ -111,7 +111,7 @@ def test_lookup_events_rate_limited_preserves_profile_email_and_marks_unchecked(
     import requests
     monkeypatch.setattr(requests, "get", _profile_then(
         _Resp(200, [{"language": "Go", "stargazers_count": 2}]),
-        _Resp(429, {}),
+        _Resp(403, {}),
     ))
     r = GitHubRecon().lookup("octocat")
 
