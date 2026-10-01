@@ -21,6 +21,8 @@ class CryptoLookup:
     _prices_cache = None
     _prices_error = None
     _prices_timestamp = 0.0
+    import threading
+    _prices_lock = threading.Lock()
 
     def _fetch_prices(self) -> None:
         import time
@@ -29,6 +31,14 @@ class CryptoLookup:
             return
         if CryptoLookup._prices_error is not None and (now - CryptoLookup._prices_timestamp < 60):
             return
+
+        with CryptoLookup._prices_lock:
+            # Double-checked locking to prevent cache stampede
+            now = time.time()
+            if CryptoLookup._prices_cache is not None and (now - CryptoLookup._prices_timestamp < 3600):
+                return
+            if CryptoLookup._prices_error is not None and (now - CryptoLookup._prices_timestamp < 60):
+                return
 
         try:
             proxies = get_proxies()
