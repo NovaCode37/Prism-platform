@@ -13,7 +13,7 @@ import re
 import requests as _requests
 import logging
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, Request
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -1233,9 +1233,30 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
     loop = asyncio.get_running_loop()
 
     def _spool() -> str:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            shutil.copyfileobj(file.file, tmp)
-            return tmp.name
+        from web.security import MAX_UPLOAD_BYTES
+        tmp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                tmp_path = tmp.name
+                written = 0
+                while True:
+                    chunk = file.file.read(64 * 1024)
+                    if not chunk:
+                        break
+                    written += tmp.write(chunk)
+                    if written > MAX_UPLOAD_BYTES:
+                        raise HTTPException(
+                            status_code=413,
+                            detail=f"File too large. Max {MAX_UPLOAD_BYTES // (1024*1024)} MB allowed.",
+                        )
+                return tmp_path
+        except Exception:
+            if tmp_path and os.path.exists(tmp_path):
+                try:
+                    os.unlink(tmp_path)
+                except OSError:
+                    pass
+            raise
 
     tmp_path = await loop.run_in_executor(None, _spool)
     try:
