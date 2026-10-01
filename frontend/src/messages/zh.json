@@ -19,7 +19,11 @@
     "toggleTheme": "切换主题",
     "github": "GitHub",
     "apiDocs": "API 文档",
-    "remainingScans": "剩余扫描次数"
+    "remainingScans": "剩余扫描次数",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "目标",
@@ -287,7 +291,7 @@
     "telegram": { "title": "Telegram 资料", "found": "已找到", "username": "用户名", "name": "名称", "bio": "简介", "type": "类型", "followers": "关注者" },
     "map": { "title": "IP 地理位置地图", "ip": "IP", "location": "位置", "organization": "组织", "coordinates": "坐标", "loading": "正在加载地图…", "noData": "无可用地理位置数据", "moreFmt": "发现 {n} 个位置", "precision": "精度", "approximate": "近似（区域级，非精确）" },
     "graph": { "title": "实体图谱", "loading": "正在加载图谱…", "empty": "此扫描无可用图谱数据" },
-    "json": { "title": "原始 JSON 结果", "show": "显示原始数据", "hide": "隐藏原始数据" },
+    "json": { "title": "原始 JSON 结果", "show": "显示原始数据", "hide": "隐藏原始数据", "copyRawJson": "Copy raw JSON" },
     "ai": { "title": "AI OSINT 分析 · Nvidia Nemotron", "chatTitle": "向 AI 提问", "generate": "生成 AI 摘要", "generating": "正在生成分析…", "model": "模型", "regenerate": "重新生成", "placeholder": "询问关于此扫描的任何问题…" },
     "duration": "耗时 {duration} 完成",
     "copyAllFindings": "复制所有发现",

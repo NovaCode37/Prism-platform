@@ -19,7 +19,11 @@
     "toggleTheme": "Changer de thème",
     "github": "GitHub",
     "apiDocs": "Documentation API",
-    "remainingScans": "Analyses restantes"
+    "remainingScans": "Analyses restantes",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "Cible",
@@ -179,7 +183,7 @@
     "telegram": { "title": "Profil Telegram", "found": "Trouvé", "username": "Nom d'utilisateur", "name": "Nom", "bio": "Bio", "type": "Type", "followers": "Abonnés" },
     "map": { "title": "Carte de géolocalisation IP", "ip": "IP", "location": "Emplacement", "organization": "Organisation", "coordinates": "Coordonnées", "loading": "Chargement de la carte…", "noData": "Aucune donnée de géolocalisation disponible", "moreFmt": "{n} emplacements trouvés", "precision": "Précision", "approximate": "Approximatif (régional, non exact)" },
     "graph": { "title": "Graphe d'entités", "loading": "Chargement du graphe…", "empty": "Aucune donnée de graphe disponible pour cette analyse" },
-    "json": { "title": "Résultats JSON bruts", "show": "Afficher les données brutes", "hide": "Masquer les données brutes" },
+    "json": { "title": "Résultats JSON bruts", "show": "Afficher les données brutes", "hide": "Masquer les données brutes", "copyRawJson": "Copy raw JSON" },
     "ai": { "title": "Analyse IA OSINT · Nvidia Nemotron", "chatTitle": "Demander à l'IA", "generate": "Générer un résumé IA", "generating": "Génération de l'analyse…", "model": "Modèle", "regenerate": "Régénérer", "placeholder": "Posez une question sur cette analyse…" },
     "duration": "Terminé en {duration}",
     "copyAllFindings": "Copier tous les résultats",

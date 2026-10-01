@@ -19,7 +19,11 @@
     "toggleTheme": "Сменить тему",
     "github": "GitHub",
     "apiDocs": "Документация API",
-    "remainingScans": "Осталось сканирований"
+    "remainingScans": "Осталось сканирований",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "Цель",
@@ -287,7 +291,7 @@
     "telegram": { "title": "Профиль Telegram", "found": "Найден", "username": "Имя пользователя", "name": "Имя", "bio": "О себе", "type": "Тип", "followers": "Подписчики" },
     "map": { "title": "Карта геолокации IP", "ip": "IP", "location": "Местоположение", "organization": "Организация", "coordinates": "Координаты", "loading": "Загрузка карты…", "noData": "Нет данных геолокации", "moreFmt": "Найдено мест: {n}", "precision": "Точность", "approximate": "Приблизительно (по региону, не точно)" },
     "graph": { "title": "Граф сущностей", "loading": "Загрузка графа…", "empty": "Нет данных для графа" },
-    "json": { "title": "Исходный JSON", "show": "Показать исходные данные", "hide": "Скрыть исходные данные" },
+    "json": { "title": "Исходный JSON", "show": "Показать исходные данные", "hide": "Скрыть исходные данные", "copyRawJson": "Copy raw JSON" },
     "ai": { "title": "ИИ-анализ OSINT · Nvidia Nemotron", "chatTitle": "Спросить ИИ", "generate": "Сгенерировать сводку", "generating": "Генерация анализа…", "model": "Модель", "regenerate": "Сгенерировать заново", "placeholder": "Задайте вопрос об этом сканировании…" },
     "duration": "Выполнено за {duration}",
     "copyAllFindings": "Скопировать все замечания",

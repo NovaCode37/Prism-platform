@@ -19,7 +19,11 @@
     "toggleTheme": "Design wechseln",
     "github": "GitHub",
     "apiDocs":"API-Dokumentation",
-    "remainingScans": "Verbleibende Scans"
+    "remainingScans": "Verbleibende Scans",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "Ziel",
@@ -287,7 +291,7 @@
     "telegram": { "title": "Telegram-Profil", "found": "Gefunden", "username": "Benutzername", "name": "Name", "bio": "Bio", "type": "Typ", "followers": "Follower" },
     "map": { "title": "IP-Geolokationskarte", "ip": "IP", "location": "Standort", "organization": "Organisation", "coordinates": "Koordinaten", "loading": "Karte wird geladen…", "noData": "Keine Geolokationsdaten verfügbar", "moreFmt": "{n} Standorte gefunden", "precision": "Genauigkeit", "approximate": "Ungefähr (regional, nicht punktgenau)" },
     "graph": { "title": "Entitätsgraph", "loading": "Graph wird geladen…", "empty": "Keine Graphdaten für diesen Scan" },
-    "json": { "title": "Rohe JSON-Daten", "show": "Rohdaten anzeigen", "hide": "Rohdaten verbergen" },
+    "json": { "title": "Rohe JSON-Daten", "show": "Rohdaten anzeigen", "hide": "Rohdaten verbergen", "copyRawJson": "Copy raw JSON" },
     "ai": { "title": "KI-OSINT-Analyse · Nvidia Nemotron", "chatTitle": "Frag die KI", "generate": "KI-Zusammenfassung erstellen", "generating": "Analyse wird erstellt…", "model": "Modell", "regenerate": "Neu generieren", "placeholder": "Frag etwas zu diesem Scan…" },
     "duration": "Abgeschlossen in {duration}",
     "copyAllFindings": "Alle Funde kopieren",

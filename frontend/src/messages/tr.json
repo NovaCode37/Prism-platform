@@ -19,7 +19,11 @@
     "toggleTheme": "Temayı değiştir",
     "github": "GitHub",
     "apiDocs": "API Dokümantasyonu",
-    "remainingScans": "Kalan taramalar"
+    "remainingScans": "Kalan taramalar",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "Hedef",
@@ -287,7 +291,7 @@
     "telegram": { "title": "Telegram Profili", "found": "Bulundu", "username": "Kullanıcı Adı", "name": "Ad", "bio": "Biyografi", "type": "Tür", "followers": "Takipçiler" },
     "map": { "title": "IP Konum Haritası", "ip": "IP", "location": "Konum", "organization": "Kuruluş", "coordinates": "Koordinatlar", "loading": "Harita yükleniyor…", "noData": "Konum verisi mevcut değil", "moreFmt": "{n} konum bulundu", "precision": "Hassasiyet", "approximate": "Yaklaşık (bölgesel, tam değil)" },
     "graph": { "title": "Varlık Grafiği", "loading": "Graf yükleniyor…", "empty": "Bu tarama için graf verisi yok" },
-    "json": { "title": "Ham JSON Sonuçları", "show": "Ham veriyi göster", "hide": "Ham veriyi gizle" },
+    "json": { "title": "Ham JSON Sonuçları", "show": "Ham veriyi göster", "hide": "Ham veriyi gizle", "copyRawJson": "Copy raw JSON" },
     "ai": { "title": "AI OSINT Analizi · Nvidia Nemotron", "chatTitle": "AI'ya Sor", "generate": "AI Özeti Oluştur", "generating": "Analiz oluşturuluyor…", "model": "Model", "regenerate": "Yeniden oluştur", "placeholder": "Bu tarama hakkında her şeyi sorun…" },
     "duration": "{duration} içinde tamamlandı",
     "copyAllFindings": "Tüm bulguları kopyala",

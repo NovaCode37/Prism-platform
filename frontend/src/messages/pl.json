@@ -19,7 +19,11 @@
     "toggleTheme": "Zmień motyw",
     "github": "GitHub",
     "apiDocs": "Dokumentacja API",
-    "remainingScans": "Pozostałe skany"
+    "remainingScans": "Pozostałe skany",
+    "watchlists": "Watchlists",
+    "getFirefoxExtension": "Get the Firefox extension",
+    "reportIssue": "Report an issue",
+    "starOnGithub": "Star on GitHub"
   },
   "sidebar": {
     "target": "Cel",
@@ -474,7 +478,8 @@
     "json": {
       "title": "Surowe Wyniki JSON",
       "show": "Pokaż JSON",
-      "hide": "Ukryj JSON"
+      "hide": "Ukryj JSON",
+      "copyRawJson": "Copy raw JSON"
     },
     "ai": {
       "title": "Analiza AI OSINT · Nvidia Nemotron",

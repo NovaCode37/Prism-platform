@@ -1000,7 +1000,7 @@ export function ScanResults({ scan, onHome }: Props) {
           <div>
             {opsec?.all_findings?.length ? (
               <Card
-                title={i18n('component.securityFindings')}
+                title={i18n('results.findings.title')}
                 extra={
                   <button
                     type="button"
@@ -1026,7 +1026,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'whois' && r.whois && (
-          <Card title={i18n('component.whoisRegistration')} onRefresh={() => refreshModule('whois')} refreshing={isRefreshing('whois')}>
+          <Card title={i18n('results.whois.title')} onRefresh={() => refreshModule('whois')} refreshing={isRefreshing('whois')}>
             <div className="space-y-1.5">
               <DtRow label="Registrar" value={r.whois.registrar} />
               <DtRow label="Organization" value={r.whois.org} />
@@ -1063,7 +1063,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {/* RDAP */}
         {tab === 'rdap' && r.rdap && !r.rdap.error && (
-          <Card title={i18n('component.rdapRegistration')} onRefresh={() => refreshModule('rdap')} refreshing={isRefreshing('rdap')}>
+          <Card title={i18n('results.tabs.rdap')} onRefresh={() => refreshModule('rdap')} refreshing={isRefreshing('rdap')}>
             <div className="space-y-1.5">
               {r.rdap.registered === false && (
                 <div className="text-text-3 text-sm py-2">Domain is not registered</div>
@@ -1103,7 +1103,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'dns' && r.dns?.records && (
-          <Card title={i18n('component.dnsRecords')} onRefresh={() => refreshModule('dns')} refreshing={isRefreshing('dns')}>
+          <Card title={i18n('results.dns.title')} onRefresh={() => refreshModule('dns')} refreshing={isRefreshing('dns')}>
             {Object.entries(r.dns.records).filter(([, v]) => Array.isArray(v) && v.length > 0).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Server size={24} className="text-text-3 opacity-40 mb-2" />
@@ -1143,7 +1143,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'accounts' && (
-          <Card title={i18n('component.usernameSearch')} onRefresh={() => refreshModule('blackbird')} refreshing={isRefreshing('blackbird')}>
+          <Card title={i18n('results.accounts.title')} onRefresh={() => refreshModule('blackbird')} refreshing={isRefreshing('blackbird')}>
             <div className="text-[11px] text-text-3 leading-relaxed mb-3">
               {"Heuristic matches from profile-page responses - false positives are possible on sites that serve a page for any username. Open each link to confirm before relying on it."}
             </div>
@@ -1190,7 +1190,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'github' && (
-          <KeyModuleCard title={i18n('component.githubRecon')} mod={r.github} onRefresh={() => refreshModule('github')} refreshing={isRefreshing('github')}>
+          <KeyModuleCard title={i18n('results.tabs.github')} mod={r.github} onRefresh={() => refreshModule('github')} refreshing={isRefreshing('github')}>
             <div className="space-y-1.5">
               {r.github?.profile?.html_url && (
                 <div className="dt-row"><span className="dt-label">Profile</span>
@@ -1237,7 +1237,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'threats' && (
           <div>
-            <KeyModuleCard title={i18n('component.virustotal')} mod={r.virustotal} onRefresh={() => refreshModule('virustotal')} refreshing={isRefreshing('virustotal')}>
+            <KeyModuleCard title={i18n('results.virustotal.title')} mod={r.virustotal} onRefresh={() => refreshModule('virustotal')} refreshing={isRefreshing('virustotal')}>
               {!r.virustotal?.malicious && !r.virustotal?.suspicious && !r.virustotal?.harmless && !r.virustotal?.undetected ? (
                 <div className="text-text-3 text-sm py-2">No threats detected</div>
               ) : (
@@ -1257,7 +1257,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 </>
               )}
             </KeyModuleCard>
-            <KeyModuleCard title={i18n('component.abuseipdb')} mod={r.abuseipdb} onRefresh={() => refreshModule('abuseipdb')} refreshing={isRefreshing('abuseipdb')}>
+            <KeyModuleCard title={i18n('results.abuseipdb.title')} mod={r.abuseipdb} onRefresh={() => refreshModule('abuseipdb')} refreshing={isRefreshing('abuseipdb')}>
               {!r.abuseipdb?.abuse_score && !r.abuseipdb?.total_reports && !r.abuseipdb?.isp && !r.abuseipdb?.usage_type ? (
                 <div className="text-text-3 text-sm py-2">No threats detected</div>
               ) : (
@@ -1274,7 +1274,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 </div>
               )}
             </KeyModuleCard>
-            <KeyModuleCard title={i18n('component.shodan')} mod={r.shodan} onRefresh={() => refreshModule('shodan')} refreshing={isRefreshing('shodan')}>
+            <KeyModuleCard title={i18n('results.shodan.title')} mod={r.shodan} onRefresh={() => refreshModule('shodan')} refreshing={isRefreshing('shodan')}>
               {r.shodan?.source === 'internetdb' && (
                 <div className="text-[11px] text-text-3 leading-relaxed mb-3 pb-2 border-b border-border-1">
                   {"Ports, hostnames and CVEs below come from InternetDB, Shodan's free dataset. It carries no organisation, location or service banners — a paid Shodan key fills those in."}
@@ -1377,7 +1377,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'wayback' && r.wayback && (
-          <Card title={i18n('component.waybackMachine')} onRefresh={() => refreshModule('wayback')} refreshing={isRefreshing('wayback')}>
+          <Card title={i18n('results.wayback.title')} onRefresh={() => refreshModule('wayback')} refreshing={isRefreshing('wayback')}>
             {!r.wayback.snapshots?.length && !r.wayback.interesting?.length ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Clock size={24} className="text-text-3 opacity-40 mb-2" />
@@ -1425,7 +1425,7 @@ export function ScanResults({ scan, onHome }: Props) {
         {tab === 'email' && (
           <div>
             {r.emailrep && !r.emailrep.error && (
-              <Card title={i18n('component.emailReputation')} onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
+              <Card title={i18n('results.emailrep.title')} onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
                 <div className="space-y-1.5">
                   <div className="dt-row"><span className="dt-label">Reputation</span>
                     <span className={`font-bold ${r.emailrep.reputation === 'high' ? 'text-green' : r.emailrep.reputation === 'medium' ? 'text-yellow' : 'text-red'}`}>
@@ -1462,12 +1462,12 @@ export function ScanResults({ scan, onHome }: Props) {
               </Card>
             )}
             {r.emailrep?.error && (
-              <Card title={i18n('component.emailReputation')} onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
+              <Card title={i18n('results.emailrep.title')} onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
                 <div className="text-red text-sm">{r.emailrep.error}</div>
               </Card>
             )}
             {r.smtp && !r.smtp.error && (
-              <Card title={i18n('component.smtpVerification')} onRefresh={() => refreshModule('smtp')} refreshing={isRefreshing('smtp')}>
+              <Card title={i18n('results.smtp.title')} onRefresh={() => refreshModule('smtp')} refreshing={isRefreshing('smtp')}>
                 <div className="space-y-1.5">
                   <div className="dt-row"><span className="dt-label">Exists</span>
                     <span className={r.smtp.exists === true ? 'text-green' : r.smtp.exists === false ? 'text-red' : 'text-text-3'}>
@@ -1489,7 +1489,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 </div>
               </Card>
             )}
-            <KeyModuleCard title={i18n('component.breachCheck')} mod={r.breaches} onRefresh={() => refreshModule('leaks', ['breaches'])} refreshing={isRefreshing('leaks')}>
+            <KeyModuleCard title={i18n('results.breaches.title')} mod={r.breaches} onRefresh={() => refreshModule('leaks', ['breaches'])} refreshing={isRefreshing('leaks')}>
               <div className="space-y-1.5">
                 {(r.breaches?.breaches?.length ?? 0) === 0 && r.breaches?.found === false && (
                   <div className="text-green text-sm py-1">✓ No breaches found</div>
@@ -1517,7 +1517,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'gravatar' && (
           <KeyModuleCard
-            title={i18n('component.gravatar')}
+            title={i18n('results.tabs.gravatar')}
             mod={r.gravatar}
             onRefresh={() => refreshModule('gravatar')}
             refreshing={isRefreshing('gravatar')}
@@ -1573,7 +1573,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'hudsonrock' && (
           <KeyModuleCard
-            title={i18n('component.infostealerExposure')}
+            title={i18n('results.tabs.hudsonrock')}
             mod={r.hudsonrock}
             onRefresh={() => refreshModule('hudsonrock')}
             refreshing={isRefreshing('hudsonrock')}
@@ -1653,7 +1653,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'lunar' && (
           <KeyModuleCard
-            title={i18n('component.domainExposure')}
+            title={i18n('results.tabs.lunar')}
             mod={r.lunar}
             onRefresh={() => refreshModule('lunar')}
             refreshing={isRefreshing('lunar')}
@@ -1726,7 +1726,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'dorks' && r.dorks && (
-          <Card title={i18n('component.googleDorks')}>
+          <Card title={i18n('results.dorks.title')}>
             {r.dorks.length === 0 ? (
               <div className="text-text-3 text-sm py-2">No dorks generated</div>
             ) : (
@@ -1745,7 +1745,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'phone' && r.phone && (
-          <Card title={i18n('component.phoneIntelligence')} onRefresh={() => refreshModule('hlr', ['hlr', 'phone_owner', 'phone'])} refreshing={isRefreshing('hlr')}>
+          <Card title={i18n('results.phone.title')} onRefresh={() => refreshModule('hlr', ['hlr', 'phone_owner', 'phone'])} refreshing={isRefreshing('hlr')}>
             <div className="space-y-1.5">
               <div className="dt-row"><span className="dt-label">Valid</span>
                 <span className={r.phone.valid ? 'text-green' : 'text-red'}>{r.phone.valid ? 'Yes' : 'No'}</span>
@@ -1771,7 +1771,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'telegram' && r.telegram && (
-          <Card title={i18n('component.telegramProfile')} onRefresh={() => refreshModule('telegram')} refreshing={isRefreshing('telegram')}>
+          <Card title={i18n('results.telegram.title')} onRefresh={() => refreshModule('telegram')} refreshing={isRefreshing('telegram')}>
             {r.telegram.error ? (
               <div className="text-red text-sm">{r.telegram.error}</div>
             ) : (
@@ -1790,13 +1790,13 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'map' && (
-          <Card title={i18n('component.ipGeolocationMap')}>
+          <Card title={i18n('results.map.title')}>
             <MapView scanId={scan.id} onCopy={copyValue} />
           </Card>
         )}
 
         {tab === 'graph' && (
-          <Card title={i18n('component.entityGraph')}>
+          <Card title={i18n('results.graph.title')}>
             <div className="flex items-center gap-2 mb-3">
               <button type="button" onClick={() => exportGraph('graphml')} className="btn-ghost text-[11px] h-8 px-3">
                 <Download size={11} /> GraphML
@@ -1811,7 +1811,7 @@ export function ScanResults({ scan, onHome }: Props) {
         )}
 
         {tab === 'json' && (
-          <Card title={i18n('component.rawJsonResults')}>
+          <Card title={i18n('results.json.title')}>
             <div className="flex items-center justify-between mb-3">
               <button onClick={() => setShowJson(v => !v)} className="flex items-center gap-1.5 text-[11px] text-text-3 hover:text-text-2">
                 {showJson ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -1821,7 +1821,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 type="button"
                 onClick={() => copyValue(JSON.stringify(r, null, 2))}
                 className="flex items-center gap-1 text-[11px] text-text-3 hover:text-text-1 transition-colors p-1 rounded-sm hover:bg-surface-2"
-                title={i18n('component.copyRawJson')}
+                title={i18n('results.json.copyRawJson')}
                 aria-label="Copy raw JSON"
               >
                 <Copy size={12} /> Copy
@@ -1837,7 +1837,7 @@ export function ScanResults({ scan, onHome }: Props) {
 
         {tab === 'ai' && (
           <div>
-            <Card title={i18n('component.aiOsintAnalysisNvidiaNemotron')}>
+            <Card title={i18n('results.ai.title')}>
               <div className="flex gap-2.5 rounded-card border border-yellow/40 bg-yellow/10 p-3 mb-3">
                 <AlertTriangle size={15} className="text-yellow shrink-0 mt-px" />
                 <div className="text-[12px] text-text-1 leading-relaxed">
@@ -1881,7 +1881,7 @@ export function ScanResults({ scan, onHome }: Props) {
               )}
             </Card>
 
-            <Card title={i18n('component.askTheAi')}>
+            <Card title={i18n('results.ai.chatTitle')}>
               <div className="flex gap-2.5 rounded-card border border-yellow/40 bg-yellow/10 p-3 mb-3">
                 <AlertTriangle size={15} className="text-yellow shrink-0 mt-px" />
                 <div className="text-[12px] text-text-2 leading-relaxed">
@@ -1947,7 +1947,7 @@ export function ScanResults({ scan, onHome }: Props) {
               else window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             aria-label="Back to top"
-            title={i18n('component.backToTop')}
+            title={i18n('common.backToTop')}
             className="flex items-center justify-center w-12 h-12 rounded-full bg-blue hover:bg-blue/90 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue/50 focus:ring-offset-2 focus:ring-offset-surface-1 transition-all duration-200 hover:scale-110 active:scale-95"
           >
             <ArrowUp size={20} strokeWidth={2.5} />
