@@ -147,6 +147,7 @@ class HLRLookup:
             print(f"{Colors.YELLOW}Timezones:{Colors.RESET} {', '.join(result['timezones'])}")
 
     def reverse_lookup(self, phone: str) -> Dict[str, Any]:
+        from modules.module_status import annotate, ERROR
         result = {
             "phone": phone,
             "names": [],
@@ -154,10 +155,12 @@ class HLRLookup:
             "carrier_confirmed": None,
             "comments": [],
             "sources": [],
+            "sources_failed": [],
             "error": None,
         }
 
         clean = phone.replace("+", "").replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
+        total_sources_attempted = 1
 
         try:
             proxies = get_proxies()
@@ -174,8 +177,10 @@ class HLRLookup:
                 if data.get("carrier"):
                     result["carrier_confirmed"] = data["carrier"]
                 result["sources"].append("numlookupapi.com")
-        except Exception:
-            pass
+            else:
+                result["sources_failed"].append({"source": "numlookupapi.com", "reason": f"HTTP {r.status_code}"})
+        except Exception as e:
+            result["sources_failed"].append({"source": "numlookupapi.com", "reason": type(e).__name__})
 
         is_ru = clean.startswith("7") or clean.startswith("89") or clean.startswith("87")
         if is_ru:
@@ -186,12 +191,14 @@ class HLRLookup:
             else:
                 ru_num = clean
 
+            total_sources_attempted += 2
             for site_url, site_name in [
                 (f"https://kto-zvonil.ru/nomer/7{ru_num}/", "kto-zvonil.ru"),
                 (f"https://zvonili.com/phone/7{ru_num}/", "zvonili.com"),
             ]:
                 try:
                     import re
+                    import requests_circuit_breaker
                     proxies = get_proxies()
                     r = requests.get(
                         site_url,
@@ -217,8 +224,13 @@ class HLRLookup:
                             if c and c not in result["comments"]:
                                 result["comments"].append(c)
                         result["sources"].append(site_name)
-                except Exception:
-                    pass
+                    else:
+                        result["sources_failed"].append({"source": site_name, "reason": f"HTTP {r.status_code}"})
+                except Exception as e:
+                    result["sources_failed"].append({"source": site_name, "reason": type(e).__name__})
+                    
+        if len(result["sources_failed"]) == total_sources_attempted:
+            annotate(result, ERROR, "All reverse lookup sources failed")
 
         return result
 

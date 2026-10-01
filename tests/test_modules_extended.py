@@ -287,6 +287,47 @@ class TestHLRLookup:
         assert result["country"] == "Austria"
         assert result["country_code"] == "AT"
 
+    def test_reverse_lookup_partial_failure(self, monkeypatch):
+        import requests
+        from modules.hlr_lookup import HLRLookup
+
+        def mock_get(url, *args, **kwargs):
+            class MockResp:
+                def __init__(self, code, json_data):
+                    self.status_code = code
+                    self._json = json_data
+                    self.text = "владелец: Иван Иванович\n<div class='comment'>Good guy</div>"
+                def json(self): return self._json
+
+            if "numlookupapi" in url:
+                return MockResp(200, {"city": "Moscow", "carrier": "MTS"})
+            elif "kto-zvonil.ru" in url:
+                return MockResp(500, {})
+            elif "zvonili.com" in url:
+                raise requests.exceptions.Timeout("Timeout")
+            return MockResp(404, {})
+
+        monkeypatch.setattr(requests, "get", mock_get)
+        result = HLRLookup().reverse_lookup("+79001234567")
+        assert "numlookupapi.com" in result["sources"]
+        assert any(f["source"] == "kto-zvonil.ru" for f in result["sources_failed"])
+        assert any(f["source"] == "zvonili.com" for f in result["sources_failed"])
+        assert result.get("status") != "ERROR"
+
+    def test_reverse_lookup_all_failed(self, monkeypatch):
+        import requests
+        from modules.hlr_lookup import HLRLookup
+        from modules.module_status import classify, ERROR
+
+        def mock_get(*args, **kwargs):
+            raise requests.exceptions.Timeout("Timeout")
+
+        monkeypatch.setattr(requests, "get", mock_get)
+        result = HLRLookup().reverse_lookup("+79001234567")
+        assert len(result["sources"]) == 0
+        assert len(result["sources_failed"]) == 3
+        assert classify(result) == ERROR
+
 class TestLeakLookup:
     def test_check_email_hibp_not_found(self, monkeypatch):
         import requests
