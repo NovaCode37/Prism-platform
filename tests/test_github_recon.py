@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from modules.github_recon import GitHubRecon
-from modules.module_status import classify, OK, RATE_LIMITED
+from modules.module_status import classify, OK, RATE_LIMITED, ERROR
 
 
 class _Resp:
@@ -74,3 +74,95 @@ def test_lookup_rate_limited(monkeypatch):
 def test_lookup_empty_username():
     r = GitHubRecon().lookup("")
     assert classify(r) == "error"
+
+
+def _profile_then(repos_resp, events_resp):
+    def fake_get(url, **kwargs):
+        if url.endswith("/users/octocat"):
+            return _Resp(200, {"login": "octocat", "name": "The Octocat",
+                               "email": "octo@example.com", "public_repos": 42})
+        if "/repos" in url:
+            return repos_resp
+        if "/events/public" in url:
+            return events_resp
+        return _Resp(404, {})
+    return fake_get
+
+
+def test_lookup_repos_rate_limited_keeps_profile(monkeypatch):
+    import requests
+    monkeypatch.setattr(requests, "get", _profile_then(
+        _Resp(403, {}),
+        _Resp(200, [{"payload": {"commits": [{"author": {"email": "dev@example.com"}}]}}]),
+    ))
+    r = GitHubRecon().lookup("octocat")
+
+    assert classify(r) == RATE_LIMITED
+    assert "GITHUB_TOKEN" in r["status_reason"]
+    assert r["error"] is None
+    assert r["profile"]["name"] == "The Octocat"
+    assert r["profile"]["public_repos"] == 42
+    assert r["repo_count"] is None
+    assert r["emails"] == ["octo@example.com", "dev@example.com"]
+
+
+def test_lookup_events_rate_limited_leaves_emails_unchecked(monkeypatch):
+    import requests
+    monkeypatch.setattr(requests, "get", _profile_then(
+        _Resp(200, [{"language": "Go", "stargazers_count": 2}]),
+        _Resp(429, {}),
+    ))
+    r = GitHubRecon().lookup("octocat")
+
+    assert classify(r) == RATE_LIMITED
+    assert "GITHUB_TOKEN" in r["status_reason"]
+    assert r["profile"]["public_repos"] == 42
+    assert r["repo_count"] == 1
+    assert r["total_stars"] == 2
+    assert r["emails"] is None
+
+
+def test_lookup_followup_error_keeps_profile(monkeypatch):
+    import requests
+    monkeypatch.setattr(requests, "get", _profile_then(_Resp(500, {}), _Resp(200, [])))
+    r = GitHubRecon().lookup("octocat")
+
+    assert classify(r) == ERROR
+    assert r["error"] == "GitHub API returned 500"
+    assert r["profile"]["public_repos"] == 42
+    assert r["repo_count"] is None
+    assert r["emails"] == ["octo@example.com"]
+
+
+def test_lookup_followup_exception_is_an_error(monkeypatch):
+    import requests
+
+    def fake_get(url, **kwargs):
+        if url.endswith("/users/octocat"):
+            return _Resp(200, {"login": "octocat", "public_repos": 42})
+        raise requests.ConnectionError("connection reset")
+
+    monkeypatch.setattr(requests, "get", fake_get)
+    r = GitHubRecon().lookup("octocat")
+
+    assert classify(r) == ERROR
+    assert "connection reset" in r["error"]
+    assert r["profile"]["public_repos"] == 42
+    assert r["repo_count"] is None
+    assert r["emails"] is None
+
+
+def test_lookup_no_emails_found_is_ok_and_empty(monkeypatch):
+    import requests
+
+    def fake_get(url, **kwargs):
+        if url.endswith("/users/octocat"):
+            return _Resp(200, {"login": "octocat", "public_repos": 0})
+        return _Resp(200, [])
+
+    monkeypatch.setattr(requests, "get", fake_get)
+    r = GitHubRecon().lookup("octocat")
+
+    assert classify(r) == OK
+    assert r["repo_count"] == 0
+    assert r["emails"] == []
