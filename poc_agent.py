@@ -1,8 +1,13 @@
 import os
+import sys
 import time
 import json
 import requests
 from dotenv import load_dotenv
+
+# Fix Windows terminal encoding for emojis/arrows
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Load environment variables (mostly to grab an LLM API key if one exists)
 load_dotenv()
@@ -103,6 +108,8 @@ def chat_with_agent(prompt: str):
         }
         
         response = requests.post(LLM_BASE_URL, json=payload, headers=headers)
+        if not response.ok:
+            print(f"[API Error] {response.text}")
         response.raise_for_status()
         response_message = response.json()["choices"][0]["message"]
         
