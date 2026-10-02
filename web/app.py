@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import re
 import requests as _requests
+import httpcore
+import httpx
 import logging
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Depends, HTTPException, Request
@@ -295,7 +297,7 @@ def _is_public_ip(addr) -> bool:
         or addr.is_link_local or addr.is_multicast or addr.is_unspecified
     )
 
-def _resolve_all_public(hostname: str) -> None:
+def _resolve_all_public(hostname: str) -> str:
     import ipaddress
     import socket
     try:
@@ -311,8 +313,9 @@ def _resolve_all_public(hostname: str) -> None:
             raise ValueError("webhook_url resolved to an invalid address")
         if not _is_public_ip(addr):
             raise ValueError("webhook_url resolves to a private/internal address")
-        return
+        return str(addr)
     seen = set()
+    first_public = None
     for fam, _t, _p, _c, sa in infos:
         ip_str = sa[0]
         if ip_str in seen:
@@ -324,8 +327,65 @@ def _resolve_all_public(hostname: str) -> None:
             raise ValueError("webhook_url resolved to an invalid address")
         if not _is_public_ip(addr):
             raise ValueError("webhook_url resolves to a private/internal address")
+        if first_public is None:
+            first_public = str(addr)
     if not seen:
         raise ValueError("webhook_url hostname did not resolve")
+    return first_public
+
+
+class _PinnedIPBackend(httpcore.SyncBackend):
+    def __init__(self, hostname: str, address: str):
+        self.hostname = hostname
+        self.address = address
+
+    def connect_tcp(self, host, port, timeout=None, local_address=None, socket_options=None):
+        if host != self.hostname:
+            raise OSError("Unexpected webhook connection host")
+        return super().connect_tcp(
+            self.address, port, timeout, local_address, socket_options
+        )
+
+
+class _PinnedIPTransport(httpx.BaseTransport):
+    def __init__(self, hostname: str, address: str):
+        self._backend = _PinnedIPBackend(hostname, address)
+        self._pool = httpcore.ConnectionPool(network_backend=self._backend)
+
+    def handle_request(self, request: httpx.Request) -> httpx.Response:
+        core_request = httpcore.Request(
+            method=request.method,
+            url=httpcore.URL(
+                scheme=request.url.raw_scheme,
+                host=request.url.raw_host,
+                port=request.url.port,
+                target=request.url.raw_path,
+            ),
+            headers=request.headers.raw,
+            content=request.stream,
+            extensions=request.extensions,
+        )
+        response = self._pool.handle_request(core_request)
+        return httpx.Response(
+            status_code=response.status,
+            headers=response.headers,
+            stream=_HttpcoreResponseStream(response.stream),
+            extensions=response.extensions,
+        )
+
+    def close(self) -> None:
+        self._pool.close()
+
+
+class _HttpcoreResponseStream(httpx.SyncByteStream):
+    def __init__(self, stream):
+        self._stream = stream
+
+    def __iter__(self):
+        yield from self._stream
+
+    def close(self) -> None:
+        self._stream.close()
 
 def _validate_webhook_url(url: str) -> str:
     from urllib.parse import urlparse
@@ -335,10 +395,6 @@ def _validate_webhook_url(url: str) -> str:
     if parsed.scheme not in ("http", "https") or not parsed.hostname:
         raise ValueError("webhook_url must be http(s) with a hostname")
     _resolve_all_public(parsed.hostname)
-    try:
-        _requests.head(url, timeout=3, allow_redirects=False)
-    except Exception:
-        pass
     return url
 
 def _run_watchlist_once(entry: Dict[str, Any]) -> None:
@@ -397,7 +453,7 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
     if parsed.scheme not in ("http", "https") or not parsed.hostname:
         return
     try:
-        _resolve_all_public(parsed.hostname)
+        pinned_ip = _resolve_all_public(parsed.hostname)
     except ValueError:
         return
 
@@ -411,10 +467,12 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
     if WEBHOOK_SECRET:
         headers["X-Prism-Secret"] = WEBHOOK_SECRET
     try:
-        _requests.post(
-            url, json=payload, headers=headers,
-            timeout=10, allow_redirects=False,
-        )
+        transport = _PinnedIPTransport(parsed.hostname, pinned_ip)
+        with httpx.Client(
+            transport=transport, timeout=10, follow_redirects=False,
+            trust_env=False,
+        ) as client:
+            client.post(url, json=payload, headers=headers)
     except Exception:
         pass
 

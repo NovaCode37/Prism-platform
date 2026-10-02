@@ -15,3 +15,5 @@ Pillow>=12.3.0
 pypdf>=6.19.0
 python-docx>=1.2.0
 xhtml2pdf>=0.2.20
+httpcore>=1.0.2,<2
+httpx>=0.28.1

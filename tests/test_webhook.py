@@ -1,9 +1,42 @@
 import os
+import socket
 import sys
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+
+def _stub_httpx_client(monkeypatch, app_mod, fake_post=None):
+    settings = {}
+
+    class FakeClient:
+        def __init__(self, transport, timeout, follow_redirects, **kwargs):
+            settings.update(
+                transport=transport,
+                timeout=timeout,
+                follow_redirects=follow_redirects,
+                **kwargs,
+            )
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def post(self, url, json=None, headers=None):
+            if fake_post is not None:
+                return fake_post(
+                    url, json=json, headers=headers,
+                    timeout=settings["timeout"],
+                    allow_redirects=settings["follow_redirects"],
+                )
+
+    monkeypatch.setattr(app_mod.httpx, "Client", FakeClient)
+    return settings
 
 
 class TestWebhookValidation:
@@ -49,8 +82,8 @@ class TestWebhookDelivery:
             captured["headers"] = headers
             captured["allow_redirects"] = allow_redirects
 
-        monkeypatch.setattr(app_mod._requests, "post", fake_post)
-        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: None)
+        _stub_httpx_client(monkeypatch, app_mod, fake_post)
+        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: "93.184.216.34")
         monkeypatch.setattr(app_mod, "WEBHOOK_SECRET", "shh")
         payload = {"scan_id": "abc", "status": "completed"}
         app_mod._send_webhook("https://hooks.example.com/prism", payload)
@@ -67,10 +100,63 @@ class TestWebhookDelivery:
         def boom(*a, **kw):
             raise RuntimeError("network down")
 
-        monkeypatch.setattr(app_mod._requests, "post", boom)
-        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: None)
+        _stub_httpx_client(monkeypatch, app_mod, boom)
+        monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: "93.184.216.34")
                         
         app_mod._send_webhook("https://hooks.example.com/prism", {"x": 1})
+
+    def test_pins_delivery_to_first_resolution(self, monkeypatch):
+        from web import app as app_mod
+        resolutions = []
+        connected = []
+        received = {}
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                received["host"] = self.headers.get("Host")
+                received["body"] = self.rfile.read(int(self.headers["Content-Length"]))
+                self.send_response(204)
+                self.end_headers()
+
+            def log_message(self, *args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+        server_thread.start()
+
+        original_getaddrinfo = socket.getaddrinfo
+
+        def resolve(hostname, port, *args, **kwargs):
+            if hostname == "hooks.example.com":
+                resolutions.append(hostname)
+                address = "93.184.216.34" if len(resolutions) == 1 else "10.0.0.1"
+                return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", (address, 0))]
+            return original_getaddrinfo(hostname, port, *args, **kwargs)
+
+        monkeypatch.setattr(socket, "getaddrinfo", resolve)
+        original_connect = socket.create_connection
+
+        def connect(address, *args, **kwargs):
+            connected.append(address)
+            if address[0] == "93.184.216.34":
+                address = ("127.0.0.1", address[1])
+            return original_connect(address, *args, **kwargs)
+
+        monkeypatch.setattr(socket, "create_connection", connect)
+
+        url = f"http://hooks.example.com:{server.server_port}/prism"
+        try:
+            app_mod._send_webhook(url, {"x": 1})
+        finally:
+            server.shutdown()
+            server.server_close()
+            server_thread.join()
+
+        assert resolutions == ["hooks.example.com"]
+        assert connected == [("93.184.216.34", server.server_port)]
+        assert received["host"] == f"hooks.example.com:{server.server_port}"
+        assert received["body"] == b'{"x":1}'
 
 
 class TestTestWebhookEndpoint:
@@ -83,12 +169,7 @@ class TestTestWebhookEndpoint:
 
         monkeypatch.setattr(security, "_API_KEYS", ["test-key"])
         monkeypatch.setattr("socket.gethostbyname", lambda h: "93.184.216.34")
-        monkeypatch.setattr(
-            app_mod._requests, "head",
-            lambda *a, **kw: (_ for _ in ()).throw(Exception("skip"))
-        )
-        if fake_post is not None:
-            monkeypatch.setattr(app_mod._requests, "post", fake_post)
+        _stub_httpx_client(monkeypatch, app_mod, fake_post)
         return TestClient(app_mod.app, raise_server_exceptions=True)
 
     def test_returns_ok_on_success(self, monkeypatch):
