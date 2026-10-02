@@ -6,13 +6,14 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import web.app as app_mod
+import config
 
 PAYLOAD = {"messages": [{"role": "user", "content": "hi"}]}
 
 
 def _reset(monkeypatch, custom="", openrouter="", groq=""):
-    monkeypatch.setattr(app_mod, "OPENROUTER_API_KEY", openrouter)
-    monkeypatch.setattr(app_mod, "GROQ_API_KEY", groq)
+    monkeypatch.setattr(config, "OPENROUTER_API_KEY", openrouter)
+    monkeypatch.setattr(config, "GROQ_API_KEY", groq)
     for name in ("LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL", "GROQ_MODEL"):
         monkeypatch.delenv(name, raising=False)
     if custom:
