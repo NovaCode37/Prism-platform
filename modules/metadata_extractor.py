@@ -135,8 +135,16 @@ def _parse_xmp_metadata(xmp_str: str) -> Dict[str, Any]:
 
 def _to_float(val) -> Optional[float]:
     try:
-        if hasattr(val, 'numerator'):
+        if hasattr(val, 'numerator') and hasattr(val, 'denominator') and not isinstance(val, (int, float)):
             return val.numerator / val.denominator if val.denominator else None
+        if isinstance(val, (tuple, list)) and len(val) == 2:
+            numerator, denominator = val
+            if hasattr(numerator, 'numerator') and hasattr(numerator, 'denominator') and not isinstance(numerator, (int, float)):
+                numerator = numerator.numerator / numerator.denominator if numerator.denominator else None
+            if hasattr(denominator, 'numerator') and hasattr(denominator, 'denominator') and not isinstance(denominator, (int, float)):
+                denominator = denominator.numerator / denominator.denominator if denominator.denominator else None
+            if isinstance(numerator, (int, float)) and isinstance(denominator, (int, float)):
+                return numerator / denominator if denominator else None
         return float(val)
     except Exception:
         return None
