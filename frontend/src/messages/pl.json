@@ -294,6 +294,11 @@
     "mdReport": "Pobierz Markdown",
     "copyCurl": "Kopiuj jako cURL",
     "scanAnother": "Skanuj kolejny cel",
+    "github": {
+      "repositoriesScanned": "Przeskanowane repozytoria",
+      "notChecked": "nie sprawdzono",
+      "commitEmailsNotChecked": "E-maile commitów nie zostały sprawdzone"
+    },
     "tabs": {
       "rdap": "RDAP",
       "github": "GitHub",

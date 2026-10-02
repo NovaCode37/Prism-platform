@@ -248,6 +248,11 @@
     "mdReport": "Markdown İndir",
     "copyCurl": "cURL olarak kopyala",
     "scanAnother": "Başka tara",
+    "github": {
+      "repositoriesScanned": "Taranan depolar",
+      "notChecked": "kontrol edilmedi",
+      "commitEmailsNotChecked": "Commit e-postaları kontrol edilmedi"
+    },
     "tabs": {
       "rdap": "RDAP",
       "github": "GitHub",

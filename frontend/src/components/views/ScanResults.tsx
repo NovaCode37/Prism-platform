@@ -1206,6 +1206,10 @@ export function ScanResults({ scan, onHome }: Props) {
               <DtRow label="Twitter" value={r.github?.profile?.twitter} />
               <DtRow label="Followers" value={r.github?.profile?.followers} />
               <DtRow label="Public Repos" value={r.github?.profile?.public_repos} />
+              <DtRow
+                label={i18n('results.github.repositoriesScanned')}
+                value={r.github?.repo_count === null ? i18n('results.github.notChecked') : r.github?.repo_count}
+              />
               <DtRow label="Total Stars" value={r.github?.total_stars} />
               <DtRow label="Joined" value={r.github?.profile?.created_at} />
             </div>
@@ -1219,17 +1223,25 @@ export function ScanResults({ scan, onHome }: Props) {
                 </div>
               </div>
             )}
-            {(r.github?.emails?.length ?? 0) > 0 && (
+            {((r.github?.emails?.length ?? 0) > 0 || r.github?.commit_emails_checked === false) && (
               <div className="mt-3">
                 <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Emails Found</div>
-                <div className="flex flex-wrap gap-1">
-                  {r.github?.emails?.map(e => (
-                    <span key={e} className="inline-flex items-center gap-1">
-                      <span className="tag tag-red">{e}</span>
-                      <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
-                    </span>
-                  ))}
-                </div>
+                {(r.github?.emails?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {r.github?.emails?.map(e => (
+                      <span key={e} className="inline-flex items-center gap-1">
+                        <span className="tag tag-red">{e}</span>
+                        <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {r.github?.commit_emails_checked === false && (
+                  <div className="text-[11px] text-text-3 mt-2">
+                    {i18n('results.github.commitEmailsNotChecked')}
+                    {r.github.status_reason ? `: ${r.github.status_reason}` : ''}
+                  </div>
+                )}
               </div>
             )}
           </KeyModuleCard>

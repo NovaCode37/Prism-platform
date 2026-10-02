@@ -322,7 +322,8 @@ export interface GitHubData extends ModuleStatusFields {
     avatar_url?: string | null;
     html_url?: string | null;
   } | null;
-  repo_count?: number;
+  repo_count?: number | null;
+  commit_emails_checked?: boolean | null;
   total_stars?: number;
   top_languages?: { language: string; count: number }[];
   emails?: string[];

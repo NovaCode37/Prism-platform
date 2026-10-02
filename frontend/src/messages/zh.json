@@ -248,6 +248,11 @@
     "mdReport": "下载 Markdown",
     "copyCurl": "复制为 cURL",
     "scanAnother": "扫描其他目标",
+    "github": {
+      "repositoriesScanned": "已扫描仓库",
+      "notChecked": "未检查",
+      "commitEmailsNotChecked": "未检查提交邮箱"
+    },
     "tabs": {
       "rdap": "RDAP",
       "github": "GitHub",

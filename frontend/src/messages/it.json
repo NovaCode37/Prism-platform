@@ -248,6 +248,11 @@
     "mdReport": "Scarica Markdown",
     "copyCurl": "Copia come cURL",
     "scanAnother": "Nuova scansione",
+    "github": {
+      "repositoriesScanned": "Repository analizzati",
+      "notChecked": "non verificato",
+      "commitEmailsNotChecked": "Le email dei commit non sono state verificate"
+    },
     "tabs": {
       "rdap": "RDAP",
       "github": "GitHub",

@@ -123,6 +123,7 @@
   "results": {
     "htmlReport": "Informe HTML", "pdfReport": "Informe PDF", "jsonReport": "Descargar JSON",
     "csvReport": "Descargar CSV", "mdReport": "Descargar Markdown", "copyCurl": "Copiar como cURL", "scanAnother": "Escanear otro",
+    "github": { "repositoriesScanned": "Repositorios analizados", "notChecked": "no comprobado", "commitEmailsNotChecked": "Los correos de commits no se comprobaron" },
     "tabs": { "rdap": "RDAP", "github": "GitHub", "gravatar": "Gravatar", "hudsonrock": "Exposición a infostealers", "lunar": "Exposición del dominio", "findings": "Hallazgos", "whois": "WHOIS", "dns": "DNS", "subdomains": "Subdominios", "accounts": "Cuentas", "threats": "Amenazas", "censys": "Censys", "darkweb": "Dark Web", "wayback": "Wayback", "email": "Correo", "dorks": "Dorks", "phone": "Teléfono", "telegram": "Telegram", "map": "Mapa", "graph": "Grafo", "json": "JSON", "ai": "IA" },
     "opsec": {
       "scoreLabel": "Puntuación OPSEC", "riskSuffix": "RIESGO",

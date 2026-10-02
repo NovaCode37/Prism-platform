@@ -248,6 +248,11 @@
     "mdReport": "Скачать Markdown",
     "copyCurl": "Скопировать как cURL",
     "scanAnother": "Новое сканирование",
+    "github": {
+      "repositoriesScanned": "Просмотрено репозиториев",
+      "notChecked": "не проверено",
+      "commitEmailsNotChecked": "Электронные адреса коммитов не проверялись"
+    },
     "tabs": {
       "rdap": "RDAP",
       "github": "GitHub",
