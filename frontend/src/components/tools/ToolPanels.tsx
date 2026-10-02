@@ -550,7 +550,7 @@ function HeadersPanel() {
           </Card>
           {result.origin_ip && (
             <Card title={t('toolPanels.headers.origin')}>
-              <Row label="IP" value={result.origin_ip} />
+              <Row label={t('toolPanels.headers.ip')} value={result.origin_ip} />
               <Row label={t('toolPanels.headers.rdns')} value={result.origin_rdns} />
               {result.origin_geo && (
                 <>
@@ -690,7 +690,7 @@ function SubnetPanel() {
             )}
             {errors.prefix && <span className="text-[11px] text-red">{errors.prefix}</span>}
           </div>
-          <RunBtn loading={false} label="Calculate" onClick={run} />
+          <RunBtn loading={false} label={t('toolPanels.subnet.calculate')} onClick={run} />
         </div>
 
         {prefixMode === 'cidr' && (
@@ -710,15 +710,15 @@ function SubnetPanel() {
 
       {result && (
         <Card>
-          <Row label="Network Address" value={`${result.networkAddress}/${result.cidr}`} />
-          <Row label="Subnet Mask" value={result.subnetMask} />
-          <Row label="Wildcard Mask" value={result.wildcardMask} />
-          <Row label="Broadcast Address" value={result.broadcastAddress} />
-          <Row label="First Usable IP" value={result.firstUsable} />
-          <Row label="Last Usable IP" value={result.lastUsable} />
-          <Row label="Usable Hosts" value={result.usableHosts.toLocaleString()} />
-          <Row label="Total Addresses" value={result.totalHosts.toLocaleString()} />
-          <Row label="IP Type" value={result.ipType} />
+          <Row label={t('toolPanels.subnet.networkAddress')} value={`${result.networkAddress}/${result.cidr}`} />
+          <Row label={t('toolPanels.subnet.subnetMask')} value={result.subnetMask} />
+          <Row label={t('toolPanels.subnet.wildcardMask')} value={result.wildcardMask} />
+          <Row label={t('toolPanels.subnet.broadcastAddress')} value={result.broadcastAddress} />
+          <Row label={t('toolPanels.subnet.firstUsableIp')} value={result.firstUsable} />
+          <Row label={t('toolPanels.subnet.lastUsableIp')} value={result.lastUsable} />
+          <Row label={t('toolPanels.subnet.usableHosts')} value={result.usableHosts.toLocaleString()} />
+          <Row label={t('toolPanels.subnet.totalAddresses')} value={result.totalHosts.toLocaleString()} />
+          <Row label={t('toolPanels.subnet.ipType')} value={result.ipType} />
         </Card>
       )}
     </div>

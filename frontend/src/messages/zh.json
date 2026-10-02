@@ -220,6 +220,18 @@
       "output": "输出",
       "invalid": "所选模式的输入无效。"
     },
+    "subnet": {
+      "calculate": "Calculate",
+      "networkAddress": "Network Address",
+      "subnetMask": "Subnet Mask",
+      "wildcardMask": "Wildcard Mask",
+      "broadcastAddress": "Broadcast Address",
+      "firstUsableIp": "First Usable IP",
+      "lastUsableIp": "Last Usable IP",
+      "usableHosts": "Usable Hosts",
+      "totalAddresses": "Total Addresses",
+      "ipType": "IP Type"
+    },
     "jwt": {
       "title": "JWT 解码器",
       "placeholder": "粘贴 JWT 令牌（eyJ...）…",

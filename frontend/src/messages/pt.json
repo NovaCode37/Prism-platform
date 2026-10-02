@@ -220,6 +220,18 @@
       "output": "Saída",
       "invalid": "Entrada inválida para o modo selecionado."
     },
+    "subnet": {
+      "calculate": "Calculate",
+      "networkAddress": "Network Address",
+      "subnetMask": "Subnet Mask",
+      "wildcardMask": "Wildcard Mask",
+      "broadcastAddress": "Broadcast Address",
+      "firstUsableIp": "First Usable IP",
+      "lastUsableIp": "Last Usable IP",
+      "usableHosts": "Usable Hosts",
+      "totalAddresses": "Total Addresses",
+      "ipType": "IP Type"
+    },
     "jwt": {
       "title": "Decodificador JWT",
       "placeholder": "Cole um token JWT (eyJ...)…",
