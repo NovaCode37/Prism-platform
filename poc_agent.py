@@ -75,11 +75,12 @@ def chat_with_agent(prompt: str):
                 "parameters": {
                     "type": "object",
                     "properties": {
+                        "reasoning": {"type": "string", "description": "Explain WHY you are running this module and what you hope to find."},
                         "target": {"type": "string", "description": "The target to scan (e.g., example.com, 1.1.1.1)"},
                         "target_type": {"type": "string", "description": "One of: domain, ip, email, phone, username"},
                         "module": {"type": "string", "description": "The Prism module to run (e.g., shodan, whois, dns, virustotal)"},
                     },
-                    "required": ["target", "target_type", "module"]
+                    "required": ["reasoning", "target", "target_type", "module"]
                 }
             }
         }
@@ -112,6 +113,9 @@ def chat_with_agent(prompt: str):
         if response_message.get("tool_calls"):
             for tool_call in response_message["tool_calls"]:
                 args = json.loads(tool_call["function"]["arguments"])
+                
+                # Print the AI's Chain of Thought reasoning!
+                print(f"\n[AI Reasoning] {args.get('reasoning', 'No reasoning provided.')}")
                 
                 # Execute the tool
                 result = run_prism_module(args["target"], args["target_type"], args["module"])
