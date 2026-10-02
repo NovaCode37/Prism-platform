@@ -13,9 +13,8 @@ def _stub_httpx_client(monkeypatch, app_mod, fake_post=None):
     settings = {}
 
     class FakeClient:
-        def __init__(self, transport, timeout, follow_redirects, **kwargs):
+        def __init__(self, timeout, follow_redirects, **kwargs):
             settings.update(
-                transport=transport,
                 timeout=timeout,
                 follow_redirects=follow_redirects,
                 **kwargs,
@@ -27,12 +26,22 @@ def _stub_httpx_client(monkeypatch, app_mod, fake_post=None):
         def __exit__(self, *args):
             return False
 
-        def post(self, url, json=None, headers=None):
+        def build_request(self, method, url, json=None, headers=None, extensions=None):
+            return {
+                "method": method,
+                "url": url,
+                "json": json,
+                "headers": headers,
+                "extensions": extensions,
+            }
+
+        def send(self, request, follow_redirects=None):
+            settings["request"] = request
             if fake_post is not None:
                 return fake_post(
-                    url, json=json, headers=headers,
+                    request["url"], json=request["json"], headers=request["headers"],
                     timeout=settings["timeout"],
-                    allow_redirects=settings["follow_redirects"],
+                    allow_redirects=follow_redirects,
                 )
 
     monkeypatch.setattr(app_mod.httpx, "Client", FakeClient)
@@ -82,17 +91,21 @@ class TestWebhookDelivery:
             captured["headers"] = headers
             captured["allow_redirects"] = allow_redirects
 
-        _stub_httpx_client(monkeypatch, app_mod, fake_post)
+        settings = _stub_httpx_client(monkeypatch, app_mod, fake_post)
         monkeypatch.setattr(app_mod, "_resolve_all_public", lambda h: "93.184.216.34")
         monkeypatch.setattr(app_mod, "WEBHOOK_SECRET", "shh")
         payload = {"scan_id": "abc", "status": "completed"}
         app_mod._send_webhook("https://hooks.example.com/prism", payload)
 
-        assert captured["url"] == "https://hooks.example.com/prism"
+        assert str(captured["url"]) == "https://93.184.216.34/prism"
         assert captured["json"] == payload
         assert captured["headers"]["X-Prism-Secret"] == "shh"
         assert captured["headers"]["Content-Type"] == "application/json"
+        assert captured["headers"]["Host"] == "hooks.example.com"
+        assert settings["request"]["extensions"]["sni_hostname"] == "hooks.example.com"
         assert captured["allow_redirects"] is False
+        assert settings["verify"] is True
+        assert settings["trust_env"] is False
 
     def test_swallows_post_errors(self, monkeypatch):
         from web import app as app_mod
