@@ -3,6 +3,7 @@ import time
 import requests
 from typing import Dict, Any
 from modules import get_proxies
+from modules.module_status import annotate, SKIPPED, RATE_LIMITED, ERROR
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -26,8 +27,11 @@ class URLScanner:
         }
 
         if not VIRUSTOTAL_API_KEY:
-            result["error"] = "No VirusTotal API key configured (add VIRUSTOTAL_API_KEY to .env)"
-            return result
+            return annotate(
+                result,
+                SKIPPED,
+                "No VirusTotal API key configured (add VIRUSTOTAL_API_KEY to .env)",
+            )
 
         headers = {"x-apikey": VIRUSTOTAL_API_KEY}
 
@@ -38,19 +42,20 @@ class URLScanner:
                 headers=headers,
                 data={"url": url},
                 timeout=15,
-                proxies=proxies,  
+                proxies=proxies,
             )
+            if r.status_code == 429:
+                return annotate(result, RATE_LIMITED, "VirusTotal API rate limit reached")
             if r.status_code not in (200, 201):
-                result["error"] = f"Submit failed: HTTP {r.status_code}"
-                return result
+                return annotate(result, ERROR, f"Submit failed: HTTP {r.status_code}")
 
             analysis_id = r.json().get("data", {}).get("id")
             if not analysis_id:
-                result["error"] = "No analysis ID returned"
-                return result
-        except Exception as e:
-            result["error"] = str(e)
-            return result
+                return annotate(result, ERROR, "No analysis ID returned")
+        except ValueError as exc:
+            return annotate(result, ERROR, f"Malformed VirusTotal response: {exc}")
+        except Exception as exc:
+            return annotate(result, ERROR, str(exc))
 
         for _ in range(20):
             time.sleep(5)
@@ -59,8 +64,13 @@ class URLScanner:
                     f"{self.VT_BASE}/analyses/{analysis_id}",
                     headers=headers,
                     timeout=15,
-                    proxies=proxies,  
+                    proxies=proxies,
                 )
+                if r2.status_code == 429:
+                    return annotate(result, RATE_LIMITED, "VirusTotal API rate limit reached")
+                if r2.status_code != 200:
+                    return annotate(result, ERROR, f"Results fetch failed: HTTP {r2.status_code}")
+
                 data = r2.json().get("data", {})
                 attrs = data.get("attributes", {})
                 if attrs.get("status") == "completed":
@@ -74,12 +84,14 @@ class URLScanner:
                     url_id = base64.urlsafe_b64encode(url.encode()).decode().rstrip("=")
                     result["permalink"] = f"https://www.virustotal.com/gui/url/{url_id}"
                     return result
-            except Exception as e:
-                result["error"] = str(e)
-                return result
+            except ValueError as exc:
+                return annotate(result, ERROR, f"Malformed VirusTotal response: {exc}")
+            except Exception as exc:
+                return annotate(result, ERROR, str(exc))
 
         result["status"] = "timeout"
-        result["error"] = "Analysis timed out - try checking VirusTotal directly"
+        result["status_reason"] = "Analysis timed out - try checking VirusTotal directly"
+        result["error"] = result["status_reason"]
         url_id = base64.urlsafe_b64encode(url.encode()).decode().rstrip("=")
         result["permalink"] = f"https://www.virustotal.com/gui/url/{url_id}"
         return result
