@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional
 import sys
 sys.path.append('..')
 from config import Colors
+from modules.module_status import annotate, OK, SKIPPED, ERROR
 
 
 class SMTPVerifier:
@@ -27,10 +28,10 @@ class SMTPVerifier:
                 key=lambda x: x[0]
             )
             return [mx[1] for mx in mx_records]
-        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, dns.exception.Timeout):
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             return []
         except Exception:
-            return []
+            raise
 
     def verify_email(self, email: str) -> Dict[str, Any]:
         result = {
@@ -48,8 +49,7 @@ class SMTPVerifier:
         }
 
         if not self.validate_email_format(email):
-            result["error"] = "Invalid email format"
-            return result
+            return annotate(result, SKIPPED, "Invalid email format")
         result["valid_format"] = True
 
         domain = email.split('@')[1]
@@ -59,19 +59,27 @@ class SMTPVerifier:
         if result["disposable"]:
             result["details"].append("Disposable/temporary email detected")
 
-        mx_records = self.get_mx_records(domain)
+        try:
+            mx_records = self.get_mx_records(domain)
+        except Exception as e:
+            return annotate(result, ERROR, f"MX lookup failed: {e}")
         result["mx_records"] = mx_records
 
         if not mx_records:
             result["details"].append("No MX records found")
-            result["error"] = "Domain has no mail server"
-            return result
+            return annotate(result, OK, "Domain has no mail server")
 
         result["mx_found"] = True
         result["details"].append(f"Found {len(mx_records)} MX record(s)")
+        smtp_response_received = False
+        smtp_errors = []
 
         for mx in mx_records[:3]:
             smtp_result = self._smtp_check(mx, email)
+            if smtp_result["connected"] and smtp_result["error"] is None:
+                smtp_response_received = True
+            if smtp_result["error"]:
+                smtp_errors.append(f"{mx}: {smtp_result['error']}")
 
             if smtp_result["connected"]:
                 result["smtp_connect"] = True
@@ -98,7 +106,10 @@ class SMTPVerifier:
         if result["exists"] is None:
             result["details"].append("Could not definitively verify email existence")
 
-        return result
+        if smtp_response_received:
+            return annotate(result, OK)
+        reason = "; ".join(smtp_errors) or "Could not connect to any mail server"
+        return annotate(result, ERROR, reason)
 
     def _smtp_check(self, mx_host: str, email: str) -> Dict[str, Any]:
         result = {
@@ -143,13 +154,13 @@ class SMTPVerifier:
             smtp.quit()
 
         except smtplib.SMTPServerDisconnected:
-            result["error"] = "Server disconnected"
+            return annotate(result, ERROR, "Server disconnected")
         except smtplib.SMTPConnectError as e:
-            result["error"] = f"Connection error: {e}"
+            return annotate(result, ERROR, f"Connection error: {e}")
         except socket.timeout:
-            result["error"] = "Connection timeout"
+            return annotate(result, ERROR, "Connection timeout")
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
         return result
 

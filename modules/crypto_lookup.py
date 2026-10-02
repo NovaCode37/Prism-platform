@@ -4,6 +4,7 @@ import time
 import threading
 from typing import Dict, Any
 from modules import get_proxies
+from modules.module_status import annotate, OK, RATE_LIMITED, ERROR
 
 
 class CryptoLookup:
@@ -22,6 +23,7 @@ class CryptoLookup:
 
     _prices_cache = None
     _prices_error = None
+    _prices_status = None
     _prices_timestamp = 0.0
     _prices_lock = threading.Lock()
 
@@ -54,14 +56,18 @@ class CryptoLookup:
                         "litecoin": data.get("litecoin", {}).get("usd", 0.0),
                     }
                     CryptoLookup._prices_error = None
+                    CryptoLookup._prices_status = OK
                 elif r.status_code == 429:
                     CryptoLookup._prices_error = "CoinGecko returned 429"
+                    CryptoLookup._prices_status = RATE_LIMITED
                     CryptoLookup._prices_cache = None
                 else:
                     CryptoLookup._prices_error = f"CoinGecko returned {r.status_code}"
+                    CryptoLookup._prices_status = ERROR
                     CryptoLookup._prices_cache = None
             except Exception as e:
                 CryptoLookup._prices_error = str(e)
+                CryptoLookup._prices_status = ERROR
                 CryptoLookup._prices_cache = None
             finally:
                 CryptoLookup._prices_timestamp = time.time()
@@ -71,6 +77,13 @@ class CryptoLookup:
         if CryptoLookup._prices_cache:
             return CryptoLookup._prices_cache.get(coin_id, 0.0)
         return 0.0
+
+    def _annotate_price_status(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        if CryptoLookup._prices_error:
+            result["price_unavailable"] = CryptoLookup._prices_error
+            status = CryptoLookup._prices_status or ERROR
+            return annotate(result, status, CryptoLookup._prices_error)
+        return annotate(result, OK)
 
     def lookup_bitcoin(self, address: str) -> Dict[str, Any]:
         result = {
@@ -102,13 +115,13 @@ class CryptoLookup:
                 price = self._get_price("bitcoin")
                 if price:
                     result["balance_usd"] = f"${balance_btc * price:,.2f}"
-                elif CryptoLookup._prices_error:
-                    result["price_unavailable"] = CryptoLookup._prices_error
+                return self._annotate_price_status(result)
+            if r.status_code == 429:
+                return annotate(result, RATE_LIMITED, "Blockchain API rate limit reached")
             else:
-                result["error"] = f"API returned HTTP {r.status_code}"
+                return annotate(result, ERROR, f"API returned HTTP {r.status_code}")
         except Exception as e:
-            result["error"] = str(e)
-        return result
+            return annotate(result, ERROR, str(e))
 
     def lookup_ethereum(self, address: str) -> Dict[str, Any]:
         result = {
@@ -138,13 +151,13 @@ class CryptoLookup:
                 price = self._get_price("ethereum")
                 if price:
                     result["balance_usd"] = f"${balance_eth * price:,.2f}"
-                elif CryptoLookup._prices_error:
-                    result["price_unavailable"] = CryptoLookup._prices_error
+                return self._annotate_price_status(result)
+            if r.status_code == 429:
+                return annotate(result, RATE_LIMITED, "Ethplorer API rate limit reached")
             else:
-                result["error"] = f"API returned HTTP {r.status_code}"
+                return annotate(result, ERROR, f"API returned HTTP {r.status_code}")
         except Exception as e:
-            result["error"] = str(e)
-        return result
+            return annotate(result, ERROR, str(e))
 
     def lookup_litecoin(self, address: str) -> Dict[str, Any]:
         result = {
@@ -176,13 +189,13 @@ class CryptoLookup:
                 price = self._get_price("litecoin")
                 if price:
                     result["balance_usd"] = f"${balance_ltc * price:,.2f}"
-                elif CryptoLookup._prices_error:
-                    result["price_unavailable"] = CryptoLookup._prices_error
+                return self._annotate_price_status(result)
+            if r.status_code == 429:
+                return annotate(result, RATE_LIMITED, "BlockCypher API rate limit reached")
             else:
-                result["error"] = f"API returned HTTP {r.status_code}"
+                return annotate(result, ERROR, f"API returned HTTP {r.status_code}")
         except Exception as e:
-            result["error"] = str(e)
-        return result
+            return annotate(result, ERROR, str(e))
 
     def lookup(self, address: str) -> Dict[str, Any]:
         address = address.strip()
@@ -194,8 +207,8 @@ class CryptoLookup:
         elif crypto_type == "litecoin":
             return self.lookup_litecoin(address)
         else:
-            return {
-                "address": address,
-                "type": "unknown",
-                "error": "Unrecognised address format. Supported: Bitcoin (1.../3.../bc1...), Ethereum (0x...)",
-            }
+            return annotate(
+                {"address": address, "type": "unknown"},
+                ERROR,
+                "Unrecognised address format. Supported: Bitcoin (1.../3.../bc1...), Ethereum (0x...)",
+            )

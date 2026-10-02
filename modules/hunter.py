@@ -1,11 +1,19 @@
 import dns.resolver
 import requests
 import socket
+import os
 from typing import Dict, Any, List, Optional
 import sys
 sys.path.append('..')
 from config import Colors
 from modules import get_proxies
+from modules.module_status import annotate, OK, SKIPPED, RATE_LIMITED, ERROR
+
+HUNTER_API_KEY = os.getenv("HUNTER_API_KEY", "").strip()
+
+
+class _ProviderRateLimitError(Exception):
+    pass
 
 FREE_PROVIDERS = {
     "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
@@ -27,7 +35,7 @@ class EmailRepLookup:
                 [(r.preference, str(r.exchange).rstrip(".")) for r in answers],
                 key=lambda x: x[0],
             )
-        except Exception:
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             return []
 
     def _check_spf(self, domain: str) -> bool:
@@ -36,7 +44,7 @@ class EmailRepLookup:
             for r in answers:
                 if "v=spf1" in str(r).lower():
                     return True
-        except Exception:
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             pass
         return False
 
@@ -46,42 +54,38 @@ class EmailRepLookup:
             for r in answers:
                 if "v=dmarc1" in str(r).lower():
                     return True
-        except Exception:
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             pass
         return False
 
     def _check_disposable(self, domain: str) -> bool:
-        try:
-            proxies = get_proxies()
-            r = requests.get(
-                f"https://open.kickbox.com/v1/disposable/{domain}",
-                timeout=8,
-                proxies=proxies,  
-            )
-            if r.status_code == 200:
-                return r.json().get("disposable", False)
-        except Exception:
-            pass
-        return False
+        proxies = get_proxies()
+        r = requests.get(
+            f"https://open.kickbox.com/v1/disposable/{domain}",
+            timeout=8,
+            proxies=proxies,
+        )
+        if r.status_code == 429:
+            raise _ProviderRateLimitError("Kickbox API rate limit reached")
+        if r.status_code != 200:
+            raise RuntimeError(f"Kickbox API returned HTTP {r.status_code}")
+        return r.json().get("disposable", False)
 
     def _check_smtp_exists(self, email: str, domain: str, mx_host: str) -> Optional[bool]:
-        try:
-            with socket.create_connection((mx_host, 25), timeout=8) as sock:
-                sock.recv(1024)
-                sock.sendall(b"EHLO prism.local\r\n")
-                sock.recv(1024)
-                sock.sendall(b"MAIL FROM:<test@prism.local>\r\n")
-                sock.recv(1024)
-                sock.sendall(f"RCPT TO:<{email}>\r\n".encode())
-                resp = sock.recv(1024).decode(errors="ignore")
-                sock.sendall(b"QUIT\r\n")
-                code = resp[:3]
-                if code.startswith("25"):
-                    return True
-                if code[:1] == "5":
-                    return False
-                return None
-        except Exception:
+        with socket.create_connection((mx_host, 25), timeout=8) as sock:
+            sock.recv(1024)
+            sock.sendall(b"EHLO prism.local\r\n")
+            sock.recv(1024)
+            sock.sendall(b"MAIL FROM:<test@prism.local>\r\n")
+            sock.recv(1024)
+            sock.sendall(f"RCPT TO:<{email}>\r\n".encode())
+            resp = sock.recv(1024).decode(errors="ignore")
+            sock.sendall(b"QUIT\r\n")
+            code = resp[:3]
+            if code.startswith("25"):
+                return True
+            if code[:1] == "5":
+                return False
             return None
 
     def lookup(self, email: str) -> Dict[str, Any]:
@@ -108,6 +112,9 @@ class EmailRepLookup:
             "error": None,
         }
 
+        if not HUNTER_API_KEY:
+            return annotate(result, SKIPPED, "No API key configured (HUNTER_API_KEY)")
+
         try:
             domain = email.split("@")[-1].lower()
 
@@ -124,9 +131,13 @@ class EmailRepLookup:
             result["spf"] = has_spf
             result["dmarc"] = has_dmarc
 
+            smtp_error = None
             if mx_records:
                 mx_host = mx_records[0][1]
-                result["deliverable"] = self._check_smtp_exists(email, domain, mx_host)
+                try:
+                    result["deliverable"] = self._check_smtp_exists(email, domain, mx_host)
+                except Exception as e:
+                    smtp_error = str(e)
 
             score = 0
             if result["valid_mx"]:       score += 30
@@ -145,10 +156,14 @@ class EmailRepLookup:
             result["suspicious"] = result["disposable"] or (not result["valid_mx"])
             result["domain_reputation"] = "high" if (has_spf and has_dmarc) else "medium" if has_spf else "low"
 
+            if smtp_error:
+                return annotate(result, ERROR, smtp_error)
+        except _ProviderRateLimitError as e:
+            return annotate(result, RATE_LIMITED, str(e))
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
-        return result
+        return annotate(result, OK)
 
     def print_result(self, result: Dict) -> None:
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")

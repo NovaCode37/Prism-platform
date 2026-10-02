@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any, List
 from modules import get_proxies
+from modules.module_status import annotate, OK, RATE_LIMITED, ERROR
 
 
 class DarkWebSearch:
@@ -29,6 +30,7 @@ class DarkWebSearch:
             "error": None,
         }
         last_error = ""
+        saw_rate_limit = False
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
         for backend in self.BACKENDS:
@@ -42,6 +44,7 @@ class DarkWebSearch:
                     proxies=proxies,  
                 )
                 if r.status_code == 429:
+                    saw_rate_limit = True
                     last_error = f'{backend["name"]}: rate limited'
                     continue
                 if r.status_code != 200:
@@ -51,12 +54,10 @@ class DarkWebSearch:
                 if backend["parse"] is not None:
                     raw = backend["parse"](r.json())
                     entries: List[Dict] = [backend["map"](i) for i in raw[:limit] if i.get("title")]
-                    if entries:
-                        result["results"] = entries
-                        result["source"] = backend["name"]
-                        result["total"] = len(entries)
-                        return result
-                    last_error = f'{backend["name"]}: no results'
+                    result["results"] = entries
+                    result["source"] = backend["name"]
+                    result["total"] = len(entries)
+                    return annotate(result, OK)
                 else:
                     last_error = f'{backend["name"]}: requires JavaScript rendering'
 
@@ -65,9 +66,10 @@ class DarkWebSearch:
             except Exception as e:
                 last_error = f'{backend["name"]}: {str(e)[:100]}'
 
-        result["error"] = (
+        reason = (
             f"Dark web search is unavailable: {last_error}. "
             "Most Tor search indexes require JavaScript or direct Tor access. "
             "Use Tor Browser with Ahmia (ahmia.fi) or DuckDuckGo onion for manual searches."
         )
-        return result
+        status = RATE_LIMITED if saw_rate_limit else ERROR
+        return annotate(result, status, reason)
