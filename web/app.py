@@ -1277,7 +1277,7 @@ def _call_llm(provider: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, An
                      "HTTP-Referer": "https://getprism.su", "X-Title": "PRISM OSINT"},
             json=body,
             timeout=(10, int(os.getenv("LLM_TIMEOUT", "90") or 90)),
-            proxies=_LLM_PROXIES,
+            proxies=config.LLM_PROXIES,
         )
     except Exception as e:
         return {"error": f"{provider['name']} could not be reached: {str(e)[:150]}"}
