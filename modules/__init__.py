@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 import requests
 
-RETRY_STATUS_CODES = (502, 503, 504)
+RETRY_STATUS_CODES = (429, 502, 503, 504)
 RETRY_ATTEMPTS = 3
 RETRY_BACKOFF_SECONDS = 0.5
 
@@ -19,7 +19,7 @@ def get_proxies() -> Optional[Dict[str, str]]:
 def get_with_retry(url: str, **kwargs) -> requests.Response:
     """GET `url`, retrying only transient failures, up to RETRY_ATTEMPTS times.
 
-    `502`, `503`, `504` and timeouts are retried with exponential backoff. Any
+    `429`, `502`, `503`, `504` and timeouts are retried with exponential backoff. Any
     other status is returned immediately: a `200` and a `404` are answers, not
     failures. When the retries are used up, the last response is returned as-is
     so the caller still reports the failure, and a timeout that outlives them is

@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import modules as modules_pkg
 from modules.cert_transparency import CertTransparency
 from modules.wayback import WaybackMachine
+from modules.module_status import ERROR, OK, RATE_LIMITED, classify
 
 
 class FakeResponse:
@@ -99,7 +100,23 @@ def test_a_source_that_stays_down_still_reports_the_failure(monkeypatch):
     result = CertTransparency().search("example.com")
 
     assert len(crt_sh_calls(calls)) == modules_pkg.RETRY_ATTEMPTS
-    assert "503" in result["error"]
+    assert result["status"] == RATE_LIMITED
+    assert "503" in result["status_reason"]
+    assert "try again later" in result["status_reason"].lower()
+
+
+def test_crtsh_429_after_retries_reports_rate_limit_if_fallback_fails(monkeypatch):
+    calls = stub(
+        monkeypatch,
+        *[FakeResponse(429)] * modules_pkg.RETRY_ATTEMPTS,
+        fallback=FakeResponse(503),
+    )
+
+    result = CertTransparency().search("example.com")
+
+    assert len(crt_sh_calls(calls)) == modules_pkg.RETRY_ATTEMPTS
+    assert result["status"] == RATE_LIMITED
+    assert "try again later" in result["status_reason"].lower()
 
 
 def test_an_answer_is_not_retried(monkeypatch):
@@ -132,6 +149,18 @@ def test_timeouts_that_outlive_the_retries_keep_the_timeout_error(monkeypatch):
 
     assert len(crt_sh_calls(calls)) == modules_pkg.RETRY_ATTEMPTS
     assert "timed out" in result["error"]
+    assert result["status"] == ERROR
+
+
+def test_empty_crtsh_answer_is_ok(monkeypatch):
+    calls = stub(monkeypatch, FakeResponse(200, []))
+
+    result = CertTransparency().search("example.com")
+
+    assert len(crt_sh_calls(calls)) == 1
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["certificates"] == []
 
 
 def test_cdx_snapshots_retry_a_transient_503(monkeypatch):
@@ -161,7 +190,62 @@ def test_a_staying_down_cdx_api_still_reports_the_failure(monkeypatch):
     result = WaybackMachine().get_snapshots("example.com")
 
     assert len(calls) == modules_pkg.RETRY_ATTEMPTS
-    assert "503" in result["error"]
+    assert result["status"] == RATE_LIMITED
+    assert "503" in result["status_reason"]
+    assert "try again later" in result["status_reason"].lower()
+
+
+def test_cdx_429_after_retries_reports_rate_limit(monkeypatch):
+    calls = stub(monkeypatch, *[FakeResponse(429)] * modules_pkg.RETRY_ATTEMPTS)
+
+    result = WaybackMachine().get_snapshots("example.com")
+
+    assert len(calls) == modules_pkg.RETRY_ATTEMPTS
+    assert result["status"] == RATE_LIMITED
+    assert "try again later" in result["status_reason"].lower()
+
+
+def test_cdx_timeout_after_retries_is_error(monkeypatch):
+    calls = stub(
+        monkeypatch,
+        *[requests.Timeout("read timed out")] * modules_pkg.RETRY_ATTEMPTS,
+    )
+
+    result = WaybackMachine().get_snapshots("example.com")
+
+    assert len(calls) == modules_pkg.RETRY_ATTEMPTS
+    assert result["status"] == ERROR
+    assert "timed out" in result["error"]
+
+
+def test_empty_cdx_answers_are_ok(monkeypatch):
+    stub(monkeypatch, FakeResponse(200, []))
+
+    result = WaybackMachine().get_snapshots("example.com")
+
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["snapshots"] == []
+
+
+def test_empty_cdx_url_harvest_is_ok(monkeypatch):
+    stub(monkeypatch, FakeResponse(200, []))
+
+    result = WaybackMachine().get_all_urls("example.com")
+
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["urls"] == []
+
+
+@pytest.mark.parametrize("status_code", [429, 503])
+def test_availability_rate_limit_is_annotated(monkeypatch, status_code):
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: FakeResponse(status_code))
+
+    result = WaybackMachine().check_availability("https://example.com")
+
+    assert result["status"] == RATE_LIMITED
+    assert "try again later" in result["status_reason"].lower()
 
 
 def test_retries_reuse_the_proxies_and_the_per_attempt_timeout(monkeypatch):

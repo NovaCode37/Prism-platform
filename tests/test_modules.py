@@ -71,7 +71,10 @@ class TestCertTransparency:
 
         monkeypatch.setattr(requests, "get", lambda *a, **k: MockBadResponse())
         result = CertTransparency().search("test.com")
-        assert result["error"] is not None
+        from modules.module_status import RATE_LIMITED
+        assert result["status"] == RATE_LIMITED
+        assert "503" in result["status_reason"]
+        assert result["error"] is None
 
 class TestOpsecScore:
     def test_perfect_score_empty_results(self):

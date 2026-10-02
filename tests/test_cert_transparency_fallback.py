@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import modules as modules_pkg  # noqa: E402
 from modules.cert_transparency import CertTransparency  # noqa: E402
+from modules.module_status import OK, RATE_LIMITED  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -88,6 +89,7 @@ def test_healthy_crtsh_never_asks_the_fallback(monkeypatch):
     "crtsh",
     [
         pytest.param(_Response(502), id="502"),
+        pytest.param(_Response(429), id="429"),
         pytest.param(_Response(200, bad_json=True), id="unparseable"),
         pytest.param(requests.Timeout(), id="timeout"),
         pytest.param(requests.ConnectionError("unreachable"), id="unreachable"),
@@ -98,6 +100,7 @@ def test_crtsh_failure_falls_back_to_certspotter(monkeypatch, crtsh):
 
     result = CertTransparency().search("example.com")
 
+    assert result["status"] == OK
     assert result["error"] is None
     assert result["source"] == "certspotter"
     assert result["fallback_reason"]
@@ -145,14 +148,30 @@ def test_fallback_goes_through_the_module_proxy(monkeypatch):
 
 
 def test_both_sources_down_reports_both_errors(monkeypatch):
-    _route(monkeypatch, _Response(502), _Response(429))
+    _route(monkeypatch, _Response(429), _Response(429))
 
     result = CertTransparency().search("example.com")
 
     assert result["subdomains"] == []
     assert result["source"] is None
-    assert "crt.sh returned status 502" in result["error"]
-    assert "certspotter returned status 429" in result["error"]
+    assert result["status"] == RATE_LIMITED
+    assert "crt.sh is busy or rate limited" in result["status_reason"]
+    assert "certspotter" in result["status_reason"]
+    assert "try again later" in result["status_reason"].lower()
+
+
+def test_timeout_from_fallback_keeps_combined_result_as_error(monkeypatch):
+    _route(
+        monkeypatch,
+        _Response(429),
+        requests.Timeout("certspotter timed out"),
+    )
+
+    result = CertTransparency().search("example.com")
+
+    assert result["status"] != RATE_LIMITED
+    assert result["error"] is not None
+    assert "certspotter request timed out" in result["error"]
 
 
 def test_empty_crtsh_answer_is_not_a_failure(monkeypatch):
@@ -161,6 +180,7 @@ def test_empty_crtsh_answer_is_not_a_failure(monkeypatch):
 
     result = CertTransparency().search("example.com")
 
+    assert result["status"] == OK
     assert result["error"] is None
     assert result["subdomains"] == []
     assert [source for source, _ in calls] == ["crt.sh"]

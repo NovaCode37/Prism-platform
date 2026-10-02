@@ -4,6 +4,17 @@ import sys
 sys.path.append('..')
 from config import Colors, USER_AGENT
 from modules import get_proxies, get_with_retry
+from modules.module_status import annotate, classify, reason_for, OK, RATE_LIMITED, ERROR
+
+
+def _http_failure(result: Dict[str, Any], source: str, status_code: int) -> Dict[str, Any]:
+    if status_code in (429, 503):
+        return annotate(
+            result,
+            RATE_LIMITED,
+            f"{source} is busy or rate limited (HTTP {status_code}); try again later",
+        )
+    return annotate(result, ERROR, f"{source} returned status {status_code}")
 
 
 class CertTransparency:
@@ -33,14 +44,12 @@ class CertTransparency:
 
 
             if response.status_code != 200:
-                result["error"] = f"crt.sh returned status {response.status_code}"
-                return result
+                return _http_failure(result, "crt.sh", response.status_code)
 
             try:
                 certs = response.json()
             except Exception:
-                result["error"] = "Failed to parse crt.sh response"
-                return result
+                return annotate(result, ERROR, "Failed to parse crt.sh response")
 
             result["total_certs"] = len(certs)
             subdomains: set = set()
@@ -75,13 +84,12 @@ class CertTransparency:
 
             result["subdomains"] = sorted(list(subdomains))
             result["certificates"] = cert_list[:20]
+            return annotate(result, OK)
 
         except requests.Timeout:
-            result["error"] = "Request timed out (crt.sh can be slow, try again)"
+            return annotate(result, ERROR, "Request timed out (crt.sh can be slow, try again)")
         except Exception as e:
-            result["error"] = str(e)
-
-        return result
+            return annotate(result, ERROR, str(e))
 
     def search(self, domain: str) -> Dict[str, Any]:
         """Look up subdomains in CT logs: crt.sh first, certspotter when it fails.
@@ -91,18 +99,25 @@ class CertTransparency:
         keyless quota. ``result["source"]`` names the source that answered.
         """
         result = self._search_crtsh(domain)
-        if not result["error"]:
+        if classify(result) == OK:
             result["source"] = "crt.sh"
             return result
 
         fallback = self._search_certspotter(domain)
-        if fallback["error"]:
+        if classify(fallback) != OK:
             # Report both, so a reader can tell the fallback was tried too.
-            result["error"] = f"{result['error']}; fallback certspotter: {fallback['error']}"
+            reason = (
+                f"{reason_for(result)}; fallback certspotter: {reason_for(fallback)}"
+            )
             result["source"] = None
-            return result
+            status = (
+                RATE_LIMITED
+                if classify(result) == classify(fallback) == RATE_LIMITED
+                else ERROR
+            )
+            return annotate(result, status, reason)
 
-        fallback["fallback_reason"] = result["error"]
+        fallback["fallback_reason"] = reason_for(result)
         return fallback
 
     def _search_certspotter(self, domain: str) -> Dict[str, Any]:
@@ -129,22 +144,17 @@ class CertTransparency:
                 proxies=get_proxies(),
             )
             if response.status_code != 200:
-                result["error"] = f"certspotter returned status {response.status_code}"
-                return result
+                return _http_failure(result, "certspotter", response.status_code)
             try:
                 issuances = response.json()
             except Exception:
-                result["error"] = "Failed to parse certspotter response"
-                return result
+                return annotate(result, ERROR, "Failed to parse certspotter response")
             if not isinstance(issuances, list):
-                result["error"] = "Unexpected certspotter response"
-                return result
+                return annotate(result, ERROR, "Unexpected certspotter response")
         except requests.Timeout:
-            result["error"] = "certspotter request timed out"
-            return result
+            return annotate(result, ERROR, "certspotter request timed out")
         except Exception as e:
-            result["error"] = str(e)
-            return result
+            return annotate(result, ERROR, str(e))
 
         result["total_certs"] = len(issuances)
         subdomains: set = set()
@@ -173,7 +183,7 @@ class CertTransparency:
 
         result["subdomains"] = sorted(subdomains)
         result["certificates"] = cert_list[:20]
-        return result
+        return annotate(result, OK)
 
     def print_result(self, result: Dict) -> None:
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")

@@ -5,6 +5,17 @@ import sys
 sys.path.append('..')
 from config import Colors
 from modules import get_proxies, get_with_retry
+from modules.module_status import annotate, OK, RATE_LIMITED, ERROR
+
+
+def _http_failure(result: Dict[str, Any], source: str, status_code: int) -> Dict[str, Any]:
+    if status_code in (429, 503):
+        return annotate(
+            result,
+            RATE_LIMITED,
+            f"{source} is busy or rate limited (HTTP {status_code}); try again later",
+        )
+    return annotate(result, ERROR, f"{source} returned status {status_code}")
 
 
 class WaybackMachine:
@@ -40,13 +51,11 @@ class WaybackMachine:
             )
 
             if r.status_code != 200:
-                result["error"] = f"CDX API returned {r.status_code}"
-                return result
+                return _http_failure(result, "CDX API", r.status_code)
 
             rows = r.json()
             if not rows or len(rows) < 2:
-                result["error"] = "No snapshots found"
-                return result
+                return annotate(result, OK)
 
             header = rows[0]
             data_rows = rows[1:]
@@ -85,10 +94,9 @@ class WaybackMachine:
                 result["first_snapshot"] = snapshots[0]["date"]
                 result["last_snapshot"] = snapshots[-1]["date"]
 
+            return annotate(result, OK)
         except Exception as e:
-            result["error"] = str(e)
-
-        return result
+            return annotate(result, ERROR, str(e))
 
     def get_all_urls(self, domain: str, limit: int = 100) -> Dict[str, Any]:
         result = {
@@ -123,13 +131,11 @@ class WaybackMachine:
             )
 
             if r.status_code != 200:
-                result["error"] = f"CDX API returned {r.status_code}"
-                return result
+                return _http_failure(result, "CDX API", r.status_code)
 
             rows = r.json()
             if not rows or len(rows) < 2:
-                result["error"] = "No archived URLs found"
-                return result
+                return annotate(result, OK)
 
             urls = [row[0] for row in rows[1:] if row]
             result["urls"] = urls
@@ -142,10 +148,9 @@ class WaybackMachine:
                         result["interesting"].append(url)
                         break
 
+            return annotate(result, OK)
         except Exception as e:
-            result["error"] = str(e)
-
-        return result
+            return annotate(result, ERROR, str(e))
 
     def check_availability(self, url: str) -> Dict[str, Any]:
         result = {"url": url, "available": False, "closest_snapshot": None, "error": None}
@@ -163,11 +168,11 @@ class WaybackMachine:
                 if closest.get("available"):
                     result["available"] = True
                     result["closest_snapshot"] = closest.get("url")
+                return annotate(result, OK)
             else:
-                result["error"] = f"API returned {r.status_code}"
+                return _http_failure(result, "Wayback availability API", r.status_code)
         except Exception as e:
-            result["error"] = str(e)
-        return result
+            return annotate(result, ERROR, str(e))
 
     def print_snapshots(self, result: Dict) -> None:
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
