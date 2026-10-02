@@ -1,10 +1,14 @@
 import os
 import sys
+
+# Add root project dir to python path so we can import config
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+import config  # Reusing PRISM's config loader which calls dotenv
+
 import time
 import json
 import argparse
 import requests
-import config  # Reusing PRISM's config loader which calls dotenv
 
 # Fix Windows terminal encoding for emojis/arrows
 if sys.platform == 'win32':
@@ -75,11 +79,12 @@ CRITICAL CONSTRAINTS:
                 "type": "object",
                 "properties": {
                     "reasoning": {"type": "string", "description": "Explain WHY you are running this module and what you hope to find."},
+                    "current_knowledge_summary": {"type": "string", "description": "ANTI-LOST-IN-MIDDLE: Summarize everything you have learned about the target so far. You must update this with every step."},
                     "target": {"type": "string", "description": f"MUST BE EXACTLY: {target}"},
                     "target_type": {"type": "string", "description": f"MUST BE EXACTLY: {target_type}"},
                     "module": {"type": "string", "description": "The Prism module to run (e.g., shodan, whois, dns, breaches)"},
                 },
-                "required": ["reasoning", "target", "target_type", "module"]
+                "required": ["reasoning", "current_knowledge_summary", "target", "target_type", "module"]
             }
         }
     }]
@@ -108,7 +113,8 @@ CRITICAL CONSTRAINTS:
         if response_message.get("tool_calls") and not plan_only:
             for tool_call in response_message["tool_calls"]:
                 args = json.loads(tool_call["function"]["arguments"])
-                print(f"\n[Step {step_count}/{MAX_STEPS} Reasoning] {args.get('reasoning', '')}")
+                print(f"\n[Step {step_count}/{MAX_STEPS} Knowledge State] {args.get('current_knowledge_summary', 'None')}")
+                print(f"[Step {step_count}/{MAX_STEPS} Reasoning] {args.get('reasoning', '')}")
                 
                 if args["target"] != target:
                     result = {"error": f"Constraint Violation: You are only allowed to scan {target}."}
