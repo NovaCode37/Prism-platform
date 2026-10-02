@@ -39,15 +39,7 @@ def _server_error(e: Exception, context: str, status_code: int = 500) -> JSONRes
     logger.exception("%s failed", context)
     return JSONResponse({"error": "Internal server error"}, status_code=status_code)
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-_LLM_KEY = os.getenv("LLM_API_KEY") or OPENROUTER_API_KEY or GROQ_API_KEY
-_LLM_URL = os.getenv("LLM_BASE_URL") or (_OPENROUTER_URL if OPENROUTER_API_KEY else _GROQ_URL)
-_LLM_MODEL = os.getenv("LLM_MODEL") or ("nvidia/nemotron-3-nano-30b-a3b:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant")
-_LLM_PROXY = os.getenv("LLM_PROXY", "").strip()
-_LLM_PROXIES = {"http": _LLM_PROXY, "https": _LLM_PROXY} if _LLM_PROXY else None
+# LLM configuration has been moved to config.py to share with other agents
 
 
 def llm_providers() -> List[Dict[str, str]]:
@@ -57,22 +49,22 @@ def llm_providers() -> List[Dict[str, str]]:
     if custom_key or custom_url:
         providers.append({
             "name": "custom",
-            "url": custom_url or _OPENROUTER_URL,
+            "url": custom_url or config.OPENROUTER_URL,
             "key": custom_key or "local",
             "model": os.getenv("LLM_MODEL", "").strip() or "nvidia/nemotron-3-nano-30b-a3b:free",
         })
-    if OPENROUTER_API_KEY and not any(p["key"] == OPENROUTER_API_KEY for p in providers):
+    if config.OPENROUTER_API_KEY and not any(p["key"] == config.OPENROUTER_API_KEY for p in providers):
         providers.append({
             "name": "openrouter",
-            "url": _OPENROUTER_URL,
-            "key": OPENROUTER_API_KEY,
+            "url": config.OPENROUTER_URL,
+            "key": config.OPENROUTER_API_KEY,
             "model": os.getenv("LLM_MODEL", "").strip() or "nvidia/nemotron-3-nano-30b-a3b:free",
         })
-    if GROQ_API_KEY and not any(p["key"] == GROQ_API_KEY for p in providers):
+    if config.GROQ_API_KEY and not any(p["key"] == config.GROQ_API_KEY for p in providers):
         providers.append({
             "name": "groq",
-            "url": _GROQ_URL,
-            "key": GROQ_API_KEY,
+            "url": config.GROQ_URL,
+            "key": config.GROQ_API_KEY,
             "model": os.getenv("GROQ_MODEL", "").strip() or "llama-3.1-8b-instant",
         })
     return providers
