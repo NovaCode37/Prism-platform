@@ -2,14 +2,22 @@ import requests
 import hashlib
 from typing import Dict, Any, List, Optional
 import sys
-sys.path.append('..')
+
+sys.path.append("..")
 from config import Colors, HIBP_API_KEY, LEAK_LOOKUP_API_KEY, USER_AGENT
-from modules.module_status import annotate, classify, print_status_notice, OK, SKIPPED, RATE_LIMITED, ERROR
+from modules.module_status import (
+    annotate,
+    classify,
+    print_status_notice,
+    OK,
+    SKIPPED,
+    RATE_LIMITED,
+    ERROR,
+)
 from modules import get_proxies
 
 
 class LeakLookup:
-
     HIBP_API = "https://haveibeenpwned.com/api/v3"
     LEAK_LOOKUP_API = "https://leak-lookup.com/api/search"
     XON_API = "https://api.xposedornot.com/v1"
@@ -25,7 +33,7 @@ class LeakLookup:
             "breached": False,
             "breaches": [],
             "total_breaches": 0,
-            "error": None
+            "error": None,
         }
 
         if not self.hibp_key:
@@ -43,7 +51,7 @@ class LeakLookup:
                 headers=headers,
                 params={"truncateResponse": "false"},
                 timeout=10,
-                proxies=proxies,  
+                proxies=proxies,
             )
 
             if response.status_code == 200:
@@ -53,17 +61,19 @@ class LeakLookup:
                 result["status"] = OK
 
                 for breach in breaches:
-                    result["breaches"].append({
-                        "name": breach.get("Name"),
-                        "title": breach.get("Title"),
-                        "domain": breach.get("Domain"),
-                        "breach_date": breach.get("BreachDate"),
-                        "added_date": breach.get("AddedDate"),
-                        "pwn_count": breach.get("PwnCount"),
-                        "data_classes": breach.get("DataClasses", []),
-                        "is_verified": breach.get("IsVerified"),
-                        "is_sensitive": breach.get("IsSensitive")
-                    })
+                    result["breaches"].append(
+                        {
+                            "name": breach.get("Name"),
+                            "title": breach.get("Title"),
+                            "domain": breach.get("Domain"),
+                            "breach_date": breach.get("BreachDate"),
+                            "added_date": breach.get("AddedDate"),
+                            "pwn_count": breach.get("PwnCount"),
+                            "data_classes": breach.get("DataClasses", []),
+                            "is_verified": breach.get("IsVerified"),
+                            "is_sensitive": breach.get("IsSensitive"),
+                        }
+                    )
 
             elif response.status_code == 404:
                 result["breached"] = False
@@ -73,10 +83,10 @@ class LeakLookup:
             elif response.status_code == 429:
                 annotate(result, RATE_LIMITED, "HIBP API rate limit reached")
             else:
-                result["error"] = f"HIBP returned status {response.status_code}"
+                annotate(result, ERROR, f"HIBP returned status {response.status_code}")
 
         except requests.exceptions.RequestException as e:
-            result["error"] = str(e)
+            annotate(result, ERROR, str(e))
 
         return result
 
@@ -86,7 +96,7 @@ class LeakLookup:
             "breached": False,
             "breaches": [],
             "total_breaches": 0,
-            "error": None
+            "error": None,
         }
 
         try:
@@ -95,13 +105,13 @@ class LeakLookup:
                 f"{self.XON_API}/check-email/{email}",
                 headers={"User-Agent": USER_AGENT},
                 timeout=10,
-                proxies=proxies,  
+                proxies=proxies,
             )
 
             if response.status_code == 200:
                 data = response.json()
                 names: List[str] = []
-                for group in (data.get("breaches") or []):
+                for group in data.get("breaches") or []:
                     if isinstance(group, list):
                         names.extend(str(n) for n in group if n)
                     elif group:
@@ -117,10 +127,12 @@ class LeakLookup:
             elif response.status_code == 429:
                 annotate(result, RATE_LIMITED, "XposedOrNot rate limit reached")
             else:
-                result["error"] = f"XposedOrNot returned status {response.status_code}"
+                annotate(
+                    result, ERROR, f"XposedOrNot returned status {response.status_code}"
+                )
 
         except requests.exceptions.RequestException as e:
-            result["error"] = str(e)
+            annotate(result, ERROR, str(e))
 
         return result
 
@@ -130,7 +142,7 @@ class LeakLookup:
             "breached": False,
             "breaches": [],
             "total_breaches": 0,
-            "error": None
+            "error": None,
         }
 
         try:
@@ -140,13 +152,13 @@ class LeakLookup:
                 params={"check": email},
                 headers={"User-Agent": USER_AGENT},
                 timeout=10,
-                proxies=proxies,  
+                proxies=proxies,
             )
 
             if response.status_code == 200:
                 data = response.json()
                 names: List[str] = []
-                for src in (data.get("sources") or []):
+                for src in data.get("sources") or []:
                     if isinstance(src, dict) and src.get("name"):
                         names.append(str(src["name"]))
                     elif isinstance(src, str) and src:
@@ -162,21 +174,19 @@ class LeakLookup:
             elif response.status_code == 429:
                 annotate(result, RATE_LIMITED, "LeakCheck rate limit reached")
             else:
-                result["error"] = f"LeakCheck returned status {response.status_code}"
+                annotate(
+                    result, ERROR, f"LeakCheck returned status {response.status_code}"
+                )
 
         except requests.exceptions.RequestException as e:
-            result["error"] = str(e)
+            annotate(result, ERROR, str(e))
 
         return result
 
     def check_password_pwned(self, password: str) -> Dict[str, Any]:
-        result = {
-            "pwned": False,
-            "count": 0,
-            "error": None
-        }
+        result = {"pwned": False, "count": 0, "error": None}
 
-        sha1_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+        sha1_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
         prefix = sha1_hash[:5]
         suffix = sha1_hash[5:]
 
@@ -185,48 +195,48 @@ class LeakLookup:
             response = requests.get(
                 f"https://api.pwnedpasswords.com/range/{prefix}",
                 timeout=10,
-                proxies=proxies,  
+                proxies=proxies,
             )
 
             if response.status_code == 200:
                 hashes = response.text.splitlines()
                 for h in hashes:
-                    h_suffix, count = h.split(':')
+                    h_suffix, count = h.split(":")
                     if h_suffix == suffix:
                         result["pwned"] = True
                         result["count"] = int(count)
                         break
             else:
-                result["error"] = f"API returned status {response.status_code}"
+                annotate(result, ERROR, f"API returned status {response.status_code}")
 
         except Exception as e:
-            result["error"] = str(e)
+            annotate(result, ERROR, str(e))
 
         return result
 
-    def check_leak_lookup(self, query: str, query_type: str = "email_address") -> Dict[str, Any]:
+    def check_leak_lookup(
+        self, query: str, query_type: str = "email_address"
+    ) -> Dict[str, Any]:
         result = {
             "query": query,
             "type": query_type,
             "found": False,
             "leaks": [],
-            "error": None
+            "error": None,
         }
 
         if not self.leak_lookup_key:
-            return annotate(result, SKIPPED, "No API key configured (LEAK_LOOKUP_API_KEY)")
+            return annotate(
+                result, SKIPPED, "No API key configured (LEAK_LOOKUP_API_KEY)"
+            )
 
         try:
             proxies = get_proxies()
             response = requests.post(
                 self.LEAK_LOOKUP_API,
-                data={
-                    "key": self.leak_lookup_key,
-                    "type": query_type,
-                    "query": query
-                },
+                data={"key": self.leak_lookup_key, "type": query_type, "query": query},
                 timeout=30,
-                proxies=proxies,  
+                proxies=proxies,
             )
 
             if response.status_code == 200:
@@ -236,22 +246,28 @@ class LeakLookup:
                     result["status"] = OK
                     if isinstance(data["message"], dict):
                         for source, entries in data["message"].items():
-                            result["leaks"].append({
-                                "source": source,
-                                "entries": entries if isinstance(entries, list) else [entries]
-                            })
+                            result["leaks"].append(
+                                {
+                                    "source": source,
+                                    "entries": entries
+                                    if isinstance(entries, list)
+                                    else [entries],
+                                }
+                            )
                 elif data.get("message") == "Not found":
                     result["found"] = False
-                    result["status"] = OK
+                    annotate(result, OK)
                 else:
-                    result["error"] = data.get("message", "Unknown response")
+                    annotate(
+                        result, ERROR, str(data.get("message", "Unknown response"))
+                    )
             elif response.status_code == 429:
                 annotate(result, RATE_LIMITED, "Leak-Lookup API rate limit reached")
             else:
-                result["error"] = f"API returned status {response.status_code}"
+                annotate(result, ERROR, f"API returned status {response.status_code}")
 
         except Exception as e:
-            result["error"] = str(e)
+            annotate(result, ERROR, str(e))
 
         return result
 
@@ -259,7 +275,11 @@ class LeakLookup:
         xon = self.check_email_xon(email)
         leakcheck = self.check_email_leakcheck(email)
         hibp = self.check_email_hibp(email)
-        leak_lookup = self.check_leak_lookup(email, "email_address") if self.leak_lookup_key else None
+        leak_lookup = (
+            self.check_leak_lookup(email, "email_address")
+            if self.leak_lookup_key
+            else None
+        )
 
         flat: List[Dict[str, Any]] = []
         seen = set()
@@ -268,13 +288,15 @@ class LeakLookup:
             if not name or name.lower() in seen:
                 continue
             seen.add(name.lower())
-            flat.append({
-                "name": name,
-                "title": b.get("title") or name,
-                "date": b.get("breach_date"),
-                "data_classes": b.get("data_classes", []),
-                "source": "HIBP",
-            })
+            flat.append(
+                {
+                    "name": name,
+                    "title": b.get("title") or name,
+                    "date": b.get("breach_date"),
+                    "data_classes": b.get("data_classes", []),
+                    "source": "HIBP",
+                }
+            )
         for source_name, sub in (("XposedOrNot", xon), ("LeakCheck", leakcheck)):
             for b in sub.get("breaches", []):
                 name = b.get("name")
@@ -319,14 +341,21 @@ class LeakLookup:
     @staticmethod
     def _aggregate_reason(level: str, result: Dict[str, Any]) -> Optional[str]:
         from modules.module_status import reason_for
+
         if level == SKIPPED:
             free_blocked = [
-                s for s in (result.get("xon"), result.get("leakcheck"))
+                s
+                for s in (result.get("xon"), result.get("leakcheck"))
                 if isinstance(s, dict) and s.get("error")
             ]
             if free_blocked:
                 return "Free breach providers (XposedOrNot, LeakCheck) are unreachable from this host; set HIBP_API_KEY for an authenticated source"
-        for sub in (result.get("xon"), result.get("leakcheck"), result.get("hibp"), result.get("leak_lookup")):
+        for sub in (
+            result.get("xon"),
+            result.get("leakcheck"),
+            result.get("hibp"),
+            result.get("leak_lookup"),
+        ):
             if isinstance(sub, dict) and classify(sub) == level:
                 return reason_for(sub)
         if level == SKIPPED:
@@ -334,9 +363,9 @@ class LeakLookup:
         return None
 
     def print_result(self, result: Dict, check_type: str = "email"):
-        print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
+        print(f"\n{Colors.CYAN}{'=' * 60}{Colors.RESET}")
         print(f"{Colors.BOLD}Leak/Breach Check Results{Colors.RESET}")
-        print(f"{Colors.CYAN}{'='*60}{Colors.RESET}")
+        print(f"{Colors.CYAN}{'=' * 60}{Colors.RESET}")
 
         if print_status_notice(result):
             return
@@ -345,17 +374,25 @@ class LeakLookup:
             email = result.get("email", "")
             is_compromised = result.get("is_compromised", False)
 
-            status = f"{Colors.RED}⚠ COMPROMISED{Colors.RESET}" if is_compromised else f"{Colors.GREEN}✓ NOT FOUND IN BREACHES{Colors.RESET}"
+            status = (
+                f"{Colors.RED}⚠ COMPROMISED{Colors.RESET}"
+                if is_compromised
+                else f"{Colors.GREEN}✓ NOT FOUND IN BREACHES{Colors.RESET}"
+            )
 
             print(f"{Colors.YELLOW}Email:{Colors.RESET} {email}")
             print(f"{Colors.YELLOW}Status:{Colors.RESET} {status}")
-            print(f"{Colors.YELLOW}Total Breaches:{Colors.RESET} {result.get('total_breaches', 0)}")
+            print(
+                f"{Colors.YELLOW}Total Breaches:{Colors.RESET} {result.get('total_breaches', 0)}"
+            )
 
             hibp = result.get("hibp", {})
             if hibp.get("breaches"):
                 print(f"\n{Colors.BOLD}Have I Been Pwned Breaches:{Colors.RESET}")
                 for breach in hibp["breaches"][:10]:
-                    print(f"  {Colors.RED}•{Colors.RESET} {breach['name']} ({breach.get('breach_date', 'N/A')})")
+                    print(
+                        f"  {Colors.RED}•{Colors.RESET} {breach['name']} ({breach.get('breach_date', 'N/A')})"
+                    )
                     print(f"    Data: {', '.join(breach.get('data_classes', [])[:5])}")
                 if len(hibp["breaches"]) > 10:
                     print(f"    ... and {len(hibp['breaches']) - 10} more")
@@ -377,10 +414,16 @@ class LeakLookup:
         elif check_type == "password":
             if result.get("pwned"):
                 print(f"{Colors.RED}⚠ PASSWORD COMPROMISED!{Colors.RESET}")
-                print(f"Found in {Colors.RED}{result['count']:,}{Colors.RESET} breaches")
-                print(f"{Colors.YELLOW}Recommendation: Change this password immediately!{Colors.RESET}")
+                print(
+                    f"Found in {Colors.RED}{result['count']:,}{Colors.RESET} breaches"
+                )
+                print(
+                    f"{Colors.YELLOW}Recommendation: Change this password immediately!{Colors.RESET}"
+                )
             else:
-                print(f"{Colors.GREEN}✓ Password not found in known breaches{Colors.RESET}")
+                print(
+                    f"{Colors.GREEN}✓ Password not found in known breaches{Colors.RESET}"
+                )
 
         if result.get("error"):
             print(f"\n{Colors.YELLOW}Note:{Colors.RESET} {result['error']}")
@@ -410,7 +453,10 @@ def run_leak_lookup():
 
     elif choice == "2":
         import getpass
-        password = getpass.getpass(f"{Colors.GREEN}Enter password (hidden): {Colors.RESET}")
+
+        password = getpass.getpass(
+            f"{Colors.GREEN}Enter password (hidden): {Colors.RESET}"
+        )
         if password:
             result = ll.check_password_pwned(password)
             ll.print_result(result, "password")
@@ -419,7 +465,9 @@ def run_leak_lookup():
     elif choice in ("3", "4", "5"):
         type_map = {"3": "username", "4": "ip_address", "5": "domain"}
         query_type = type_map[choice]
-        query = input(f"{Colors.GREEN}Enter {query_type.replace('_', ' ')}: {Colors.RESET}").strip()
+        query = input(
+            f"{Colors.GREEN}Enter {query_type.replace('_', ' ')}: {Colors.RESET}"
+        ).strip()
         if query:
             result = ll.check_leak_lookup(query, query_type)
             ll.print_result(result, query_type)
@@ -427,6 +475,7 @@ def run_leak_lookup():
 
     print(f"{Colors.RED}Invalid input{Colors.RESET}")
     return None
+
 
 if __name__ == "__main__":
     run_leak_lookup()
