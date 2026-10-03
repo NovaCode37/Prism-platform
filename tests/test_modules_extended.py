@@ -880,3 +880,228 @@ class TestGraphBuilderExtended:
             graph = build_graph("target", scan_type, {})
             assert "nodes" in graph
             assert "edges" in graph
+
+
+class TestExtraToolsStatuses:
+    def test_whois_missing_dependency_is_skipped(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "WHOIS_AVAILABLE", False)
+        result = extra_tools.WhoisLookup().lookup("example.com")
+
+        assert result["status"] == "skipped"
+        assert result["status_reason"] == "python-whois not installed. Run: pip install python-whois"
+        assert result["error"] is None
+
+    def test_whois_success_is_ok(self, monkeypatch):
+        from types import SimpleNamespace
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "WHOIS_AVAILABLE", True)
+        monkeypatch.setattr(
+            extra_tools,
+            "whois",
+            SimpleNamespace(whois=lambda domain: SimpleNamespace(
+                registrar="Example Registrar",
+                org="Example Org",
+                country="US",
+                creation_date=None,
+                expiration_date=None,
+                updated_date=None,
+                name_servers=["NS1.EXAMPLE.COM"],
+                status=["active"],
+                emails=["admin@example.com"],
+            )),
+            raising=False,
+        )
+
+        result = extra_tools.WhoisLookup().lookup("example.com")
+
+        assert result["status"] == "ok"
+        assert result["error"] is None
+        assert result["registrar"] == "Example Registrar"
+        assert result["whois_status"] == ["active"]
+
+    def test_whois_exception_is_error(self, monkeypatch):
+        from types import SimpleNamespace
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "WHOIS_AVAILABLE", True)
+        monkeypatch.setattr(
+            extra_tools,
+            "whois",
+            SimpleNamespace(whois=lambda domain: (_ for _ in ()).throw(RuntimeError("lookup failed"))),
+            raising=False,
+        )
+
+        result = extra_tools.WhoisLookup().lookup("example.com")
+
+        assert result["status"] == "error"
+        assert result["error"] == "lookup failed"
+
+    def test_geoip_success_is_ok(self, monkeypatch):
+        import socket
+        from modules import extra_tools
+
+        monkeypatch.setattr(socket, "gethostbyname", lambda host: "203.0.113.1")
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+
+        class Response:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {"ip": "203.0.113.1", "country": "US"}
+
+        monkeypatch.setattr(extra_tools.requests, "get", lambda *args, **kwargs: Response())
+        result = extra_tools.GeoIPLookup().lookup("example.com")
+
+        assert result["status"] == "ok"
+        assert result["error"] is None
+        assert result["country_name"] == "United States"
+
+    def test_geoip_rate_limit_is_rate_limited(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+
+        class Response:
+            status_code = 429
+
+        monkeypatch.setattr(extra_tools.requests, "get", lambda *args, **kwargs: Response())
+        result = extra_tools.GeoIPLookup().lookup("203.0.113.1")
+
+        assert result["status"] == "rate_limited"
+        assert result["status_reason"] == "ipinfo API rate limit reached"
+        assert result["error"] is None
+
+    def test_geoip_http_failure_is_error(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+
+        class Response:
+            status_code = 503
+
+        monkeypatch.setattr(extra_tools.requests, "get", lambda *args, **kwargs: Response())
+        result = extra_tools.GeoIPLookup().lookup("203.0.113.1")
+
+        assert result["status"] == "error"
+        assert result["error"] == "API returned status 503"
+
+    def test_geoip_request_exception_is_error(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+        monkeypatch.setattr(
+            extra_tools.requests,
+            "get",
+            lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("request failed")),
+        )
+        result = extra_tools.GeoIPLookup().lookup("203.0.113.1")
+
+        assert result["status"] == "error"
+        assert result["error"] == "request failed"
+
+    def test_dns_missing_dependency_is_skipped(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "DNS_AVAILABLE", False)
+        result = extra_tools.DNSLookup().lookup("example.com")
+
+        assert result["status"] == "skipped"
+        assert result["status_reason"] == "dnspython not installed. Run: pip install dnspython"
+        assert result["error"] is None
+
+    def test_dns_success_is_ok(self, monkeypatch):
+        import dns
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "DNS_AVAILABLE", True)
+        monkeypatch.setattr(
+            dns.resolver,
+            "resolve",
+            lambda domain, record_type: ["203.0.113.1"],
+        )
+        result = extra_tools.DNSLookup().lookup("example.com", ["A"])
+
+        assert result["status"] == "ok"
+        assert result["error"] is None
+        assert result["records"] == {"A": ["203.0.113.1"]}
+
+    def test_dns_nxdomain_is_ok_with_reason(self, monkeypatch):
+        import dns
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "DNS_AVAILABLE", True)
+        monkeypatch.setattr(
+            dns.resolver,
+            "resolve",
+            lambda domain, record_type: (_ for _ in ()).throw(dns.resolver.NXDOMAIN()),
+        )
+        result = extra_tools.DNSLookup().lookup("missing.example", ["A", "MX"])
+
+        assert result["status"] == "ok"
+        assert result["status_reason"] == "Domain does not exist"
+        assert result["records"] == {}
+        assert result["error"] is None
+
+    def test_dns_timeout_is_error(self, monkeypatch):
+        import dns
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "DNS_AVAILABLE", True)
+        monkeypatch.setattr(
+            dns.resolver,
+            "resolve",
+            lambda domain, record_type: (_ for _ in ()).throw(dns.exception.Timeout()),
+        )
+        result = extra_tools.DNSLookup().lookup("example.com", ["A"])
+
+        assert result["status"] == "error"
+        assert result["error"] == "DNS query timeout"
+
+    def test_dns_exception_is_error(self, monkeypatch):
+        import dns
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "DNS_AVAILABLE", True)
+        monkeypatch.setattr(
+            dns.resolver,
+            "resolve",
+            lambda domain, record_type: (_ for _ in ()).throw(RuntimeError("resolver failed")),
+        )
+        result = extra_tools.DNSLookup().lookup("example.com", ["A"])
+
+        assert result["status"] == "error"
+        assert result["error"] == "resolver failed"
+
+    def test_website_success_is_ok(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+
+        class Response:
+            text = "<html><title>Example</title></html>"
+            headers = {"Server": "nginx"}
+
+        monkeypatch.setattr(extra_tools.requests, "get", lambda *args, **kwargs: Response())
+        result = extra_tools.WebsiteAnalyzer().analyze("example.com")
+
+        assert result["status"] == "ok"
+        assert result["error"] is None
+        assert result["title"] == "Example"
+
+    def test_website_exception_is_error(self, monkeypatch):
+        from modules import extra_tools
+
+        monkeypatch.setattr(extra_tools, "get_proxies", lambda: {})
+        monkeypatch.setattr(
+            extra_tools.requests,
+            "get",
+            lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("site request failed")),
+        )
+        result = extra_tools.WebsiteAnalyzer().analyze("example.com")
+
+        assert result["status"] == "error"
+        assert result["error"] == "site request failed"

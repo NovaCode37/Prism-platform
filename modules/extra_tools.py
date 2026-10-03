@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from config import IPINFO_API_KEY, Colors
 from modules import get_proxies
+from modules.module_status import annotate, OK, SKIPPED, RATE_LIMITED, ERROR
 
 try:
     import whois
@@ -56,7 +57,7 @@ class WhoisLookup:
             "expiration_date": None,
             "updated_date": None,
             "name_servers": [],
-            "status": [],
+            "whois_status": [],
             "emails": [],
             "org": None,
             "country": None,
@@ -64,8 +65,11 @@ class WhoisLookup:
         }
 
         if not WHOIS_AVAILABLE:
-            result["error"] = "python-whois not installed. Run: pip install python-whois"
-            return result
+            return annotate(
+                result,
+                SKIPPED,
+                "python-whois not installed. Run: pip install python-whois",
+            )
 
         try:
             w = whois.whois(domain)
@@ -92,7 +96,7 @@ class WhoisLookup:
 
             if w.status:
                 status = w.status if isinstance(w.status, list) else [w.status]
-                result["status"] = [str(s) for s in status if s]
+                result["whois_status"] = [str(s) for s in status if s]
 
             if w.emails:
                 emails = w.emails if isinstance(w.emails, list) else [w.emails]
@@ -104,9 +108,9 @@ class WhoisLookup:
                 result["emails"] = cleaned
 
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
-        return result
+        return annotate(result, OK)
 
     def print_result(self, result: Dict):
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
@@ -196,12 +200,14 @@ class GeoIPLookup:
                     result["country_name"] = self._get_country_name(country_code)
 
             else:
-                result["error"] = f"API returned status {response.status_code}"
+                if response.status_code == 429:
+                    return annotate(result, RATE_LIMITED, "ipinfo API rate limit reached")
+                return annotate(result, ERROR, f"API returned status {response.status_code}")
 
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
-        return result
+        return annotate(result, OK)
 
     def _get_country_name(self, code: str) -> str:
         countries = {
@@ -246,9 +252,13 @@ class DNSLookup:
         }
 
         if not DNS_AVAILABLE:
-            result["error"] = "dnspython not installed. Run: pip install dnspython"
-            return result
+            return annotate(
+                result,
+                SKIPPED,
+                "dnspython not installed. Run: pip install dnspython",
+            )
 
+        failure_reason = None
         for rtype in record_types:
             try:
                 answers = dns.resolver.resolve(domain, rtype)
@@ -272,14 +282,17 @@ class DNSLookup:
             except dns.resolver.NoAnswer:
                 pass
             except dns.resolver.NXDOMAIN:
-                result["error"] = "Domain does not exist"
-                break
+                return annotate(result, OK, "Domain does not exist")
             except dns.exception.Timeout:
-                result["error"] = "DNS query timeout"
-            except Exception:
-                pass
+                if failure_reason is None:
+                    failure_reason = "DNS query timeout"
+            except Exception as e:
+                if failure_reason is None:
+                    failure_reason = str(e) or type(e).__name__
 
-        return result
+        if failure_reason is not None:
+            return annotate(result, ERROR, failure_reason)
+        return annotate(result, OK)
 
     def print_result(self, result: Dict):
         print(f"\n{Colors.CYAN}{'='*60}{Colors.RESET}")
@@ -362,9 +375,9 @@ class WebsiteAnalyzer:
             result["phones"] = list(set([p for p in phones if len(p) >= 10]))[:10]
 
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
-        return result
+        return annotate(result, OK)
 
     def _detect_technologies(self, html: str, headers) -> List[str]:
         techs = []
