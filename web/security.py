@@ -174,12 +174,12 @@ async def check_upload_size(request: Request) -> None:
             detail=f"File too large. Max {MAX_UPLOAD_BYTES // (1024*1024)} MB allowed.",
         )
 
-def validate_scan_id(scan_id: str) -> str:
+def validate_scan_id(scan_id: str, status_code: int = 400) -> str:
     import uuid
     try:
         uuid.UUID(scan_id)
     except (ValueError, AttributeError):
-        raise HTTPException(status_code=400, detail="Invalid scan ID format.")
+        raise HTTPException(status_code=status_code, detail="Invalid scan ID format.")
     return scan_id
 
 def _is_blocked_ip(ip_str: str) -> bool:

@@ -711,7 +711,7 @@ async def list_watchlist(request: Request):
 @limiter.limit("60/minute")
 async def watchlist_alerts(request: Request, watch_id: str):
     from web import watchlist
-    validate_scan_id(watch_id)
+    validate_scan_id(watch_id, status_code=404)
     entry = watchlist.get_watchlist(watch_id)
     if not entry or (entry.get("owner") or ANONYMOUS_PRINCIPAL) != get_principal(request):
         return JSONResponse({"error": "Watchlist not found"}, status_code=404)
@@ -721,7 +721,7 @@ async def watchlist_alerts(request: Request, watch_id: str):
 @limiter.limit("30/minute")
 async def delete_watchlist_entry(request: Request, watch_id: str):
     from web import watchlist
-    validate_scan_id(watch_id)
+    validate_scan_id(watch_id, status_code=404)
     if not watchlist.delete_watchlist(watch_id, get_principal(request)):
         return JSONResponse({"error": "Watchlist not found"}, status_code=404)
     return {"deleted": watch_id}
@@ -730,7 +730,7 @@ async def delete_watchlist_entry(request: Request, watch_id: str):
 @limiter.limit("30/minute")
 async def patch_watchlist_entry(request: Request, watch_id: str, req: WatchlistPatchRequest):
     from web import watchlist
-    validate_scan_id(watch_id)
+    validate_scan_id(watch_id, status_code=404)
     entry = watchlist.set_paused(watch_id, get_principal(request), req.paused)
     if entry is None:
         return JSONResponse({"error": "Watchlist not found"}, status_code=404)
