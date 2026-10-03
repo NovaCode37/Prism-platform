@@ -5,7 +5,6 @@ import argparse
 import requests
 import asyncio
 
-# Add root project dir to python path so we can import config & cli
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import config  
 
@@ -15,7 +14,6 @@ MAX_STEPS = 5
 MAX_MODULES = 10
 
 def summarize_result(data, max_list_size=5):
-    """Recursively prune long lists to prevent context window blowouts without breaking JSON schema."""
     if isinstance(data, dict):
         return {k: summarize_result(v, max_list_size) for k, v in data.items()}
     elif isinstance(data, list):
@@ -170,7 +168,6 @@ CRITICAL CONSTRAINTS:
                     "role": "tool",
                     "tool_call_id": tool_call["id"],
                     "name": tool_name,
-                    # Summarize lists first, then safely cap the overall string length to 15k chars (~3k tokens)
                     "content": json.dumps(summarize_result(result))[:15000]
                 })
         else:
