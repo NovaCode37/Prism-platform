@@ -15,6 +15,19 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CENSYS_API_ID = os.getenv("CENSYS_API_ID", "")
 CENSYS_API_SECRET = os.getenv("CENSYS_API_SECRET", "")
 
+# LLM Configuration
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+LLM_API_KEY = os.getenv("LLM_API_KEY") or OPENROUTER_API_KEY or GROQ_API_KEY
+LLM_BASE_URL = os.getenv("LLM_BASE_URL") or (OPENROUTER_URL if OPENROUTER_API_KEY else GROQ_URL)
+LLM_MODEL = os.getenv("LLM_MODEL") or ("nvidia/nemotron-3-nano-30b-a3b:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant")
+LLM_PROXY = os.getenv("LLM_PROXY", "").strip()
+LLM_PROXIES = {"http": LLM_PROXY, "https": LLM_PROXY} if LLM_PROXY else None
+LLM_TIMEOUT = int(os.getenv("LLM_TIMEOUT", "30"))
+
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "results")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 PRISM_VERSION = "2.11.0"
