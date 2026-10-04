@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from modules.module_status import (
     annotate,
+    annotate_http_failure,
     classify,
     reason_for,
     status_notice,
@@ -189,3 +190,23 @@ class TestKeyDependentModulesSkip:
         assert result["error"] is None
 
 
+class TestAnnotateHttpFailure:
+    def test_rate_limited(self):
+        # 429 and 503 should result in RATE_LIMITED
+        r429 = annotate_http_failure({}, "My API", 429)
+        assert r429["status"] == RATE_LIMITED
+        assert "rate limited" in r429["status_reason"]
+        assert "429" in r429["status_reason"]
+        assert "My API" in r429["status_reason"]
+        assert r429["error"] is None
+
+        r503 = annotate_http_failure({}, "Other API", 503)
+        assert r503["status"] == RATE_LIMITED
+        assert "503" in r503["status_reason"]
+
+    def test_error(self):
+        # 500 should result in ERROR
+        r500 = annotate_http_failure({}, "Bad API", 500)
+        assert r500["status"] == ERROR
+        assert "returned status 500" in r500["error"]
+        assert "Bad API" in r500["error"]

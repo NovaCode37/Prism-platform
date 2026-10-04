@@ -5,17 +5,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 from modules import get_proxies, get_with_retry
-from modules.module_status import annotate, OK, RATE_LIMITED, ERROR
-
-
-def _http_failure(result: Dict[str, Any], source: str, status_code: int) -> Dict[str, Any]:
-    if status_code in (429, 503):
-        return annotate(
-            result,
-            RATE_LIMITED,
-            f"{source} is busy or rate limited (HTTP {status_code}); try again later",
-        )
-    return annotate(result, ERROR, f"{source} returned status {status_code}")
+from modules.module_status import annotate, annotate_http_failure, OK, RATE_LIMITED, ERROR
 
 
 class WaybackMachine:
@@ -51,7 +41,7 @@ class WaybackMachine:
             )
 
             if r.status_code != 200:
-                return _http_failure(result, "CDX API", r.status_code)
+                return annotate_http_failure(result, "CDX API", r.status_code)
 
             rows = r.json()
             if not rows or len(rows) < 2:
@@ -131,7 +121,7 @@ class WaybackMachine:
             )
 
             if r.status_code != 200:
-                return _http_failure(result, "CDX API", r.status_code)
+                return annotate_http_failure(result, "CDX API", r.status_code)
 
             rows = r.json()
             if not rows or len(rows) < 2:
@@ -170,7 +160,7 @@ class WaybackMachine:
                     result["closest_snapshot"] = closest.get("url")
                 return annotate(result, OK)
             else:
-                return _http_failure(result, "Wayback availability API", r.status_code)
+                return annotate_http_failure(result, "Wayback availability API", r.status_code)
         except Exception as e:
             return annotate(result, ERROR, str(e))
 

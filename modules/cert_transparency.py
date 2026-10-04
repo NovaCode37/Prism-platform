@@ -4,17 +4,7 @@ import sys
 sys.path.append('..')
 from config import Colors, USER_AGENT
 from modules import get_proxies, get_with_retry
-from modules.module_status import annotate, classify, reason_for, OK, RATE_LIMITED, ERROR
-
-
-def _http_failure(result: Dict[str, Any], source: str, status_code: int) -> Dict[str, Any]:
-    if status_code in (429, 503):
-        return annotate(
-            result,
-            RATE_LIMITED,
-            f"{source} is busy or rate limited (HTTP {status_code}); try again later",
-        )
-    return annotate(result, ERROR, f"{source} returned status {status_code}")
+from modules.module_status import annotate, annotate_http_failure, classify, reason_for, OK, RATE_LIMITED, ERROR
 
 
 class CertTransparency:
@@ -44,7 +34,7 @@ class CertTransparency:
 
 
             if response.status_code != 200:
-                return _http_failure(result, "crt.sh", response.status_code)
+                return annotate_http_failure(result, "crt.sh", response.status_code)
 
             try:
                 certs = response.json()
@@ -144,7 +134,7 @@ class CertTransparency:
                 proxies=get_proxies(),
             )
             if response.status_code != 200:
-                return _http_failure(result, "certspotter", response.status_code)
+                return annotate_http_failure(result, "certspotter", response.status_code)
             try:
                 issuances = response.json()
             except Exception:

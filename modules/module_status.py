@@ -122,3 +122,13 @@ def annotate(result: Dict[str, Any], status: str, reason: Optional[str] = None) 
     else:
         result["error"] = None
     return result
+
+
+def annotate_http_failure(result: Dict[str, Any], source: str, status_code: int) -> Dict[str, Any]:
+    if status_code in (429, 503):
+        return annotate(
+            result,
+            RATE_LIMITED,
+            f"{source} is busy or rate limited (HTTP {status_code}); try again later",
+        )
+    return annotate(result, ERROR, f"{source} returned status {status_code}")
