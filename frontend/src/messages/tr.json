@@ -199,6 +199,7 @@
       "dmarc": "DMARC",
       "origin": "Kaynak",
       "rdns": "rDNS",
+      "ip": "IP",
       "city": "Şehir",
       "country": "Ülke",
       "org": "Kuruluş",
@@ -221,16 +222,16 @@
       "invalid": "Seçilen mod için geçersiz girdi."
     },
     "subnet": {
-      "calculate": "Calculate",
-      "networkAddress": "Network Address",
-      "subnetMask": "Subnet Mask",
-      "wildcardMask": "Wildcard Mask",
-      "broadcastAddress": "Broadcast Address",
-      "firstUsableIp": "First Usable IP",
-      "lastUsableIp": "Last Usable IP",
-      "usableHosts": "Usable Hosts",
-      "totalAddresses": "Total Addresses",
-      "ipType": "IP Type"
+      "calculate": "Hesapla",
+      "networkAddress": "Ağ Adresi",
+      "subnetMask": "Alt Ağ Maskesi",
+      "wildcardMask": "Wildcard Maskesi",
+      "broadcastAddress": "Yayın Adresi",
+      "firstUsableIp": "İlk Kullanılabilir IP",
+      "lastUsableIp": "Son Kullanılabilir IP",
+      "usableHosts": "Kullanılabilir Host Sayısı",
+      "totalAddresses": "Toplam Adres",
+      "ipType": "IP Türü"
     },
     "jwt": {
       "title": "JWT Çözücü",

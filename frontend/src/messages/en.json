@@ -199,6 +199,7 @@
       "dmarc": "DMARC",
       "origin": "Origin",
       "rdns": "rDNS",
+      "ip": "IP",
       "city": "City",
       "country": "Country",
       "org": "Org",

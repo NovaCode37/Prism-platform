@@ -199,6 +199,7 @@
       "dmarc": "DMARC",
       "origin": "来源",
       "rdns": "rDNS",
+      "ip": "IP",
       "city": "城市",
       "country": "国家",
       "org": "组织",
@@ -221,16 +222,16 @@
       "invalid": "所选模式的输入无效。"
     },
     "subnet": {
-      "calculate": "Calculate",
-      "networkAddress": "Network Address",
-      "subnetMask": "Subnet Mask",
-      "wildcardMask": "Wildcard Mask",
-      "broadcastAddress": "Broadcast Address",
-      "firstUsableIp": "First Usable IP",
-      "lastUsableIp": "Last Usable IP",
-      "usableHosts": "Usable Hosts",
-      "totalAddresses": "Total Addresses",
-      "ipType": "IP Type"
+      "calculate": "计算",
+      "networkAddress": "网络地址",
+      "subnetMask": "子网掩码",
+      "wildcardMask": "通配符掩码",
+      "broadcastAddress": "广播地址",
+      "firstUsableIp": "第一个可用 IP",
+      "lastUsableIp": "最后一个可用 IP",
+      "usableHosts": "可用主机数",
+      "totalAddresses": "地址总数",
+      "ipType": "IP 类型"
     },
     "jwt": {
       "title": "JWT 解码器",

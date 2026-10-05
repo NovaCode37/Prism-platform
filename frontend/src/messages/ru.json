@@ -199,6 +199,7 @@
       "dmarc": "DMARC",
       "origin": "Источник",
       "rdns": "rDNS",
+      "ip": "IP",
       "city": "Город",
       "country": "Страна",
       "org": "Организация",
@@ -221,16 +222,16 @@
       "invalid": "Некорректные данные для выбранного режима."
     },
     "subnet": {
-      "calculate": "Calculate",
-      "networkAddress": "Network Address",
-      "subnetMask": "Subnet Mask",
-      "wildcardMask": "Wildcard Mask",
-      "broadcastAddress": "Broadcast Address",
-      "firstUsableIp": "First Usable IP",
-      "lastUsableIp": "Last Usable IP",
-      "usableHosts": "Usable Hosts",
-      "totalAddresses": "Total Addresses",
-      "ipType": "IP Type"
+      "calculate": "Рассчитать",
+      "networkAddress": "Адрес сети",
+      "subnetMask": "Маска подсети",
+      "wildcardMask": "Обратная маска",
+      "broadcastAddress": "Широковещательный адрес",
+      "firstUsableIp": "Первый доступный IP",
+      "lastUsableIp": "Последний доступный IP",
+      "usableHosts": "Доступные хосты",
+      "totalAddresses": "Всего адресов",
+      "ipType": "Тип IP"
     },
     "jwt": {
       "title": "Декодер JWT",
