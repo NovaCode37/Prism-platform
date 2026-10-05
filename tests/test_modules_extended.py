@@ -8,10 +8,16 @@ import asyncio
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 class TestEmailRepLookup:
+    @pytest.fixture(autouse=True)
+    def _set_hunter_key(self, monkeypatch):
+        import modules.hunter as hunter_module
+        monkeypatch.setattr(hunter_module, "HUNTER_API_KEY", "test-key", raising=False)
+
     def test_lookup_high_reputation(self, monkeypatch):
         import dns.resolver
         import requests
         from modules.hunter import EmailRepLookup
+        from modules.module_status import ERROR
 
         class MXAnswer:
             def __iter__(self):
@@ -60,12 +66,82 @@ class TestEmailRepLookup:
         assert result["disposable"] is False
         assert result["reputation"] == "high"
         assert result["domain_reputation"] == "high"
+        assert result["status"] == ERROR
+        assert result["error"] == "mocked"
+
+    def test_lookup_without_api_key_is_skipped(self, monkeypatch):
+        import modules.hunter as hunter_module
+        from modules.module_status import SKIPPED
+
+        monkeypatch.setattr(hunter_module, "HUNTER_API_KEY", "")
+        monkeypatch.setattr(
+            hunter_module.EmailRepLookup,
+            "_check_mx",
+            lambda *args: (_ for _ in ()).throw(AssertionError("lookup must be skipped")),
+        )
+
+        result = hunter_module.EmailRepLookup().lookup("x@example.com")
+
+        assert result["status"] == SKIPPED
         assert result["error"] is None
+        assert "HUNTER_API_KEY" in result["status_reason"]
+
+    def test_lookup_failure_is_error(self, monkeypatch):
+        from modules.hunter import EmailRepLookup
+        from modules.module_status import ERROR
+
+        monkeypatch.setattr(
+            EmailRepLookup,
+            "_check_mx",
+            lambda *args: (_ for _ in ()).throw(RuntimeError("DNS provider failed")),
+        )
+
+        result = EmailRepLookup().lookup("x@example.com")
+
+        assert result["status"] == ERROR
+        assert result["error"] == "DNS provider failed"
+
+    def test_provider_http_429_is_rate_limited(self, monkeypatch):
+        import requests
+        import modules.hunter as hunter_module
+        from modules.module_status import RATE_LIMITED
+
+        class MockResponse:
+            status_code = 429
+
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_mx", lambda *args: [])
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_spf", lambda *args: False)
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_dmarc", lambda *args: False)
+        monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
+
+        result = hunter_module.EmailRepLookup().lookup("x@example.com")
+
+        assert result["status"] == RATE_LIMITED
+        assert result["error"] is None
+
+    def test_provider_http_failure_is_error(self, monkeypatch):
+        import requests
+        import modules.hunter as hunter_module
+        from modules.module_status import ERROR
+
+        class MockResponse:
+            status_code = 503
+
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_mx", lambda *args: [])
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_spf", lambda *args: False)
+        monkeypatch.setattr(hunter_module.EmailRepLookup, "_check_dmarc", lambda *args: False)
+        monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
+
+        result = hunter_module.EmailRepLookup().lookup("x@example.com")
+
+        assert result["status"] == ERROR
+        assert "503" in result["error"]
 
     def test_lookup_no_mx(self, monkeypatch):
         import dns.resolver
         import requests
         from modules.hunter import EmailRepLookup
+        from modules.module_status import OK
 
         def mock_resolve(domain, rtype):
             raise dns.resolver.NoAnswer()
@@ -83,6 +159,8 @@ class TestEmailRepLookup:
         assert result["valid_mx"] is False
         assert result["suspicious"] is True
         assert result["reputation"] in ("low", "medium")
+        assert result["status"] == OK
+        assert result["error"] is None
 
     def test_lookup_disposable(self, monkeypatch):
         import dns.resolver
@@ -164,13 +242,18 @@ class TestSMTPVerifier:
 
     def test_verify_invalid_format(self):
         from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import SKIPPED
+
         result = SMTPVerifier().verify_email("notanemail")
         assert result["valid_format"] is False
-        assert result["error"] == "Invalid email format"
+        assert result["status"] == SKIPPED
+        assert result["error"] is None
+        assert result["status_reason"] == "Invalid email format"
 
     def test_verify_no_mx(self, monkeypatch):
         import dns.resolver
         from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import OK
 
         def mock_resolve(domain, rtype):
             raise dns.resolver.NXDOMAIN()
@@ -180,12 +263,30 @@ class TestSMTPVerifier:
         result = SMTPVerifier().verify_email("user@nonexistent.fake")
         assert result["valid_format"] is True
         assert result["mx_found"] is False
-        assert result["error"] == "Domain has no mail server"
+        assert result["status"] == OK
+        assert result["error"] is None
+        assert result["status_reason"] == "Domain has no mail server"
+
+    def test_mx_lookup_failure_is_error(self, monkeypatch):
+        import dns.resolver
+        from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import ERROR
+
+        def mock_resolve(domain, rtype):
+            raise dns.exception.Timeout("DNS timed out")
+
+        monkeypatch.setattr(dns.resolver, "resolve", mock_resolve)
+
+        result = SMTPVerifier().verify_email("user@example.com")
+
+        assert result["status"] == ERROR
+        assert "MX lookup failed" in result["error"]
 
     def test_verify_with_mx_smtp_fail(self, monkeypatch):
         import dns.resolver
         import smtplib
         from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import ERROR
 
         class MXAnswer:
             def __iter__(self):
@@ -214,6 +315,79 @@ class TestSMTPVerifier:
         result = SMTPVerifier().verify_email("user@test.com")
         assert result["mx_found"] is True
         assert result["smtp_connect"] is False
+        assert result["status"] == ERROR
+        assert "Connection error" in result["error"]
+
+    @pytest.mark.parametrize(
+        ("response_code", "expected_exists"),
+        [(451, None), (550, False)],
+    )
+    def test_mailbox_refusal_is_a_valid_smtp_answer(self, monkeypatch, response_code, expected_exists):
+        import dns.resolver
+        import smtplib
+        from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import OK
+
+        class MXAnswer:
+            def __iter__(self):
+                return iter([type("R", (), {
+                    "preference": 10,
+                    "exchange": type("E", (), {"__str__": lambda self: "mail.test.com."})(),
+                })()])
+
+        monkeypatch.setattr(dns.resolver, "resolve", lambda *args: MXAnswer())
+
+        class MockSMTP:
+            def __init__(self, timeout=10):
+                pass
+            def connect(self, host):
+                return 220, b"ready"
+            def ehlo_or_helo_if_needed(self):
+                pass
+            def mail(self, sender):
+                return 250, b"ok"
+            def rcpt(self, recipient):
+                return response_code, b"mailbox unavailable"
+            def quit(self):
+                pass
+
+        monkeypatch.setattr(smtplib, "SMTP", MockSMTP)
+
+        result = SMTPVerifier().verify_email("missing@test.com")
+
+        assert result["exists"] is expected_exists
+        assert result["status"] == OK
+        assert result["error"] is None
+
+    def test_smtp_protocol_failure_is_error(self, monkeypatch):
+        import dns.resolver
+        import smtplib
+        from modules.smtp_verify import SMTPVerifier
+        from modules.module_status import ERROR
+
+        class MXAnswer:
+            def __iter__(self):
+                return iter([type("R", (), {
+                    "preference": 10,
+                    "exchange": type("E", (), {"__str__": lambda self: "mail.test.com."})(),
+                })()])
+
+        monkeypatch.setattr(dns.resolver, "resolve", lambda *args: MXAnswer())
+
+        class MockSMTP:
+            def __init__(self, timeout=10):
+                pass
+            def connect(self, host):
+                return 220, b"ready"
+            def ehlo_or_helo_if_needed(self):
+                raise smtplib.SMTPServerDisconnected("protocol closed")
+
+        monkeypatch.setattr(smtplib, "SMTP", MockSMTP)
+
+        result = SMTPVerifier().verify_email("user@test.com")
+
+        assert result["status"] == ERROR
+        assert "Server disconnected" in result["error"]
 
     def test_disposable_detection(self):
         from modules.smtp_verify import SMTPVerifier
@@ -222,6 +396,135 @@ class TestSMTPVerifier:
         assert v._check_disposable("yopmail.com") is True
         assert v._check_disposable("gmail.com") is False
         assert v._check_disposable("company.com") is False
+
+class TestCryptoLookupStatuses:
+    def _lookup_with_status(self, monkeypatch, status_code):
+        from modules.crypto_lookup import CryptoLookup
+
+        class MockResponse:
+            def __init__(self):
+                self.status_code = status_code
+
+            def json(self):
+                return {"final_balance": 100000000, "total_received": 100000000, "total_sent": 0, "n_tx": 1}
+
+        monkeypatch.setattr("modules.crypto_lookup.get_proxies", lambda: None)
+        monkeypatch.setattr("modules.crypto_lookup.requests.get", lambda *args, **kwargs: MockResponse())
+        monkeypatch.setattr(CryptoLookup, "_get_price", lambda self, coin: 0.0)
+        return CryptoLookup().lookup_bitcoin("1BoatSLRHtKNngkdXEeobR76b53LETtpyT")
+
+    def test_success_is_ok(self, monkeypatch):
+        from modules.module_status import OK
+
+        result = self._lookup_with_status(monkeypatch, 200)
+
+        assert result["status"] == OK
+        assert result["error"] is None
+
+    def test_http_429_is_rate_limited(self, monkeypatch):
+        from modules.module_status import RATE_LIMITED
+
+        result = self._lookup_with_status(monkeypatch, 429)
+
+        assert result["status"] == RATE_LIMITED
+        assert result["error"] is None
+
+    def test_other_http_failure_is_error(self, monkeypatch):
+        from modules.module_status import ERROR
+
+        result = self._lookup_with_status(monkeypatch, 503)
+
+        assert result["status"] == ERROR
+        assert "503" in result["error"]
+
+    @pytest.mark.parametrize(
+        ("price_status", "expected_status"),
+        [(200, "ok"), (429, "rate_limited"), (503, "error")],
+    )
+    def test_price_provider_failures_are_annotated(self, monkeypatch, price_status, expected_status):
+        from modules.crypto_lookup import CryptoLookup
+
+        class MockResponse:
+            def __init__(self, status_code):
+                self.status_code = status_code
+
+            def json(self):
+                if self.status_code == 200:
+                    return {"final_balance": 100000000, "total_received": 100000000, "total_sent": 0, "n_tx": 1}
+                return {"bitcoin": {"usd": 50000}}
+
+        def mock_get(url, **kwargs):
+            if "coingecko" in url:
+                return MockResponse(price_status)
+            return MockResponse(200)
+
+        monkeypatch.setattr("modules.crypto_lookup.get_proxies", lambda: None)
+        monkeypatch.setattr("modules.crypto_lookup.requests.get", mock_get)
+        monkeypatch.setattr(CryptoLookup, "_prices_cache", None)
+        monkeypatch.setattr(CryptoLookup, "_prices_error", None)
+        monkeypatch.setattr(CryptoLookup, "_prices_status", None)
+        monkeypatch.setattr(CryptoLookup, "_prices_timestamp", 0.0)
+
+        result = CryptoLookup().lookup_bitcoin("1BoatSLRHtKNngkdXEeobR76b53LETtpyT")
+
+        assert result["status"] == expected_status
+        if expected_status == "error":
+            assert "CoinGecko" in result["error"]
+        else:
+            assert result["error"] is None
+
+
+class TestDarkWebSearchStatuses:
+    def _search_with_status(self, monkeypatch, status_code, results=None):
+        from modules.darkweb_search import DarkWebSearch
+
+        class MockResponse:
+            def __init__(self):
+                self.status_code = status_code
+
+            def json(self):
+                if results is None:
+                    return {"results": [{"title": "example", "url": "http://example.onion", "description": "result"}]}
+                return {"results": results}
+
+        monkeypatch.setattr("modules.darkweb_search.get_proxies", lambda: None)
+        monkeypatch.setattr("modules.darkweb_search.requests.get", lambda *args, **kwargs: MockResponse())
+        return DarkWebSearch().search("example")
+
+    def test_success_is_ok(self, monkeypatch):
+        from modules.module_status import OK
+
+        result = self._search_with_status(monkeypatch, 200)
+
+        assert result["status"] == OK
+        assert result["error"] is None
+        assert result["results"]
+
+    def test_successful_empty_search_is_ok(self, monkeypatch):
+        from modules.module_status import OK
+
+        result = self._search_with_status(monkeypatch, 200, results=[])
+
+        assert result["status"] == OK
+        assert result["error"] is None
+        assert result["results"] == []
+
+    def test_http_429_is_rate_limited(self, monkeypatch):
+        from modules.module_status import RATE_LIMITED
+
+        result = self._search_with_status(monkeypatch, 429)
+
+        assert result["status"] == RATE_LIMITED
+        assert result["error"] is None
+
+    def test_other_http_failure_is_error(self, monkeypatch):
+        from modules.module_status import ERROR
+
+        result = self._search_with_status(monkeypatch, 503)
+
+        assert result["status"] == ERROR
+        assert "503" in result["error"]
+
 
 class TestHLRLookup:
     def test_validate_valid_phone(self):
