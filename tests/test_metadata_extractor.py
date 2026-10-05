@@ -12,6 +12,7 @@ from modules.metadata_extractor import (
 )
 
 
+
 def test_dms_to_decimal_handles_south_and_west_ref():
     assert _dms_to_decimal((12, 30, 0), "S") == -12.5
     assert _dms_to_decimal((45, 30, 0), "W") == -45.5
@@ -71,6 +72,7 @@ def test_extract_image_metadata_reads_known_exif_and_gps(tmp_path):
     assert result["raw_exif"]
     assert result["software"] == "Example Software"
     assert result["author"] == "Example Artist"
+    assert result["status"] == "ok"
     assert result["error"] is None
 
 
@@ -83,6 +85,7 @@ def test_extract_image_metadata_without_metadata_returns_clean_result(tmp_path):
     assert result["format"] == "JPEG"
     assert result["gps"] is None
     assert result["raw_exif"] == {}
+    assert result["status"] == "ok"
     assert result["error"] is None
 
 
@@ -102,6 +105,7 @@ def test_extract_image_metadata_handles_malformed_exif_block(tmp_path, monkeypat
     result = extract_image_metadata(str(img_path))
 
     assert isinstance(result, dict)
+    assert result["status"] == "error"
     assert result["error"] is not None
 
 
@@ -112,6 +116,7 @@ def test_extract_metadata_rejects_corrupt_file_without_raising(tmp_path):
     result = extract_image_metadata(str(bad_path))
 
     assert isinstance(result, dict)
+    assert result["status"] == "error"
     assert result["error"] is not None
 
 
@@ -119,4 +124,129 @@ def test_extract_metadata_handles_unknown_file_type():
     result = extract_metadata("notes.txt")
 
     assert result["file"] == "notes.txt"
+    assert result["status"] == "error"
     assert result["error"].startswith("Unsupported file type:")
+
+
+def test_extract_image_metadata_missing_pillow_is_skipped(monkeypatch, tmp_path):
+    import modules.metadata_extractor as mod
+
+    monkeypatch.setattr(mod, "PILLOW_AVAILABLE", False)
+    test_path = tmp_path / "dummy.jpg"
+    test_path.write_bytes(b"dummy")
+
+    result = mod.extract_image_metadata(str(test_path))
+
+    assert result["status"] == "skipped"
+    assert result["status_reason"] == "Pillow not installed: pip install Pillow"
+    assert result["error"] is None
+
+
+def test_extract_pdf_metadata_missing_pypdf_is_skipped(monkeypatch, tmp_path):
+    import modules.metadata_extractor as mod
+
+    monkeypatch.setattr(mod, "PYPDF_AVAILABLE", False)
+    test_path = tmp_path / "dummy.pdf"
+    test_path.write_bytes(b"dummy")
+
+    result = mod.extract_pdf_metadata(str(test_path))
+
+    assert result["status"] == "skipped"
+    assert result["status_reason"] == "pypdf not installed: pip install pypdf"
+    assert result["error"] is None
+
+
+def test_extract_docx_metadata_missing_docx_is_skipped(monkeypatch, tmp_path):
+    import modules.metadata_extractor as mod
+
+    monkeypatch.setattr(mod, "DOCX_AVAILABLE", False)
+    test_path = tmp_path / "dummy.docx"
+    test_path.write_bytes(b"dummy")
+
+    result = mod.extract_docx_metadata(str(test_path))
+
+    assert result["status"] == "skipped"
+    assert result["status_reason"] == "python-docx not installed: pip install python-docx"
+    assert result["error"] is None
+
+
+def test_extract_pdf_metadata_corrupt_file_is_error(tmp_path):
+    pytest.importorskip("pypdf")
+    bad_path = tmp_path / "broken.pdf"
+    bad_path.write_bytes(b"not a valid pdf content")
+
+    result = extract_metadata(str(bad_path))
+
+    assert result["status"] == "error"
+    assert result["error"] is not None
+
+
+def test_extract_docx_metadata_corrupt_file_is_error(tmp_path):
+    pytest.importorskip("docx")
+    bad_path = tmp_path / "broken.docx"
+    bad_path.write_bytes(b"not a valid zip or docx content")
+
+    result = extract_metadata(str(bad_path))
+
+    assert result["status"] == "error"
+    assert result["error"] is not None
+
+
+def test_extract_pdf_metadata_valid_with_and_without_metadata(tmp_path):
+    pypdf = pytest.importorskip("pypdf")
+
+    # 1. Valid PDF with metadata
+    writer = pypdf.PdfWriter()
+    writer.add_blank_page(width=100, height=100)
+    writer.add_metadata({"/Title": "Test Title", "/Author": "Test Author"})
+    with_meta_path = tmp_path / "with_meta.pdf"
+    with open(with_meta_path, "wb") as f:
+        writer.write(f)
+
+    res_meta = extract_metadata(str(with_meta_path))
+    assert res_meta["status"] == "ok"
+    assert res_meta["error"] is None
+    assert res_meta["title"] == "Test Title"
+    assert res_meta["author"] == "Test Author"
+    assert res_meta["pages"] == 1
+
+    # 2. Valid PDF without metadata
+    writer_blank = pypdf.PdfWriter()
+    writer_blank.add_blank_page(width=100, height=100)
+    no_meta_path = tmp_path / "no_meta.pdf"
+    with open(no_meta_path, "wb") as f:
+        writer_blank.write(f)
+
+    res_no_meta = extract_metadata(str(no_meta_path))
+    assert res_no_meta["status"] == "ok"
+    assert res_no_meta["error"] is None
+    assert res_no_meta["pages"] == 1
+    assert res_no_meta["title"] is None
+
+
+def test_extract_docx_metadata_valid_with_and_without_metadata(tmp_path):
+    docx = pytest.importorskip("docx")
+
+    # 1. Valid DOCX with metadata
+    doc = docx.Document()
+    doc.core_properties.title = "DOCX Sample"
+    doc.core_properties.author = "Docx Author"
+    with_meta_path = tmp_path / "with_meta.docx"
+    doc.save(str(with_meta_path))
+
+    res_meta = extract_metadata(str(with_meta_path))
+    assert res_meta["status"] == "ok"
+    assert res_meta["error"] is None
+    assert res_meta["title"] == "DOCX Sample"
+    assert res_meta["author"] == "Docx Author"
+
+    # 2. Valid DOCX without metadata
+    doc_blank = docx.Document()
+    no_meta_path = tmp_path / "no_meta.docx"
+    doc_blank.save(str(no_meta_path))
+
+    res_no_meta = extract_metadata(str(no_meta_path))
+    assert res_no_meta["status"] == "ok"
+    assert res_no_meta["error"] is None
+
+
