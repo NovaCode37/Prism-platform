@@ -5,6 +5,30 @@ import xml.etree.ElementTree as ET
 from typing import Dict, Any, Optional
 from datetime import datetime
 
+from modules.module_status import annotate, OK, SKIPPED, ERROR
+
+try:
+    import PIL  # noqa: F401
+    PILLOW_AVAILABLE = True
+except ImportError:
+    PILLOW_AVAILABLE = False
+
+try:
+    import pypdf  # noqa: F401
+    PYPDF_AVAILABLE = True
+except ImportError:
+    try:
+        import PyPDF2  # noqa: F401
+        PYPDF_AVAILABLE = True
+    except ImportError:
+        PYPDF_AVAILABLE = False
+
+try:
+    import docx  # noqa: F401
+    DOCX_AVAILABLE = True
+except ImportError:
+    DOCX_AVAILABLE = False
+
 
 def _extract_xmp(file_path: str) -> Optional[str]:
     try:
@@ -211,6 +235,9 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
         "error": None,
     }
 
+    if not PILLOW_AVAILABLE:
+        return annotate(result, SKIPPED, "Pillow not installed: pip install Pillow")
+
     try:
         from PIL import Image
         from PIL.ExifTags import TAGS, GPSTAGS
@@ -281,12 +308,10 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
                     if not result["timestamps"]:
                         result["timestamps"] = xmp.get("timestamps", {})
 
-    except ImportError:
-        result["error"] = "Pillow not installed: pip install Pillow"
     except Exception as e:
-        result["error"] = str(e)
+        return annotate(result, ERROR, str(e))
 
-    return result
+    return annotate(result, OK)
 
 
 def extract_pdf_metadata(file_path: str) -> Dict[str, Any]:
@@ -306,6 +331,9 @@ def extract_pdf_metadata(file_path: str) -> Dict[str, Any]:
         "gps": None,
         "error": None,
     }
+
+    if not PYPDF_AVAILABLE:
+        return annotate(result, SKIPPED, "pypdf not installed: pip install pypdf")
 
     try:
         import pypdf
@@ -335,13 +363,13 @@ def extract_pdf_metadata(file_path: str) -> Dict[str, Any]:
                     result["producer"] = meta.get("/Producer")
                     result["title"]    = meta.get("/Title")
         except ImportError:
-            result["error"] = "pypdf not installed: pip install pypdf"
+            return annotate(result, SKIPPED, "pypdf not installed: pip install pypdf")
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
     except Exception as e:
-        result["error"] = str(e)
+        return annotate(result, ERROR, str(e))
 
-    return result
+    return annotate(result, OK)
 
 
 def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
@@ -361,6 +389,9 @@ def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
         "error": None,
     }
 
+    if not DOCX_AVAILABLE:
+        return annotate(result, SKIPPED, "python-docx not installed: pip install python-docx")
+
     try:
         import docx
         doc = docx.Document(file_path)
@@ -373,12 +404,10 @@ def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
         result["title"]            = cp.title
         result["subject"]          = cp.subject
         result["keywords"]         = cp.keywords
-    except ImportError:
-        result["error"] = "python-docx not installed: pip install python-docx"
     except Exception as e:
-        result["error"] = str(e)
+        return annotate(result, ERROR, str(e))
 
-    return result
+    return annotate(result, OK)
 
 
 def extract_metadata(file_path: str) -> Dict[str, Any]:
@@ -390,4 +419,4 @@ def extract_metadata(file_path: str) -> Dict[str, Any]:
     elif ext in (".docx", ".docm"):
         return extract_docx_metadata(file_path)
     else:
-        return {"error": f"Unsupported file type: {ext}", "file": os.path.basename(file_path)}
+        return annotate({"file": os.path.basename(file_path)}, ERROR, f"Unsupported file type: {ext}")

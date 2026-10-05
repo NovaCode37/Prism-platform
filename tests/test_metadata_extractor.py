@@ -1,15 +1,19 @@
 import pytest
 from PIL import Image, TiffImagePlugin
 
+from modules import metadata_extractor
 from modules.metadata_extractor import (
     _dms_to_decimal,
     _parse_exif_gps,
     _parse_xmp_coord,
     _to_float,
     _xmp_frac,
+    extract_docx_metadata,
     extract_image_metadata,
     extract_metadata,
+    extract_pdf_metadata,
 )
+from modules.module_status import ERROR, OK, SKIPPED
 
 
 def test_dms_to_decimal_handles_south_and_west_ref():
@@ -72,6 +76,7 @@ def test_extract_image_metadata_reads_known_exif_and_gps(tmp_path):
     assert result["software"] == "Example Software"
     assert result["author"] == "Example Artist"
     assert result["error"] is None
+    assert result["status"] == OK
 
 
 def test_extract_image_metadata_without_metadata_returns_clean_result(tmp_path):
@@ -84,6 +89,7 @@ def test_extract_image_metadata_without_metadata_returns_clean_result(tmp_path):
     assert result["gps"] is None
     assert result["raw_exif"] == {}
     assert result["error"] is None
+    assert result["status"] == OK
 
 
 def test_extract_image_metadata_handles_malformed_exif_block(tmp_path, monkeypatch):
@@ -103,6 +109,7 @@ def test_extract_image_metadata_handles_malformed_exif_block(tmp_path, monkeypat
 
     assert isinstance(result, dict)
     assert result["error"] is not None
+    assert result["status"] == ERROR
 
 
 def test_extract_metadata_rejects_corrupt_file_without_raising(tmp_path):
@@ -113,6 +120,7 @@ def test_extract_metadata_rejects_corrupt_file_without_raising(tmp_path):
 
     assert isinstance(result, dict)
     assert result["error"] is not None
+    assert result["status"] == ERROR
 
 
 def test_extract_metadata_handles_unknown_file_type():
@@ -120,3 +128,95 @@ def test_extract_metadata_handles_unknown_file_type():
 
     assert result["file"] == "notes.txt"
     assert result["error"].startswith("Unsupported file type:")
+    assert result["status"] == ERROR
+
+
+@pytest.mark.parametrize(
+    "flag, func, filename, hint",
+    [
+        ("PILLOW_AVAILABLE", extract_image_metadata, "photo.jpg", "pip install Pillow"),
+        ("PYPDF_AVAILABLE", extract_pdf_metadata, "doc.pdf", "pip install pypdf"),
+        ("DOCX_AVAILABLE", extract_docx_metadata, "doc.docx", "pip install python-docx"),
+    ],
+)
+def test_missing_library_is_skipped_not_error(tmp_path, monkeypatch, flag, func, filename, hint):
+    path = tmp_path / filename
+    path.write_bytes(b"placeholder")
+    monkeypatch.setattr(metadata_extractor, flag, False)
+
+    result = func(str(path))
+
+    assert result["status"] == SKIPPED
+    assert hint in result["status_reason"]
+    assert result["error"] is None
+
+
+def test_corrupt_pdf_is_error(tmp_path):
+    path = tmp_path / "broken.pdf"
+    path.write_bytes(b"not a real pdf")
+
+    result = extract_pdf_metadata(str(path))
+
+    assert result["status"] == ERROR
+    assert result["error"]
+
+
+def test_corrupt_docx_is_error(tmp_path):
+    path = tmp_path / "broken.docx"
+    path.write_bytes(b"not a real docx")
+
+    result = extract_docx_metadata(str(path))
+
+    assert result["status"] == ERROR
+    assert result["error"]
+
+
+def _blank_pdf(path, metadata=None):
+    import pypdf
+
+    writer = pypdf.PdfWriter()
+    writer.add_blank_page(width=72, height=72)
+    if metadata:
+        writer.add_metadata(metadata)
+    with open(path, "wb") as f:
+        writer.write(f)
+
+
+def test_pdf_with_metadata_is_ok(tmp_path):
+    path = tmp_path / "tagged.pdf"
+    _blank_pdf(path, {"/Title": "Report", "/Author": "Jane Doe"})
+
+    result = extract_pdf_metadata(str(path))
+
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["pages"] == 1
+    assert result["title"] == "Report"
+    assert result["author"] == "Jane Doe"
+
+
+def test_pdf_without_metadata_is_ok(tmp_path):
+    path = tmp_path / "plain.pdf"
+    _blank_pdf(path)
+
+    result = extract_pdf_metadata(str(path))
+
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["title"] is None
+    assert result["author"] is None
+
+
+def test_docx_with_metadata_is_ok(tmp_path):
+    import docx
+
+    path = tmp_path / "tagged.docx"
+    document = docx.Document()
+    document.core_properties.author = "Jane Doe"
+    document.save(path)
+
+    result = extract_docx_metadata(str(path))
+
+    assert result["status"] == OK
+    assert result["error"] is None
+    assert result["author"] == "Jane Doe"
