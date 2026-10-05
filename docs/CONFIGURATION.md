@@ -154,7 +154,7 @@ prism.example.com {
 | `VIRUSTOTAL_API_KEY`              | Threat intelligence                  | 500 req/day      |
 | `ABUSEIPDB_API_KEY`               | IP abuse score                       | 1000 req/day     |
 | `SHODAN_API_KEY`                  | Port scan + CVE lookup               | Free tier        |
-| `CENSYS_API_ID` + `CENSYS_API_SECRET` | Host & certificate search        | 250 req/mo       |
+| `CENSYS_PAT` / `CENSYS_ORG_ID`    | Host & certificate search        | 250 req/mo       |
 | `OPENROUTER_API_KEY`              | AI summary (Nvidia Nemotron)         | Free tier        |
 | `GROQ_API_KEY`                    | AI fallback (Llama-3 instant)        | Free tier        |
 | `TELEGRAM_BOT_TOKEN`              | Telegram user lookup                 | Free             |
@@ -177,8 +177,8 @@ prism.example.com {
 | `ABUSEIPDB_API_KEY`  |Checks if an IP address has been reported for malicious activity | No | AbuseIPDB Dashboard  |
 | `SHODAN_API_KEY`     |Searches for internet-connected devices and open ports | No | Shodan Developer Dashboard     |
 | `TELEGRAM_BOT_TOKEN` | Sends automated scan alerts and reports directly to a Telegram channel | No | Telegram BotFather |
-| `CENSYS_API_ID`      | Authenticates attack surface and internet-wide scanning queries | No | Censys Search Console |
-| `CENSYS_API_SECRET`  | Paired with CENSYS_API_ID for Censys data access | No | Censys Search Console |
+| `CENSYS_PAT`         | Personal Access Token for Censys (alias `CENSYS_API_KEY`). Create this in the Censys Platform UI | No | Censys Search Console |
+| `CENSYS_ORG_ID`      | Censys Organization ID. Only needed if your token is scoped to a specific organization. | No | Censys Search Console |
 | `ALLOWED_ORIGINS`    | Configures CORS settings to restrict which frontend domains can talk to your backend | No | Set to a comma-separated list of domains |
 | `PRISM_BASE_PATH`    | Public backend path prefix for reverse proxy subpath deployments | No | Set to `/prism` or leave empty |
 | `PRISM_UI_API_KEY`   | Public browser UI key injected into the Docker-served UI | No | Use an accepted UI-scoped value from `API_KEYS` |

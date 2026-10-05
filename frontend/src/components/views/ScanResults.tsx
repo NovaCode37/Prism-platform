@@ -828,7 +828,7 @@ export function ScanResults({ scan, onHome }: Props) {
     { name: 'Shodan', mod: r.shodan, key: 'SHODAN_API_KEY' },
     { name: 'VirusTotal', mod: r.virustotal, key: 'VIRUSTOTAL_API_KEY' },
     { name: 'AbuseIPDB', mod: r.abuseipdb, key: 'ABUSEIPDB_API_KEY' },
-    { name: 'Censys', mod: r.censys, key: 'CENSYS_API_ID / CENSYS_API_SECRET' },
+    { name: 'Censys', mod: r.censys, key: 'CENSYS_PAT' },
   ].filter(({ mod }) => mod && modStatus(mod) === 'skipped');
 
   const showLimitedIpNotice = scan.scan_type === 'ip' && skippedIpProviders.length > 0;
