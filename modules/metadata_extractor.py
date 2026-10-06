@@ -7,23 +7,23 @@ from datetime import datetime
 from modules.module_status import annotate, OK, SKIPPED, ERROR
 
 try:
-    import PIL
+    import PIL  # noqa: F401
     PILLOW_AVAILABLE = True
 except ImportError:
     PILLOW_AVAILABLE = False
 
 try:
-    import pypdf
+    import pypdf  # noqa: F401
     PYPDF_AVAILABLE = True
 except ImportError:
     try:
-        import PyPDF2
+        import PyPDF2  # noqa: F401
         PYPDF_AVAILABLE = True
     except ImportError:
         PYPDF_AVAILABLE = False
 
 try:
-    import docx
+    import docx  # noqa: F401
     DOCX_AVAILABLE = True
 except ImportError:
     DOCX_AVAILABLE = False
@@ -307,8 +307,6 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
                     if not result["timestamps"]:
                         result["timestamps"] = xmp.get("timestamps", {})
 
-    except ImportError:
-        return annotate(result, SKIPPED, "Pillow not installed: pip install Pillow")
     except Exception as e:
         return annotate(result, ERROR, str(e))
 
@@ -405,8 +403,6 @@ def extract_docx_metadata(file_path: str) -> Dict[str, Any]:
         result["title"]            = cp.title
         result["subject"]          = cp.subject
         result["keywords"]         = cp.keywords
-    except ImportError:
-        return annotate(result, SKIPPED, "python-docx not installed: pip install python-docx")
     except Exception as e:
         return annotate(result, ERROR, str(e))
 
