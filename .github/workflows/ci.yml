@@ -94,6 +94,7 @@ jobs:
           npm run test:scan-target
           npm run test:encoder
           npm run test:version
+          npm run test:risk-levels
 
       - name: Build
         run: npm run build

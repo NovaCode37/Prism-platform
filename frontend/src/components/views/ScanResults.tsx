@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github, UserCircle, TrendingUp } from 'lucide-react';
-import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
+import type { ScanResults, ScanMeta, OpsecFinding, OpsecScore, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
 import { fetchReportBlob, fetchGraphExport, generateAiSummary, sendAiChat, getMapData, getGraphData, startScan, getScan } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
 
@@ -288,7 +288,7 @@ function GraphView({ scanId }: { scanId: string }) {
   );
 }
 
-const RISK_COLOR: Record<string, string> = {
+const RISK_COLOR: Record<OpsecScore['risk_level'], string> = {
   CRITICAL: '#f85149', HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#3fb950', MINIMAL: '#3fb950', NOT_ASSESSED: '#636e72'
 };
 
