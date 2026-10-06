@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any, List
 from modules import get_proxies
+from modules.module_status import ERROR, OK, RATE_LIMITED, annotate
 
 
 class DarkWebSearch:
@@ -28,7 +29,8 @@ class DarkWebSearch:
             "source": "",
             "error": None,
         }
-        last_error = ""
+        failures: List[str] = []
+        rate_limited = 0
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
         for backend in self.BACKENDS:
@@ -42,32 +44,35 @@ class DarkWebSearch:
                     proxies=proxies,  
                 )
                 if r.status_code == 429:
-                    last_error = f'{backend["name"]}: rate limited'
+                    failures.append(f'{backend["name"]}: rate limited')
+                    rate_limited += 1
                     continue
                 if r.status_code != 200:
-                    last_error = f'{backend["name"]}: HTTP {r.status_code}'
+                    failures.append(f'{backend["name"]}: HTTP {r.status_code}')
                     continue
 
-                if backend["parse"] is not None:
-                    raw = backend["parse"](r.json())
-                    entries: List[Dict] = [backend["map"](i) for i in raw[:limit] if i.get("title")]
-                    if entries:
-                        result["results"] = entries
-                        result["source"] = backend["name"]
-                        result["total"] = len(entries)
-                        return result
-                    last_error = f'{backend["name"]}: no results'
-                else:
-                    last_error = f'{backend["name"]}: requires JavaScript rendering'
+                if backend["parse"] is None:
+                    failures.append(f'{backend["name"]}: requires JavaScript rendering')
+                    continue
+
+                raw = backend["parse"](r.json())
+                entries: List[Dict] = [backend["map"](i) for i in raw if i.get("title")][:limit]
+                result["results"] = entries
+                result["source"] = backend["name"]
+                result["total"] = len(entries)
+                reason = "; ".join(failures) if failures else None
+                return annotate(result, OK, reason)
 
             except requests.exceptions.ConnectionError:
-                last_error = f'{backend["name"]}: unreachable (DNS/network error)'
+                failures.append(f'{backend["name"]}: unreachable (DNS/network error)')
             except Exception as e:
-                last_error = f'{backend["name"]}: {str(e)[:100]}'
+                failures.append(f'{backend["name"]}: {str(e)[:100]}')
 
-        result["error"] = (
-            f"Dark web search is unavailable: {last_error}. "
+        status = RATE_LIMITED if rate_limited and rate_limited == len(failures) else ERROR
+        return annotate(
+            result,
+            status,
+            f"Dark web search is unavailable: {'; '.join(failures)}. "
             "Most Tor search indexes require JavaScript or direct Tor access. "
-            "Use Tor Browser with Ahmia (ahmia.fi) or DuckDuckGo onion for manual searches."
+            "Use Tor Browser with Ahmia (ahmia.fi) or DuckDuckGo onion for manual searches.",
         )
-        return result
