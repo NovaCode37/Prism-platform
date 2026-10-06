@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book, Eye, Puzzle, AlertCircle, Keyboard } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslations, SUPPORTED_LOCALES } from '@/lib/i18n';
@@ -16,21 +16,23 @@ interface Props {
   onShortcuts: () => void;
 }
 
+function subscribeToClock(onTick: () => void) {
+  const iv = setInterval(onTick, 1000);
+  return () => clearInterval(iv);
+}
+
+const readClock = () => Math.floor(Date.now() / 1000);
+// The static export has no clock to read, so the first paint renders empty and hydration matches.
+const readServerClock = () => null;
+
 function useDateTime() {
-  const [dt, setDt] = useState({ date: '', time: '' });
-  useEffect(() => {
-    const fmt = () => {
-      const now = new Date();
-      return {
-        date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-      };
-    };
-    setDt(fmt());
-    const iv = setInterval(() => setDt(fmt()), 1000);
-    return () => clearInterval(iv);
-  }, []);
-  return dt;
+  const seconds = useSyncExternalStore(subscribeToClock, readClock, readServerClock);
+  if (seconds === null) return { date: '', time: '' };
+  const now = new Date(seconds * 1000);
+  return {
+    date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+  };
 }
 
 export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle, onShortcuts }: Props) {
