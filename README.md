@@ -43,7 +43,7 @@ Scan a domain, IP, email, phone or username and get WHOIS, DNS, threat intel, br
 - **OPSEC Score**: aggregated 0-100 exposure risk score across data exposure, identity, infrastructure and web security
 - **HTML, PDF, CSV & Markdown reports**: export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE)
 - **Multi-language UI**: English, Russian, German, French, Spanish, Italian, Polish, Portuguese, and Chinese out of the box (i18n + auto-detect)
-- **Standalone CLI**: run scans headlessly via `python cli.py scan example.com --json`, and manage scheduled re-scans with `python cli.py watchlist add example.com --interval 6`
+- **Standalone CLI**: run scans headlessly via `python cli.py scan example.com --json`, manage scheduled re-scans with `python cli.py watchlist add example.com --interval 6`, and see which modules `-m` accepts and which are missing an API key with `python cli.py modules`
 - **Scan history & comparison**: browse past scans, load results, compare two scans side-by-side
 - **Webhook callbacks**: get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
 - **Hardened auth**: header-only API keys (`X-API-Key` / `Bearer`), no query-string secrets, strict CORS, per-principal scan isolation
