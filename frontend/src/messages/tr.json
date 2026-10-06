@@ -298,7 +298,7 @@
       "infrastructure": { "label": "Altyapı", "tooltip": "Açığa çıkan hizmetler, açık portlar, zayıf DNS/WHOIS hijyeni, tehdit istihbaratı eşleşmeleri." },
       "web_security": { "label": "Web Güvenliği", "tooltip": "TLS, güvenlik başlıkları, sertifika şeffaflığı, arşivlenmiş hassas yollar." }
     },
-    "common": { "yes": "Evet", "no": "Hayır", "unknown": "Bilinmiyor", "points": "puan" },
+    "common": { "yes": "Evet", "no": "Hayır", "unknown": "Bilinmiyor", "points": "puan", "moduleRetry": "Tekrar denemek için yenile düğmesini kullanın." },
     "findings": { "title": "Güvenlik Bulguları", "none": "Güvenlik bulgusu yok" },
     "whois": { "title": "WHOIS Kaydı", "registrar": "Kayıt Kuruluşu", "organization": "Kuruluş", "country": "Ülke", "created": "Oluşturulma", "expires": "Sona erme", "emails": "E-postalar", "nameServers": "Ad Sunucuları" },
     "dns": { "title": "DNS Kayıtları" },

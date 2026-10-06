@@ -356,14 +356,16 @@ function ModuleStatusBadge({ status, label }: { status: ModuleStatus; label?: st
   );
 }
 
-function ModuleNotice({ status, reason }: { status: 'skipped' | 'rate_limited'; reason?: string }) {
+function ModuleNotice({ status, reason }: { status: Exclude<ModuleStatus, 'ok'>; reason?: string }) {
+  const { t } = useTranslations();
   const b = STATUS_BADGE[status];
   return (
-    <div className="text-[12px]" style={{ color: status === 'rate_limited' ? b.color : undefined }}>
+    <div className="text-[12px]" style={{ color: status === 'skipped' ? undefined : b.color }}>
       <span className="text-text-2">{reason || b.hint}</span>
       {status === 'skipped' && (
         <span className="text-text-3"> - add the key to <code className="font-mono">.env</code> to enable this module.</span>
       )}
+      {status === 'error' && <div className="text-text-3 mt-1">{t('results.common.moduleRetry')}</div>}
     </div>
   );
 }
@@ -378,14 +380,12 @@ function KeyModuleCard({ title, mod, children, onRefresh, refreshing = false }: 
   if (!mod) return null;
   const st = modStatus(mod);
   if (st === 'ok') return <Card title={title} onRefresh={onRefresh} refreshing={refreshing}>{children}</Card>;
-  if (st === 'skipped' || st === 'rate_limited') {
-    return (
-      <Card title={title} extra={<ModuleStatusBadge status={st} />} onRefresh={onRefresh} refreshing={refreshing}>
-        <ModuleNotice status={st} reason={mod.status_reason} />
-      </Card>
-    );
-  }
-  return null;
+  return (
+    <Card title={title} extra={<ModuleStatusBadge status={st} />} onRefresh={onRefresh} refreshing={refreshing}>
+      <ModuleNotice status={st} reason={mod.status_reason || mod.error || undefined} />
+      {st === 'rate_limited' && <div className="mt-3">{children}</div>}
+    </Card>
+  );
 }
 
 function CopyIconButton({ onClick, label }: { onClick: () => void; label: string }) {
@@ -839,9 +839,9 @@ export function ScanResults({ scan, onHome }: Props) {
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
     if (t.id === 'subdomains') return r.cert_transparency?.subdomains?.length;
     if (t.id === 'accounts') return accounts.some(b => b.status === 'found');
-    if (t.id === 'github') return r.github && modStatus(r.github) === 'ok';
-    if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(m => m && modStatus(m) !== 'error');
-    if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
+    if (t.id === 'github') return r.github && modStatus(r.github) !== 'skipped';
+    if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(Boolean);
+    if (t.id === 'censys') return r.censys && modStatus(r.censys) !== 'skipped';
     if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
     if (t.id === 'wayback') return r.wayback;
     if (t.id === 'email') return r.emailrep || r.smtp || r.breaches || r.gravatar;

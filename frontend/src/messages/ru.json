@@ -298,7 +298,7 @@
       "infrastructure": { "label": "Инфраструктура", "tooltip": "Открытые сервисы и порты, слабая гигиена DNS/WHOIS, попадания в базы угроз (threat intel)." },
       "web_security": { "label": "Веб-безопасность", "tooltip": "TLS, заголовки безопасности, Certificate Transparency, архивные чувствительные пути." }
     },
-    "common": { "yes": "Да", "no": "Нет", "unknown": "Неизвестно", "points": "б." },
+    "common": { "yes": "Да", "no": "Нет", "unknown": "Неизвестно", "points": "б.", "moduleRetry": "Нажмите кнопку обновления, чтобы попробовать снова." },
     "findings": { "title": "Замечания по безопасности", "none": "Замечаний по безопасности нет" },
     "whois": { "title": "Данные WHOIS", "registrar": "Регистратор", "organization": "Организация", "country": "Страна", "created": "Создан", "expires": "Истекает", "emails": "Email", "nameServers": "DNS-серверы" },
     "dns": { "title": "DNS-записи" },

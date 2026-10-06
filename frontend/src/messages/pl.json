@@ -360,7 +360,8 @@
     "yes": "Tak",
     "no": "Nie",
     "unknown": "Nieznane",
-    "points": "pkt"
+    "points": "pkt",
+    "moduleRetry": "Użyj przycisku odświeżania, aby spróbować ponownie."
   },
     "findings": {
       "title": "Wykryte zagrożenia",

@@ -176,7 +176,7 @@
       "infrastructure": { "label": "Infrastructure", "tooltip": "Services exposés, ports ouverts, mauvaise hygiène DNS/WHOIS, correspondances threat-intel." },
       "web_security": { "label": "Sécurité web", "tooltip": "TLS, en-têtes de sécurité, transparence des certificats, chemins sensibles archivés." }
     },
-    "common": { "yes": "Oui", "no": "Non", "unknown": "Inconnu", "points": "pts" },
+    "common": { "yes": "Oui", "no": "Non", "unknown": "Inconnu", "points": "pts", "moduleRetry": "Utilisez le bouton d'actualisation pour réessayer." },
     "findings": { "title": "Résultats de sécurité", "none": "Aucun résultat de sécurité" },
     "whois": { "title": "Enregistrement WHOIS", "registrar": "Registraire", "organization": "Organisation", "country": "Pays", "created": "Créé", "expires": "Expire", "emails": "E-mails", "nameServers": "Serveurs de noms" },
     "dns": { "title": "Enregistrements DNS" },

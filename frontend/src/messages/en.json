@@ -298,7 +298,7 @@
       "infrastructure": { "label": "Infrastructure", "tooltip": "Exposed services, open ports, weak DNS/WHOIS hygiene, threat-intel hits." },
       "web_security": { "label": "Web Security", "tooltip": "TLS, security headers, certificate transparency, archived sensitive paths." }
     },
-    "common": { "yes": "Yes", "no": "No", "unknown": "Unknown", "points": "pts" },
+    "common": { "yes": "Yes", "no": "No", "unknown": "Unknown", "points": "pts", "moduleRetry": "Use the refresh button to try again." },
     "findings": { "title": "Security Findings", "none": "No security findings" },
     "whois": { "title": "WHOIS Registration", "registrar": "Registrar", "organization": "Organization", "country": "Country", "created": "Created", "expires": "Expires", "emails": "Emails", "nameServers": "Name Servers" },
     "dns": { "title": "DNS Records" },
