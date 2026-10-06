@@ -165,3 +165,109 @@ def test_cli_multiple_exports_overwrite_prevention(mock_run_scan, tmp_path):
     assert (tmp_path / "out.graphml").exists()
     assert (tmp_path / "out.gexf").exists()
     assert (tmp_path / "out.html").exists()
+
+
+def _want_names():
+    import ast
+    import inspect
+    import textwrap
+
+    tree = ast.parse(textwrap.dedent(inspect.getsource(cli.run_scan)))
+    return {
+        node.args[0].value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "want"
+        and node.args
+        and isinstance(node.args[0], ast.Constant)
+    }
+
+
+def test_every_module_run_scan_can_run_is_listed():
+    names = _want_names()
+    assert names, "found no want(...) calls in run_scan"
+    assert names - set(cli.ALL_MODULES) == set()
+
+
+def test_listing_has_nothing_run_scan_cannot_run():
+    assert set(cli.ALL_MODULES) - _want_names() == set()
+
+
+def test_key_tables_only_name_known_modules():
+    assert set(cli.REQUIRED_ENV) <= set(cli.ALL_MODULES)
+    assert set(cli.OPTIONAL_ENV) <= set(cli.ALL_MODULES)
+    assert not set(cli.REQUIRED_ENV) & set(cli.OPTIONAL_ENV)
+
+
+def _clear_key_env(monkeypatch):
+    for env in list(cli.REQUIRED_ENV.values()) + list(cli.OPTIONAL_ENV.values()):
+        for name in env:
+            monkeypatch.delenv(name, raising=False)
+
+
+def test_modules_lists_every_type(monkeypatch, capsys):
+    _clear_key_env(monkeypatch)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["modules"])
+
+    assert exc.value.code == 0
+    out = capsys.readouterr().out
+    for scan_type, mods in cli.MODULES_BY_TARGET_TYPE.items():
+        assert f"\n{scan_type}\n" in f"\n{out}"
+        for name in mods:
+            assert f"  {name}" in out
+    assert "VIRUSTOTAL_API_KEY" in out
+    assert "required, not set, skipped at scan time" in out
+
+
+def test_modules_type_filter(capsys):
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["modules", "--type", "email"])
+
+    assert exc.value.code == 0
+    out = capsys.readouterr().out
+    assert out.startswith("email\n")
+    assert "whois" not in out
+
+
+def test_modules_json_matches_constants(monkeypatch, capsys):
+    import json
+
+    _clear_key_env(monkeypatch)
+    monkeypatch.setenv("VIRUSTOTAL_API_KEY", "x")
+
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["modules", "--json"])
+
+    assert exc.value.code == 0
+    data = json.loads(capsys.readouterr().out)
+    assert list(data) == list(cli.MODULES_BY_TARGET_TYPE)
+    for scan_type, mods in cli.MODULES_BY_TARGET_TYPE.items():
+        assert [row["name"] for row in data[scan_type]] == list(mods)
+
+    by_name = {row["name"]: row for row in data["domain"]}
+    assert by_name["whois"] == {"name": "whois", "env": [], "key": None, "configured": None}
+    assert by_name["virustotal"]["key"] == "required"
+    assert by_name["virustotal"]["configured"] is True
+    assert by_name["censys"]["configured"] is False
+    assert by_name["shodan"]["key"] == "optional"
+
+
+def test_modules_alias_key_counts_as_configured(monkeypatch):
+    _clear_key_env(monkeypatch)
+    monkeypatch.setenv("CENSYS_API_KEY", "x")
+
+    rows = {row["name"]: row for row in cli.describe_modules("ip")["ip"]}
+
+    assert rows["censys"]["configured"] is True
+
+
+def test_modules_enabled_flag_needs_a_truthy_value(monkeypatch):
+    _clear_key_env(monkeypatch)
+    monkeypatch.setenv("HUDSONROCK_ENABLED", "false")
+
+    rows = {row["name"]: row for row in cli.describe_modules("email")["email"]}
+
+    assert rows["hudsonrock"]["configured"] is False

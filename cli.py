@@ -63,6 +63,46 @@ ALL_MODULES = tuple(
     dict.fromkeys(m for mods in MODULES_BY_TARGET_TYPE.values() for m in mods)
 )
 
+REQUIRED_ENV: Dict[str, tuple[str, ...]] = {
+    "virustotal": ("VIRUSTOTAL_API_KEY",),
+    "abuseipdb": ("ABUSEIPDB_API_KEY",),
+    "censys": ("CENSYS_PAT", "CENSYS_API_KEY"),
+    "hudsonrock": ("HUDSONROCK_ENABLED",),
+    "lunar": ("LUNAR_ENABLED",),
+}
+
+OPTIONAL_ENV: Dict[str, tuple[str, ...]] = {
+    "geoip": ("IPINFO_API_KEY",),
+    "shodan": ("SHODAN_API_KEY",),
+    "leaks": ("HIBP_API_KEY", "LEAK_LOOKUP_API_KEY"),
+    "hlr": ("NUMVERIFY_API_KEY",),
+    "telegram": ("TELEGRAM_BOT_TOKEN",),
+}
+
+
+def _env_is_set(name: str) -> bool:
+    value = os.getenv(name, "").strip()
+    if name.endswith("_ENABLED"):
+        return value.lower() in ("1", "true", "yes", "on")
+    return bool(value)
+
+
+def describe_modules(scan_type: Optional[str] = None) -> Dict[str, List[Dict[str, Any]]]:
+    types = [scan_type] if scan_type else list(MODULES_BY_TARGET_TYPE)
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    for t in types:
+        rows = []
+        for name in MODULES_BY_TARGET_TYPE[t]:
+            env = REQUIRED_ENV.get(name) or OPTIONAL_ENV.get(name) or ()
+            rows.append({
+                "name": name,
+                "env": list(env),
+                "key": "required" if name in REQUIRED_ENV else ("optional" if env else None),
+                "configured": any(_env_is_set(v) for v in env) if env else None,
+            })
+        out[t] = rows
+    return out
+
 
 def normalize_target(target: str) -> str:
     normalized = target.strip()
@@ -406,6 +446,16 @@ def build_parser() -> argparse.ArgumentParser:
     scan_p.add_argument("--verbose", "-v", action="store_true", default=False, help="Print progress to stderr")
     scan_p.add_argument("--quiet", "-q", action="store_true", default=False, help="Print only the result (suppress banners and progress)")
 
+    modules_p = sub.add_parser("modules", help="List the modules -m accepts and which API keys they need")
+    modules_p.add_argument(
+        "--type", "-t",
+        dest="scan_type",
+        choices=list(MODULES_BY_TARGET_TYPE),
+        default=None,
+        help="Only list modules for this target type",
+    )
+    modules_p.add_argument("--json", dest="fmt_json", action="store_true", default=False, help="Output JSON")
+
     watch_p = sub.add_parser("watchlist", help="Manage scheduled re-scans")
     watch_p.set_defaults(watch_parser=watch_p)
     watch_sub = watch_p.add_subparsers(dest="watch_command")
@@ -442,6 +492,28 @@ def _fmt_ts(ts: Optional[float]) -> str:
     if not ts:
         return "-"
     return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
+
+
+def run_modules(args: argparse.Namespace) -> int:
+    listing = describe_modules(args.scan_type)
+    if args.fmt_json:
+        print(json.dumps(listing, indent=2))
+        return 0
+    for scan_type, rows in listing.items():
+        print(scan_type)
+        for row in rows:
+            if not row["env"]:
+                print(f"  {row['name']}")
+                continue
+            env = " / ".join(row["env"])
+            if row["configured"]:
+                state = "set"
+            elif row["key"] == "required":
+                state = "not set, skipped at scan time"
+            else:
+                state = "not set, runs with less data"
+            print(f"  {row['name']:<18} {env:<36} {row['key']}, {state}")
+    return 0
 
 
 def run_watchlist(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -506,6 +578,9 @@ def main(argv: Optional[List[str]] = None) -> None:
     if args.command is None:
         parser.print_help()
         sys.exit(1)
+
+    if args.command == "modules":
+        sys.exit(run_modules(args))
 
     if args.command == "watchlist":
         sys.exit(run_watchlist(args, parser))
