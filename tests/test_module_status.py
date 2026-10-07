@@ -189,3 +189,20 @@ class TestKeyDependentModulesSkip:
         assert result["error"] is None
 
 
+
+class TestAnnotateHttpFailure:
+    def test_annotate_http_failure_rate_limited(self):
+        from modules.module_status import annotate_http_failure, RATE_LIMITED
+        result = annotate_http_failure({}, "test_source", 429)
+        assert result["status"] == RATE_LIMITED
+        assert result["status_reason"] == "test_source is busy or rate limited (HTTP 429); try again later"
+        
+        result = annotate_http_failure({}, "test_source", 503)
+        assert result["status"] == RATE_LIMITED
+        assert result["status_reason"] == "test_source is busy or rate limited (HTTP 503); try again later"
+
+    def test_annotate_http_failure_error(self):
+        from modules.module_status import annotate_http_failure, ERROR
+        result = annotate_http_failure({}, "test_source", 500)
+        assert result["status"] == ERROR
+        assert result["status_reason"] == "test_source returned status 500"
