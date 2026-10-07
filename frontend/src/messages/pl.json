@@ -361,7 +361,7 @@
     "no": "Nie",
     "unknown": "Nieznane",
     "points": "pkt",
-    "moduleRetry": "Użyj przycisku odświeżania, aby spróbować ponownie."
+    "moduleRetry": "Użyj przycisku odświeżania, aby spróbować ponownie.", "skippedKeyHint": "dodaj {key} do pliku .env, aby włączyć ten moduł.", "skippedHint": "dodaj klucz do pliku .env, aby włączyć ten moduł.", "noSecurityFindings": "Brak problemów z bezpieczeństwem", "noDnsRecords": "Nie znaleziono rekordów DNS", "noThreats": "Nie wykryto zagrożeń"
   },
     "findings": {
       "title": "Wykryte zagrożenia",

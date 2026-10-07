@@ -298,7 +298,7 @@
       "infrastructure": { "label": "Infraestrutura", "tooltip": "Serviços expostos, portas abertas, higiene fraca de DNS/WHOIS, alertas de threat-intel." },
       "web_security": { "label": "Segurança web", "tooltip": "TLS, cabeçalhos de segurança, certificate transparency, caminhos sensíveis arquivados." }
     },
-    "common": { "yes": "Sim", "no": "Não", "unknown": "Desconhecido", "points": "pts", "moduleRetry": "Use o botão de atualizar para tentar novamente." },
+    "common": { "yes": "Sim", "no": "Não", "unknown": "Desconhecido", "points": "pts", "moduleRetry": "Use o botão de atualizar para tentar novamente.", "skippedKeyHint": "adicione {key} ao .env para ativar este módulo.", "skippedHint": "adicione a chave ao .env para ativar este módulo.", "noSecurityFindings": "Nenhum problema de segurança", "noDnsRecords": "Nenhum registro DNS encontrado", "noThreats": "Nenhuma ameaça detectada" },
     "findings": { "title": "Resultados de segurança", "none": "Nenhum resultado de segurança" },
     "whois": { "title": "Registro WHOIS", "registrar": "Registrar", "organization": "Organização", "country": "País", "created": "Criado", "expires": "Expira", "emails": "E-mails", "nameServers": "Servidores de nomes" },
     "dns": { "title": "Registros DNS" },

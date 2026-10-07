@@ -68,6 +68,7 @@ function loadLeaflet(): Promise<any> {
 }
 
 function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
+  const { t } = useTranslations();
   const [data, setData] = useState<MapData | null>(null);
   const [error, setError] = useState('');
   const mapHostRef = useRef<HTMLDivElement>(null);
@@ -153,7 +154,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
   }, []);
 
   if (error) return <div className="text-red text-sm">{error}</div>;
-  if (!data) return <div className="text-text-3 text-sm animate-pulse">Loading map...</div>;
+  if (!data) return <div className="text-text-3 text-sm animate-pulse">{t('results.map.loading')}</div>;
   if (!data.markers?.length) {
     if (data.info && (data.info.country || data.info.carrier || data.info.region)) {
       return (
@@ -167,7 +168,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
         </div>
       );
     }
-    return <div className="text-text-3 text-sm">No geolocation data available</div>;
+    return <div className="text-text-3 text-sm">{t('results.map.noData')}</div>;
   }
 
   const m = data.markers[0];
@@ -274,7 +275,7 @@ function GraphView({ scanId }: { scanId: string }) {
 
   return (
     <div>
-      {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">Loading graph...</div>}
+      {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">{t('results.graph.loading')}</div>}
       {status === 'empty' && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <GitBranch size={28} className="text-text-3 opacity-40 mb-2" />
@@ -359,12 +360,17 @@ function ModuleStatusBadge({ status, label }: { status: ModuleStatus; label?: st
 function ModuleNotice({ status, reason }: { status: Exclude<ModuleStatus, 'ok'>; reason?: string }) {
   const { t } = useTranslations();
   const b = STATUS_BADGE[status];
+  // Skip reasons name the variable they need ("No API key configured (CENSYS_PAT)"); the hint names it too.
+  // A reason that names no variable is about something else (a missing package, say) and already says
+  // what to do, so the generic hint is only for a skip that came without a reason.
+  const envKey = reason?.match(/\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b/)?.[0];
+  const hint = envKey
+    ? t('results.common.skippedKeyHint').replace('{key}', envKey)
+    : reason ? null : t('results.common.skippedHint');
   return (
     <div className="text-[12px]" style={{ color: status === 'skipped' ? undefined : b.color }}>
       <span className="text-text-2">{reason || b.hint}</span>
-      {status === 'skipped' && (
-        <span className="text-text-3"> - add the key to <code className="font-mono">.env</code> to enable this module.</span>
-      )}
+      {status === 'skipped' && hint && <span className="text-text-3"> - {hint}</span>}
       {status === 'error' && <div className="text-text-3 mt-1">{t('results.common.moduleRetry')}</div>}
     </div>
   );
@@ -1020,7 +1026,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 {opsec.all_findings.map((f, i) => <FindingRow key={i} f={f} />)}
               </Card>
             ) : (
-              <div className="card p-6 text-center text-text-3 text-sm">No security findings</div>
+              <div className="card p-6 text-center text-text-3 text-sm">{i18n('results.common.noSecurityFindings')}</div>
             )}
           </div>
         )}
@@ -1107,7 +1113,7 @@ export function ScanResults({ scan, onHome }: Props) {
             {Object.entries(r.dns.records).filter(([, v]) => Array.isArray(v) && v.length > 0).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Server size={24} className="text-text-3 opacity-40 mb-2" />
-                <div className="text-text-3 text-sm">No DNS records found</div>
+                <div className="text-text-3 text-sm">{i18n('results.common.noDnsRecords')}</div>
               </div>
             ) : (
               Object.entries(r.dns.records).filter(([, v]) => Array.isArray(v) && v.length > 0).map(([type, records]) => (
@@ -1251,7 +1257,7 @@ export function ScanResults({ scan, onHome }: Props) {
           <div>
             <KeyModuleCard title={i18n('results.virustotal.title')} mod={r.virustotal} onRefresh={() => refreshModule('virustotal')} refreshing={isRefreshing('virustotal')}>
               {!r.virustotal?.malicious && !r.virustotal?.suspicious && !r.virustotal?.harmless && !r.virustotal?.undetected ? (
-                <div className="text-text-3 text-sm py-2">No threats detected</div>
+                <div className="text-text-3 text-sm py-2">{i18n('results.common.noThreats')}</div>
               ) : (
                 <>
                   <div className="grid grid-cols-2 sm:flex sm:gap-6 mb-4 gap-3">
@@ -1271,7 +1277,7 @@ export function ScanResults({ scan, onHome }: Props) {
             </KeyModuleCard>
             <KeyModuleCard title={i18n('results.abuseipdb.title')} mod={r.abuseipdb} onRefresh={() => refreshModule('abuseipdb')} refreshing={isRefreshing('abuseipdb')}>
               {!r.abuseipdb?.abuse_score && !r.abuseipdb?.total_reports && !r.abuseipdb?.isp && !r.abuseipdb?.usage_type ? (
-                <div className="text-text-3 text-sm py-2">No threats detected</div>
+                <div className="text-text-3 text-sm py-2">{i18n('results.common.noThreats')}</div>
               ) : (
                 <div className="space-y-1.5">
                   <div className="dt-row"><span className="dt-label">Abuse Score</span>
@@ -1310,7 +1316,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 </div>
               ) : null}
               {!r.shodan?.open_ports?.length && !r.shodan?.vulns?.length && (
-                <div className="text-text-3 text-sm py-2">No threats detected</div>
+                <div className="text-text-3 text-sm py-2">{i18n('results.common.noThreats')}</div>
               )}
             </KeyModuleCard>
           </div>

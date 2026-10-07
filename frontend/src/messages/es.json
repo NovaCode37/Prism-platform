@@ -132,7 +132,7 @@
       "infrastructure": { "label": "Infraestructura", "tooltip": "Servicios expuestos, puertos abiertos, higiene débil de DNS/WHOIS, coincidencias en inteligencia de amenazas." },
       "web_security": { "label": "Seguridad web", "tooltip": "TLS, cabeceras de seguridad, transparencia de certificados, rutas sensibles archivadas." }
     },
-    "common": { "yes": "Sí", "no": "No", "unknown": "Desconocido", "points": "pts", "moduleRetry": "Usa el botón de actualizar para volver a intentarlo." },
+    "common": { "yes": "Sí", "no": "No", "unknown": "Desconocido", "points": "pts", "moduleRetry": "Usa el botón de actualizar para volver a intentarlo.", "skippedKeyHint": "añade {key} a .env para activar este módulo.", "skippedHint": "añade la clave a .env para activar este módulo.", "noSecurityFindings": "Sin hallazgos de seguridad", "noDnsRecords": "No se encontraron registros DNS", "noThreats": "No se detectaron amenazas" },
     "findings": { "title": "Hallazgos de seguridad", "none": "Sin hallazgos de seguridad" },
     "whois": { "title": "Registro WHOIS", "registrar": "Registrador", "organization": "Organización", "country": "País", "created": "Creado", "expires": "Expira", "emails": "Correos", "nameServers": "Servidores de nombres" },
     "dns": { "title": "Registros DNS" },
