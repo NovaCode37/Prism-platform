@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import json
 import os
+import shutil
 import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -87,6 +88,32 @@ def _env_is_set(name: str) -> bool:
     return bool(value)
 
 
+# Modules that run a separate program instead of needing a key. Without it they are reported
+# `skipped` at scan time, so the listing has to say whether it was found.
+REQUIRED_BINARY: Dict[str, str] = {
+    "maigret": "maigret",
+}
+
+
+def _find_maigret() -> Optional[str]:
+    """Where maigret would be run from, looked up the way modules/maigret_wrapper.py does it:
+    MAIGRET_BIN first, then the project's venv-maigret, then PATH. Nothing is executed."""
+    custom = os.getenv("MAIGRET_BIN")
+    if custom and os.path.isfile(custom):
+        return custom
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    for path in (
+        os.path.join(project_root, "venv-maigret", "bin", "maigret"),
+        os.path.join(project_root, "venv-maigret", "Scripts", "maigret.exe"),
+    ):
+        if os.path.isfile(path):
+            return path
+    return shutil.which("maigret")
+
+
+_BINARY_FINDERS = {"maigret": _find_maigret}
+
+
 def describe_modules(scan_type: Optional[str] = None) -> Dict[str, List[Dict[str, Any]]]:
     types = [scan_type] if scan_type else list(MODULES_BY_TARGET_TYPE)
     out: Dict[str, List[Dict[str, Any]]] = {}
@@ -94,12 +121,17 @@ def describe_modules(scan_type: Optional[str] = None) -> Dict[str, List[Dict[str
         rows = []
         for name in MODULES_BY_TARGET_TYPE[t]:
             env = REQUIRED_ENV.get(name) or OPTIONAL_ENV.get(name) or ()
-            rows.append({
+            row: Dict[str, Any] = {
                 "name": name,
                 "env": list(env),
                 "key": "required" if name in REQUIRED_ENV else ("optional" if env else None),
                 "configured": any(_env_is_set(v) for v in env) if env else None,
-            })
+            }
+            binary = REQUIRED_BINARY.get(name)
+            if binary is not None:
+                row["requires"] = binary
+                row["found"] = _BINARY_FINDERS[binary]() is not None
+            rows.append(row)
         out[t] = rows
     return out
 
@@ -502,6 +534,10 @@ def run_modules(args: argparse.Namespace) -> int:
     for scan_type, rows in listing.items():
         print(scan_type)
         for row in rows:
+            if "requires" in row:
+                state = "found" if row["found"] else "binary not found, skipped at scan time"
+                print(f"  {row['name']:<18} {'program: ' + row['requires']:<36} {state}")
+                continue
             if not row["env"]:
                 print(f"  {row['name']}")
                 continue

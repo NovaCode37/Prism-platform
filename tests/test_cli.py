@@ -271,3 +271,55 @@ def test_modules_enabled_flag_needs_a_truthy_value(monkeypatch):
     rows = {row["name"]: row for row in cli.describe_modules("email")["email"]}
 
     assert rows["hudsonrock"]["configured"] is False
+
+def _no_maigret(monkeypatch):
+    monkeypatch.delenv("MAIGRET_BIN", raising=False)
+    monkeypatch.setattr(cli.shutil, "which", lambda name: None)
+
+
+def test_modules_reports_a_missing_maigret(monkeypatch, capsys):
+    _no_maigret(monkeypatch)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["modules", "--type", "username"])
+
+    assert exc.value.code == 0
+    lines = {line.split()[0]: line for line in capsys.readouterr().out.splitlines()[1:]}
+    assert "program: maigret" in lines["maigret"]
+    assert lines["maigret"].endswith("binary not found, skipped at scan time")
+    assert lines["blackbird"].strip() == "blackbird"
+
+
+def test_modules_json_carries_the_maigret_binary(monkeypatch, capsys):
+    import json
+
+    _no_maigret(monkeypatch)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["modules", "--type", "username", "--json"])
+
+    assert exc.value.code == 0
+    rows = {row["name"]: row for row in json.loads(capsys.readouterr().out)["username"]}
+    assert rows["maigret"]["requires"] == "maigret"
+    assert rows["maigret"]["found"] is False
+    assert "requires" not in rows["blackbird"]
+
+
+def test_modules_finds_maigret_on_path(monkeypatch):
+    monkeypatch.delenv("MAIGRET_BIN", raising=False)
+    monkeypatch.setattr(cli.shutil, "which", lambda name: "/usr/bin/maigret" if name == "maigret" else None)
+
+    rows = {row["name"]: row for row in cli.describe_modules("username")["username"]}
+
+    assert rows["maigret"]["found"] is True
+
+
+def test_modules_finds_maigret_through_maigret_bin(monkeypatch, tmp_path):
+    binary = tmp_path / "maigret"
+    binary.write_text("")
+    _no_maigret(monkeypatch)
+    monkeypatch.setenv("MAIGRET_BIN", str(binary))
+
+    rows = {row["name"]: row for row in cli.describe_modules("username")["username"]}
+
+    assert rows["maigret"]["found"] is True
