@@ -235,6 +235,11 @@ mocks. **No live network hits are made in CI.**
 3. Codecov upload
 4. Docker image build + 10-second smoke test (`curl /`)
 
+`.github/workflows/release-image.yml` runs on a `v*` tag. It calls `ci.yml`
+first (`needs: test`), so a tag on a commit that fails lint, tests or the
+frontend build publishes no image and leaves `latest` where it was. After the
+push it still smoke-tests the published image (`/healthz`).
+
 ---
 
 ## Production deploy

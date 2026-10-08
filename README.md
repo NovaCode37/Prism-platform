@@ -431,6 +431,10 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 2. **Test**: pytest with coverage
 3. **Build**: Docker image
 
+Pushing a `v*` tag runs `.github/workflows/release-image.yml`, which runs the
+whole CI pipeline above first and only builds and publishes the image to GHCR
+if it passes.
+
 ---
 
 ## Roadmap
