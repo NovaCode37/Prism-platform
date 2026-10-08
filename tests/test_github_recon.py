@@ -61,7 +61,18 @@ def test_lookup_not_found(monkeypatch):
     import requests
     monkeypatch.setattr(requests, "get", lambda url, **kw: _Resp(404, {}))
     r = GitHubRecon().lookup("definitely-not-a-real-user-xyz")
-    assert r["error"] == "GitHub user not found"
+    assert classify(r) == OK
+    assert r["status_reason"] == "GitHub user not found"
+    assert r["error"] is None
+    assert r["profile"] is None
+
+
+def test_lookup_server_error(monkeypatch):
+    import requests
+    monkeypatch.setattr(requests, "get", lambda url, **kw: _Resp(500, {}))
+    r = GitHubRecon().lookup("octocat")
+    assert classify(r) == ERROR
+    assert r["error"] == "GitHub API returned 500"
 
 
 def test_lookup_rate_limited(monkeypatch):
