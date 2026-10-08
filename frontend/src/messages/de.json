@@ -312,7 +312,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} Snapshots · Erster: {first} · Letzter: {last}", "recent": "Neueste Snapshots", "sensitive": "Sensible URLs im Archiv" },
     "emailrep": { "title": "E-Mail-Reputation", "reputation": "Reputation", "suspicious": "Verdächtig", "validMx": "MX gültig", "deliverable": "Zustellbar", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Domain-Reputation", "mxRecords": "MX-Einträge", "disposableWarn": "⚠ Wegwerf-E-Mail erkannt", "spoofableWarn": "⚠ Domain ist fälschbar (kein SPF/DMARC)", "freeProvider": "Kostenloser E-Mail-Anbieter" },
     "smtp": { "title": "SMTP-Überprüfung", "exists": "Existiert", "connect": "SMTP-Verbindung", "catchAllWarn": "⚠ Catch-All-Server (akzeptiert beliebige Adresse)", "details": "Details" },
-    "breaches": { "title": "Leak-Prüfung", "found": "Leaks gefunden", "breachedServices": "Betroffene Dienste", "total": "Leaks gesamt" },
+    "breaches": { "title": "Leak-Prüfung", "found": "Leaks gefunden", "breachedServices": "Betroffene Dienste", "total": "Leaks gesamt", "none": "Keine Leaks gefunden" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "Telefon-Intelligenz", "valid": "Gültig", "country": "Land", "countryCode": "Ländercode", "region": "Region", "carrier": "Anbieter", "lineType": "Anschlussart", "timezones": "Zeitzonen", "ownerName": "Inhaber", "address": "Adresse" },
     "telegram": { "title": "Telegram-Profil", "found": "Gefunden", "username": "Benutzername", "name": "Name", "bio": "Bio", "type": "Typ", "followers": "Follower" },
