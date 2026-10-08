@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { getScan } from '@/lib/api';
+import { diffResults, flattenResults, type DiffStatus } from '@/lib/scan-diff';
 import type { ScanMeta, ScanResults as ScanResultsType } from '@/lib/types';
 
 type FullScan = ScanMeta & { results: ScanResultsType };
@@ -10,40 +11,6 @@ interface Props {
   scanIdA: string;
   scanIdB: string;
   onBack: () => void;
-}
-
-function flattenResults(results: ScanResultsType): Record<string, string> {
-  const flat: Record<string, string> = {};
-  for (const [mod, data] of Object.entries(results)) {
-    if (!data || mod === 'report_path' || mod === 'map_data' || mod === 'graph') continue;
-    if (typeof data === 'object' && !Array.isArray(data)) {
-      for (const [k, v] of Object.entries(data as Record<string, unknown>)) {
-        flat[`${mod}.${k}`] = typeof v === 'object' ? JSON.stringify(v) : String(v ?? '');
-      }
-    } else {
-      flat[mod] = typeof data === 'object' ? JSON.stringify(data) : String(data);
-    }
-  }
-  return flat;
-}
-
-type DiffStatus = 'added' | 'removed' | 'changed' | 'same';
-
-function diffResults(a: Record<string, string>, b: Record<string, string>): { key: string; status: DiffStatus; valA?: string; valB?: string }[] {
-  const allKeys = Array.from(new Set([...Object.keys(a), ...Object.keys(b)]));
-  const rows: { key: string; status: DiffStatus; valA?: string; valB?: string }[] = [];
-  for (const key of allKeys.sort()) {
-    const inA = key in a;
-    const inB = key in b;
-    if (inA && inB) {
-      rows.push({ key, status: a[key] === b[key] ? 'same' : 'changed', valA: a[key], valB: b[key] });
-    } else if (inA) {
-      rows.push({ key, status: 'removed', valA: a[key] });
-    } else {
-      rows.push({ key, status: 'added', valB: b[key] });
-    }
-  }
-  return rows;
 }
 
 const STATUS_STYLE: Record<DiffStatus, string> = {

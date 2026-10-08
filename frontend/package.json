@@ -13,7 +13,8 @@
     "test:encoder": "node scripts/test-encoder.mjs",
     "test:i18n-lookup": "node scripts/test-i18n-lookup.mjs",
     "test:version": "node scripts/test-version-sync.mjs",
-    "test:risk-levels": "node scripts/test-risk-levels.mjs"
+    "test:risk-levels": "node scripts/test-risk-levels.mjs",
+    "test:scan-diff": "node scripts/test-scan-diff.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

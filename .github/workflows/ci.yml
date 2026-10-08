@@ -95,6 +95,7 @@ jobs:
           npm run test:encoder
           npm run test:version
           npm run test:risk-levels
+          npm run test:scan-diff
 
       - name: Build
         run: npm run build
