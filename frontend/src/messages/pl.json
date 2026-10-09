@@ -305,7 +305,7 @@
       "address": "Adres",
       "bio": "Bio",
       "blog": "Bloga",
-      "carrier": "Przewoźnik",
+      "carrier": "Operator",
       "clientEvents": "Wydarzenia klienckie",
       "company": "Firma",
       "copyDnsRecord": "Skopiuj rekord DNS",
@@ -313,7 +313,7 @@
       "copyShodanPort": "Skopiuj port Shodan",
       "copyDomain": "Skopiuj domenę",
       "copyEmail": "Skopiuj e-mail",
-      "copyOnionUrl": "Skopiuj adres URL cebuli",
+      "copyOnionUrl": "Kopiuj adres .onion",
       "copyPort": "Skopiuj port",
       "copySubdomain": "Skopiuj subdomenę",
       "copySummary": "Skopiuj podsumowanie",
@@ -419,12 +419,17 @@
       }
     },
     "common": {
-    "yes": "Tak",
-    "no": "Nie",
-    "unknown": "Nieznane",
-    "points": "pkt",
-    "moduleRetry": "Użyj przycisku odświeżania, aby spróbować ponownie.", "skippedKeyHint": "dodaj {key} do pliku .env, aby włączyć ten moduł.", "skippedHint": "dodaj klucz do pliku .env, aby włączyć ten moduł.", "noSecurityFindings": "Brak problemów z bezpieczeństwem", "noDnsRecords": "Nie znaleziono rekordów DNS", "noThreats": "Nie wykryto zagrożeń"
-  },
+      "yes": "Tak",
+      "no": "Nie",
+      "unknown": "Nieznane",
+      "points": "pkt",
+      "moduleRetry": "Użyj przycisku odświeżania, aby spróbować ponownie.",
+      "skippedKeyHint": "dodaj {key} do pliku .env, aby włączyć ten moduł.",
+      "skippedHint": "dodaj klucz do pliku .env, aby włączyć ten moduł.",
+      "noSecurityFindings": "Brak problemów z bezpieczeństwem",
+      "noDnsRecords": "Nie znaleziono rekordów DNS",
+      "noThreats": "Nie wykryto zagrożeń"
+    },
     "findings": {
       "title": "Wykryte zagrożenia",
       "none": "Brak zagrożeń"
@@ -620,14 +625,14 @@
     "failedToToggle": "Nie udało się zaktualizować listy"
   },
   "common": {
-  "copy": "Kopiuj",
-  "copied": "Skopiowano!",
-  "copyFailed": "Kopiowanie nie powiodło się",
-  "loading": "Ładowanie…",
-  "error": "Błąd",
-  "backToTop": "Powrót do góry",
-  "tabErrorTitle": "Nie można załadować tej karty",
-  "tabErrorMessage": "Wystąpił błąd podczas ładowania tego wyniku."
+    "copy": "Kopiuj",
+    "copied": "Skopiowano!",
+    "copyFailed": "Kopiowanie nie powiodło się",
+    "loading": "Ładowanie…",
+    "error": "Błąd",
+    "backToTop": "Powrót do góry",
+    "tabErrorTitle": "Nie można załadować tej karty",
+    "tabErrorMessage": "Wystąpił błąd podczas ładowania tego wyniku."
   },
   "lang": {
     "label": "Język",
