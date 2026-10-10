@@ -351,7 +351,7 @@ export interface OnionData {
   target?: string;
   total_found?: number;
   results?: { source?: string; url: string; title?: string | null; description?: string | null }[];
-  sources?: { ahmia?: number; darksearch?: number };
+  sources?: { ahmia?: number };
 }
 
 export interface UrlScanResult {

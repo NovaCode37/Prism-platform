@@ -28,7 +28,7 @@ and how to extend it with new modules.
              │
              ▼
    3rd-party APIs (Shodan, Censys, VT, AbuseIPDB,
-   Ahmia, DarkSearch, crt.sh, Wayback, HIBP, …)
+   Ahmia, crt.sh, Wayback, HIBP, …)
 ```
 
 ---
