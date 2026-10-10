@@ -160,7 +160,8 @@
     "emailsCopied": "¡Correos copiados!",
     "filterPlatforms": "Filtrar plataformas...",
     "searchGoogle": "Buscar en Google",
-    "sendMessage": "Enviar mensaje"
+    "sendMessage": "Enviar mensaje",
+    "fields": {"copyIp": "Copiar IP", "copyTarget": "Copiar objetivo", "copyEmail": "Copiar email", "copyDomain": "Copiar dominio", "copyDnsRecord": "Copiar registro DNS", "copySubdomain": "Copiar subdominio", "copyUsernameUrl": "Copiar URL", "copyShodanPort": "Copiar puerto", "copyPort": "Copiar puerto", "copyOnionUrl": "Copiar dirección .onion", "copySummary": "Copiar resumen", "company": "Empresa", "location": "Ubicación", "blog": "Blog", "twitter": "Twitter", "publicRepos": "Repos públicos", "totalStars": "Estrellas totales", "joined": "Unido", "displayName": "Nombre para mostrar", "totalCompromised": "Total comprometidos", "employees": "Empleados", "users": "Usuarios", "thirdParties": "Terceros", "passwordsAnalysed": "Contraseñas analizadas", "tooWeak": "Demasiado débil", "weak": "Débil", "strong": "Fuerte", "recordsFound": "Registros encontrados", "corporateServices": "Servicios corporativos", "userServices": "Servicios de usuario", "period": "Período", "totalEvents": "Eventos totales", "infostealerEvents": "Eventos de infostealer", "dataBreachEvents": "Eventos de brecha de datos", "employeeEvents": "Eventos de empleados", "clientEvents": "Eventos de clientes", "firstSeen": "Visto por primera vez", "lastSeen": "Visto por última vez"}
   },
   "toolPanels": {
     "back": "Volver",

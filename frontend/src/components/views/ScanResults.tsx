@@ -182,7 +182,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
             <span className="dt-label">IP</span>
             <div className="flex items-center gap-1.5">
               <span className="dt-value font-mono">{m.ip}</span>
-              <CopyIconButton onClick={() => onCopy(m.ip ?? '')} label="Copy IP" />
+              <CopyIconButton onClick={() => onCopy(m.ip ?? '')} label={t('results.fields.copyIp')} />
             </div>
           </div>
         )}
@@ -884,7 +884,7 @@ export function ScanResults({ scan, onHome }: Props) {
         <div>
           <div className="flex items-center gap-1.5">
             <div className="font-bold text-text-1 text-[15px] break-all">{scan.target}</div>
-            <CopyIconButton onClick={() => copyValue(scan.target)} label="Copy target" />
+            <CopyIconButton onClick={() => copyValue(scan.target)} label={i18n('results.fields.copyTarget')} />
           </div>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <span className="badge badge-info">{scan.scan_type?.toUpperCase()}</span>
@@ -1034,18 +1034,18 @@ export function ScanResults({ scan, onHome }: Props) {
         {tab === 'whois' && r.whois && (
           <Card title={i18n('results.whois.title')} onRefresh={() => refreshModule('whois')} refreshing={isRefreshing('whois')}>
             <div className="space-y-1.5">
-              <DtRow label="Registrar" value={r.whois.registrar} />
-              <DtRow label="Organization" value={r.whois.org} />
-              <DtRow label="Country" value={r.whois.country} />
-              <DtRow label="Created" value={r.whois.creation_date?.slice(0, 10)} />
-              <DtRow label="Expires" value={r.whois.expiration_date?.slice(0, 10)} />
+              <DtRow label={i18n('results.whois.registrar')} value={r.whois.registrar} />
+              <DtRow label={i18n('results.whois.organization')} value={r.whois.org} />
+              <DtRow label={i18n('results.whois.country')} value={r.whois.country} />
+              <DtRow label={i18n('results.whois.created')} value={r.whois.creation_date?.slice(0, 10)} />
+              <DtRow label={i18n('results.whois.expires')} value={r.whois.expiration_date?.slice(0, 10)} />
               {r.whois.emails?.length && (
                 <div className="dt-row"><span className="dt-label">Emails</span>
                   <div className="flex flex-wrap gap-1">
                     {r.whois.emails.map(e => (
                       <span key={e} className="inline-flex items-center gap-1">
                         <span className="tag tag-red">{e}</span>
-                        <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
+                        <CopyIconButton onClick={() => copyValue(e)} label={i18n('results.fields.copyEmail')} />
                       </span>
                     ))}
                   </div>
@@ -1057,7 +1057,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     {r.whois.name_servers.slice(0, 4).map(ns => (
                       <span key={ns} className="inline-flex items-center gap-1">
                         <span className="tag">{ns}</span>
-                        <CopyIconButton onClick={() => copyValue(ns)} label="Copy domain" />
+                        <CopyIconButton onClick={() => copyValue(ns)} label={i18n('results.fields.copyDomain')} />
                       </span>
                     ))}
                   </div>
@@ -1124,7 +1124,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     return (
                       <div key={i} className="flex items-center gap-1.5 py-0.5">
                         <div className="font-mono text-[11px] text-text-2 break-all flex-1">{text}</div>
-                        <CopyIconButton onClick={() => copyValue(text)} label="Copy DNS record" />
+                        <CopyIconButton onClick={() => copyValue(text)} label={i18n('results.fields.copyDnsRecord')} />
                       </div>
                     );
                   })}
@@ -1141,7 +1141,7 @@ export function ScanResults({ scan, onHome }: Props) {
               {r.cert_transparency.subdomains?.map(s => (
                 <span key={s} className="inline-flex items-center gap-1">
                   <span className="tag">{s}</span>
-                  <CopyIconButton onClick={() => copyValue(s)} label="Copy subdomain" />
+                  <CopyIconButton onClick={() => copyValue(s)} label={i18n('results.fields.copySubdomain')} />
                 </span>
               ))}
             </div>
@@ -1176,7 +1176,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   <td className="py-2">
                     <div className="flex items-center gap-1.5">
                       <a href={b.url} target="_blank" rel="noreferrer" className="text-blue hover:underline truncate block max-w-xs">{b.url}</a>
-                      <CopyIconButton onClick={() => copyValue(b.url)} label="Copy username URL" />
+                      <CopyIconButton onClick={() => copyValue(b.url)} label={i18n('results.fields.copyUsernameUrl')} />
                     </div>
                   </td>
                   <td className="py-2 text-right font-mono text-text-3">{b.response_time?.toFixed(2)}s</td>
@@ -1203,21 +1203,21 @@ export function ScanResults({ scan, onHome }: Props) {
                   <a href={r.github.profile.html_url} target="_blank" rel="noreferrer" className="text-blue hover:underline">{r.github.profile.html_url}</a>
                 </div>
               )}
-              <DtRow label="Name" value={r.github?.profile?.name} />
-              <DtRow label="Type" value={r.github?.profile?.type} />
-              <DtRow label="Bio" value={r.github?.profile?.bio} />
-              <DtRow label="Company" value={r.github?.profile?.company} />
-              <DtRow label="Location" value={r.github?.profile?.location} />
-              <DtRow label="Blog" value={r.github?.profile?.blog} />
-              <DtRow label="Twitter" value={r.github?.profile?.twitter} />
-              <DtRow label="Followers" value={r.github?.profile?.followers} />
-              <DtRow label="Public Repos" value={r.github?.profile?.public_repos} />
+              <DtRow label={i18n('results.telegram.name')} value={r.github?.profile?.name} />
+              <DtRow label={i18n('results.telegram.type')} value={r.github?.profile?.type} />
+              <DtRow label={i18n('results.telegram.bio')} value={r.github?.profile?.bio} />
+              <DtRow label={i18n('results.fields.company')} value={r.github?.profile?.company} />
+              <DtRow label={i18n('results.fields.location')} value={r.github?.profile?.location} />
+              <DtRow label={i18n('results.fields.blog')} value={r.github?.profile?.blog} />
+              <DtRow label={i18n('results.fields.twitter')} value={r.github?.profile?.twitter} />
+              <DtRow label={i18n('results.telegram.followers')} value={r.github?.profile?.followers} />
+              <DtRow label={i18n('results.fields.publicRepos')} value={r.github?.profile?.public_repos} />
               <DtRow
                 label={i18n('results.github.repositoriesScanned')}
                 value={r.github?.repo_count === null ? i18n('results.github.notChecked') : r.github?.repo_count}
               />
-              <DtRow label="Total Stars" value={r.github?.total_stars} />
-              <DtRow label="Joined" value={r.github?.profile?.created_at} />
+              <DtRow label={i18n('results.fields.totalStars')} value={r.github?.total_stars} />
+              <DtRow label={i18n('results.fields.joined')} value={r.github?.profile?.created_at} />
             </div>
             {(r.github?.top_languages?.length ?? 0) > 0 && (
               <div className="mt-3">
@@ -1237,7 +1237,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     {r.github?.emails?.map(e => (
                       <span key={e} className="inline-flex items-center gap-1">
                         <span className="tag tag-red">{e}</span>
-                        <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
+                        <CopyIconButton onClick={() => copyValue(e)} label={i18n('results.fields.copyEmail')} />
                       </span>
                     ))}
                   </div>
@@ -1269,8 +1269,8 @@ export function ScanResults({ scan, onHome }: Props) {
                     ))}
                   </div>
                   <div className="space-y-1.5">
-                    <DtRow label="Country" value={r.virustotal?.country} />
-                    <DtRow label="ASN" value={r.virustotal?.as_owner} />
+                    <DtRow label={i18n('results.virustotal.country')} value={r.virustotal?.country} />
+                    <DtRow label={i18n('results.virustotal.asn')} value={r.virustotal?.as_owner} />
                   </div>
                 </>
               )}
@@ -1285,9 +1285,9 @@ export function ScanResults({ scan, onHome }: Props) {
                       {r.abuseipdb?.abuse_score}/100
                     </span>
                   </div>
-                  <DtRow label="Total Reports" value={r.abuseipdb?.total_reports} />
-                  <DtRow label="ISP" value={r.abuseipdb?.isp} />
-                  <DtRow label="Usage Type" value={r.abuseipdb?.usage_type} />
+                  <DtRow label={i18n('results.abuseipdb.totalReports')} value={r.abuseipdb?.total_reports} />
+                  <DtRow label={i18n('results.abuseipdb.isp')} value={r.abuseipdb?.isp} />
+                  <DtRow label={i18n('results.abuseipdb.usageType')} value={r.abuseipdb?.usage_type} />
                   {r.abuseipdb?.is_tor && <div className="text-red text-[12px] font-semibold mt-1">⚠ TOR Exit Node</div>}
                 </div>
               )}
@@ -1304,7 +1304,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   {r.shodan.open_ports.map(p => (
                     <span key={p} className="inline-flex items-center gap-1 mr-1">
                       <span className={`tag ${[21,22,23,3389,5900,445,3306,5432,27017,6379].includes(p) ? 'tag-red' : ''}`}>{p}</span>
-                      <CopyIconButton onClick={() => copyValue(p)} label="Copy Shodan port" />
+                      <CopyIconButton onClick={() => copyValue(p)} label={i18n('results.fields.copyShodanPort')} />
                     </span>
                   ))}
                 </div>
@@ -1334,7 +1334,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     {r.censys.open_ports.map(p => (
                       <span key={p} className="inline-flex items-center gap-1">
                         <span className="tag">{p}</span>
-                        <CopyIconButton onClick={() => copyValue(p)} label="Copy port" />
+                        <CopyIconButton onClick={() => copyValue(p)} label={i18n('results.fields.copyPort')} />
                       </span>
                     ))}
                   </div>
@@ -1346,7 +1346,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     {r.censys.subdomains.map(s => (
                       <span key={s} className="inline-flex items-center gap-1">
                         <span className="tag tag-blue">{s}</span>
-                        <CopyIconButton onClick={() => copyValue(s)} label="Copy subdomain" />
+                        <CopyIconButton onClick={() => copyValue(s)} label={i18n('results.fields.copySubdomain')} />
                       </span>
                     ))}
                   </div>
@@ -1384,7 +1384,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] tag tag-red uppercase">{item.source}</span>
                     <span className="font-mono text-[11px] text-text-1 break-all flex-1">{item.url}</span>
-                    <CopyIconButton onClick={() => copyValue(item.url)} label="Copy onion URL" />
+                    <CopyIconButton onClick={() => copyValue(item.url)} label={i18n('results.fields.copyOnionUrl')} />
                   </div>
                   {item.title && <div className="text-[12px] text-text-2 mt-1.5">{item.title}</div>}
                   {item.description && <div className="text-[11px] text-text-3 mt-0.5">{item.description}</div>}
@@ -1467,7 +1467,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   <div className="dt-row"><span className="dt-label">DMARC</span>
                     <span className={r.emailrep.dmarc ? 'text-green' : 'text-red'}>{r.emailrep.dmarc ? 'Yes' : 'No'}</span>
                   </div>
-                  <DtRow label="Domain Reputation" value={r.emailrep.domain_reputation?.toUpperCase()} />
+                  <DtRow label={i18n('results.emailrep.domainRep')} value={r.emailrep.domain_reputation?.toUpperCase()} />
                   {r.emailrep.disposable && <div className="text-red text-[12px] font-semibold mt-1">{i18n('results.emailrep.disposableWarn')}</div>}
                   {r.emailrep.spoofable && <div className="text-yellow text-[12px] font-semibold mt-1">{i18n('results.emailrep.spoofableWarn')}</div>}
                   {r.emailrep.free_provider && <div className="text-text-3 text-[12px] mt-1">{i18n('results.emailrep.freeProvider')}</div>}
@@ -1527,7 +1527,7 @@ export function ScanResults({ scan, onHome }: Props) {
                     </div>
                   </div>
                 )}
-                {r.breaches?.total !== undefined && <DtRow label="Total Breaches" value={r.breaches.total} />}
+                {r.breaches?.total !== undefined && <DtRow label={i18n('results.breaches.total')} value={r.breaches.total} />}
               </div>
             </KeyModuleCard>
           </div>
@@ -1542,7 +1542,7 @@ export function ScanResults({ scan, onHome }: Props) {
           >
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <DtRow label="Display Name" value={r.gravatar?.display_name} />
+                <DtRow label={i18n('results.fields.displayName')} value={r.gravatar?.display_name} />
                   {r.gravatar?.avatar_url && (
                     <div className="dt-row">
                       <span className="dt-label">Avatar URL</span>
@@ -1606,10 +1606,10 @@ export function ScanResults({ scan, onHome }: Props) {
               {r.hudsonrock?.target_type === 'domain' ? (
                 <>
                   <div className="space-y-1.5">
-                    <DtRow label="Total compromised" value={r.hudsonrock?.total_compromised} />
-                    <DtRow label="Employees" value={r.hudsonrock?.employees} />
-                    <DtRow label="Users" value={r.hudsonrock?.users} />
-                    <DtRow label="Third parties" value={r.hudsonrock?.third_parties} />
+                    <DtRow label={i18n('results.fields.totalCompromised')} value={r.hudsonrock?.total_compromised} />
+                    <DtRow label={i18n('results.fields.employees')} value={r.hudsonrock?.employees} />
+                    <DtRow label={i18n('results.fields.users')} value={r.hudsonrock?.users} />
+                    <DtRow label={i18n('results.fields.thirdParties')} value={r.hudsonrock?.third_parties} />
                   </div>
 
                   {(r.hudsonrock?.employee_urls?.length ?? 0) > 0 && (
@@ -1650,19 +1650,19 @@ export function ScanResults({ scan, onHome }: Props) {
                         Employee password strength
                       </div>
                       <div className="space-y-1.5">
-                        <DtRow label="Passwords analysed" value={r.hudsonrock.employee_password_stats.total} />
-                        <DtRow label="Too weak %" value={r.hudsonrock.employee_password_stats.too_weak} />
-                        <DtRow label="Weak %" value={r.hudsonrock.employee_password_stats.weak} />
-                        <DtRow label="Strong %" value={r.hudsonrock.employee_password_stats.strong} />
+                        <DtRow label={i18n('results.fields.passwordsAnalysed')} value={r.hudsonrock.employee_password_stats.total} />
+                        <DtRow label={i18n('results.fields.tooWeak')} value={r.hudsonrock.employee_password_stats.too_weak} />
+                        <DtRow label={i18n('results.fields.weak')} value={r.hudsonrock.employee_password_stats.weak} />
+                        <DtRow label={i18n('results.fields.strong')} value={r.hudsonrock.employee_password_stats.strong} />
                       </div>
                     </div>
                   )}
                 </>
               ) : (
                 <div className="space-y-1.5">
-                  <DtRow label="Records found" value={r.hudsonrock?.stealers_found} />
-                  <DtRow label="Corporate services" value={r.hudsonrock?.corporate_services} />
-                  <DtRow label="User services" value={r.hudsonrock?.user_services} />
+                  <DtRow label={i18n('results.fields.recordsFound')} value={r.hudsonrock?.stealers_found} />
+                  <DtRow label={i18n('results.fields.corporateServices')} value={r.hudsonrock?.corporate_services} />
+                  <DtRow label={i18n('results.fields.userServices')} value={r.hudsonrock?.user_services} />
                 </div>
               )}
             </div>
@@ -1682,14 +1682,14 @@ export function ScanResults({ scan, onHome }: Props) {
               </div>
 
               <div className="space-y-1.5">
-                <DtRow label="Period" value={r.lunar?.period?.from ? `${r.lunar.period.from} to ${r.lunar.period.to}` : null} />
-                <DtRow label="Total events" value={r.lunar?.total_events} />
-                <DtRow label="Infostealer events" value={r.lunar?.infostealer_events} />
-                <DtRow label="Data breach events" value={r.lunar?.data_breach_events} />
-                <DtRow label="Employee events" value={r.lunar?.employee_events} />
-                <DtRow label="Client events" value={r.lunar?.client_events} />
-                <DtRow label="First seen" value={r.lunar?.first_seen} />
-                <DtRow label="Last seen" value={r.lunar?.last_seen} />
+                <DtRow label={i18n('results.fields.period')} value={r.lunar?.period?.from ? `${r.lunar.period.from} to ${r.lunar.period.to}` : null} />
+                <DtRow label={i18n('results.fields.totalEvents')} value={r.lunar?.total_events} />
+                <DtRow label={i18n('results.fields.infostealerEvents')} value={r.lunar?.infostealer_events} />
+                <DtRow label={i18n('results.fields.dataBreachEvents')} value={r.lunar?.data_breach_events} />
+                <DtRow label={i18n('results.fields.employeeEvents')} value={r.lunar?.employee_events} />
+                <DtRow label={i18n('results.fields.clientEvents')} value={r.lunar?.client_events} />
+                <DtRow label={i18n('results.fields.firstSeen')} value={r.lunar?.first_seen} />
+                <DtRow label={i18n('results.fields.lastSeen')} value={r.lunar?.last_seen} />
               </div>
 
               {(r.lunar?.malware_families?.length ?? 0) > 0 && (
@@ -1768,11 +1768,11 @@ export function ScanResults({ scan, onHome }: Props) {
               <div className="dt-row"><span className="dt-label">Valid</span>
                 <span className={r.phone.valid ? 'text-green' : 'text-red'}>{r.phone.valid ? 'Yes' : 'No'}</span>
               </div>
-              <DtRow label="Country" value={r.phone.country_name} />
-              <DtRow label="Country Code" value={r.phone.country_code} />
-              <DtRow label="Region" value={r.phone.region} />
-              <DtRow label="Carrier" value={r.phone.carrier} />
-              <DtRow label="Line Type" value={r.phone.line_type} />
+              <DtRow label={i18n('results.phone.country')} value={r.phone.country_name} />
+              <DtRow label={i18n('results.phone.countryCode')} value={r.phone.country_code} />
+              <DtRow label={i18n('results.phone.region')} value={r.phone.region} />
+              <DtRow label={i18n('results.phone.carrier')} value={r.phone.carrier} />
+              <DtRow label={i18n('results.phone.lineType')} value={r.phone.line_type} />
               {r.phone.timezones?.length && (
                 <div className="dt-row"><span className="dt-label">Timezones</span>
                   <div>{r.phone.timezones.map(tz => <span key={tz} className="tag">{tz}</span>)}</div>
@@ -1780,8 +1780,8 @@ export function ScanResults({ scan, onHome }: Props) {
               )}
               {r.phone.reverse && (
                 <>
-                  <DtRow label="Owner Name" value={r.phone.reverse.name} />
-                  <DtRow label="Address" value={r.phone.reverse.address} />
+                  <DtRow label={i18n('results.phone.ownerName')} value={r.phone.reverse.name} />
+                  <DtRow label={i18n('results.phone.address')} value={r.phone.reverse.address} />
                 </>
               )}
             </div>
@@ -1797,11 +1797,11 @@ export function ScanResults({ scan, onHome }: Props) {
                 <div className="dt-row"><span className="dt-label">Found</span>
                   <span className={r.telegram.found ? 'text-green' : 'text-red'}>{r.telegram.found ? 'Yes' : 'No'}</span>
                 </div>
-                <DtRow label="Username" value={r.telegram.username} />
-                <DtRow label="Name" value={r.telegram.name} />
-                <DtRow label="Bio" value={r.telegram.bio} />
-                <DtRow label="Type" value={r.telegram.type} />
-                {r.telegram.followers && <DtRow label="Followers" value={r.telegram.followers} />}
+                <DtRow label={i18n('results.telegram.username')} value={r.telegram.username} />
+                <DtRow label={i18n('results.telegram.name')} value={r.telegram.name} />
+                <DtRow label={i18n('results.telegram.bio')} value={r.telegram.bio} />
+                <DtRow label={i18n('results.telegram.type')} value={r.telegram.type} />
+                {r.telegram.followers && <DtRow label={i18n('results.telegram.followers')} value={r.telegram.followers} />}
               </div>
             )}
           </Card>
@@ -1891,7 +1891,7 @@ export function ScanResults({ scan, onHome }: Props) {
                 <div>
                   {aiModel && <div className="text-[10px] text-text-3 mb-3 font-mono">Model: {aiModel}</div>}
                   <div className="mb-2 flex items-center justify-end">
-                    <CopyIconButton onClick={() => copyValue(aiSummary)} label="Copy summary" />
+                    <CopyIconButton onClick={() => copyValue(aiSummary)} label={i18n('results.fields.copySummary')} />
                   </div>
                   <div className="text-[13px] text-text-1 leading-relaxed whitespace-pre-wrap">{aiSummary}</div>
                   <button onClick={runAi} className="btn-ghost h-8 px-3 text-[11px] mt-4">Regenerate</button>

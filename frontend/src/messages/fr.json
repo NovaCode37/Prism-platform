@@ -204,7 +204,8 @@
     "emailsCopied": "E-mails copiés !",
     "filterPlatforms": "Filtrer les plateformes...",
     "searchGoogle": "Rechercher sur Google",
-    "sendMessage": "Envoyer le message"
+    "sendMessage": "Envoyer le message",
+    "fields": {"copyIp": "Copier l'IP", "copyTarget": "Copier la cible", "copyEmail": "Copier l'e-mail", "copyDomain": "Copier le domaine", "copyDnsRecord": "Copier l'enregistrement DNS", "copySubdomain": "Copier le sous-domaine", "copyUsernameUrl": "Copier l'URL", "copyShodanPort": "Copier le port", "copyPort": "Copier le port", "copyOnionUrl": "Copier l'adresse .onion", "copySummary": "Copier le résumé", "company": "Entreprise", "location": "Emplacement", "blog": "Blog", "twitter": "Twitter", "publicRepos": "Dépôts publics", "totalStars": "Total des étoiles", "joined": "Inscrit", "displayName": "Nom d'affichage", "totalCompromised": "Total compromis", "employees": "Employés", "users": "Utilisateurs", "thirdParties": "Tiers", "passwordsAnalysed": "Mots de passe analysés", "tooWeak": "Trop faible", "weak": "Faible", "strong": "Fort", "recordsFound": "Enregistrements trouvés", "corporateServices": "Services d'entreprise", "userServices": "Services utilisateurs", "period": "Période", "totalEvents": "Total des événements", "infostealerEvents": "Événements infostealer", "dataBreachEvents": "Événements de violation de données", "employeeEvents": "Événements employés", "clientEvents": "Événements clients", "firstSeen": "Vu pour la première fois", "lastSeen": "Vu pour la dernière fois"}
   },
   "toolPanels": {
     "back": "Retour",

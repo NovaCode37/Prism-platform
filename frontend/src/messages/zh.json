@@ -326,7 +326,8 @@
     "emailsCopied": "邮箱已复制！",
     "filterPlatforms": "筛选平台...",
     "searchGoogle": "在 Google 上搜索",
-    "sendMessage": "发送消息"
+    "sendMessage": "发送消息",
+    "fields": {"copyIp": "复制 IP", "copyTarget": "复制目标", "copyEmail": "复制邮箱", "copyDomain": "复制域名", "copyDnsRecord": "复制 DNS 记录", "copySubdomain": "复制子域名", "copyUsernameUrl": "复制 URL", "copyShodanPort": "复制端口", "copyPort": "复制端口", "copyOnionUrl": "复制 .onion 地址", "copySummary": "复制摘要", "company": "公司", "location": "位置", "blog": "博客", "twitter": "推特", "publicRepos": "公开仓库", "totalStars": "总星标", "joined": "加入时间", "displayName": "显示名称", "totalCompromised": "总泄露", "employees": "员工", "users": "用户", "thirdParties": "第三方", "passwordsAnalysed": "分析的密码", "tooWeak": "太弱", "weak": "弱", "strong": "强", "recordsFound": "找到的记录", "corporateServices": "企业服务", "userServices": "用户服务", "period": "期间", "totalEvents": "总事件", "infostealerEvents": "信息窃取事件", "dataBreachEvents": "数据泄露事件", "employeeEvents": "员工事件", "clientEvents": "客户事件", "firstSeen": "首次发现", "lastSeen": "最后发现"}
   },
   "watchlist": {
     "title": "监视列表",

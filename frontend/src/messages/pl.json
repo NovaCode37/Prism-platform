@@ -525,7 +525,8 @@
     "emailsCopied": "E-maile skopiowane!",
     "filterPlatforms": "Filtruj platformy...",
     "searchGoogle": "Szukaj w Google",
-    "sendMessage": "Wyślij wiadomość"
+    "sendMessage": "Wyślij wiadomość",
+    "fields": {"copyIp": "Kopiuj IP", "copyTarget": "Kopiuj cel", "copyEmail": "Kopiuj e-mail", "copyDomain": "Kopiuj domenę", "copyDnsRecord": "Kopiuj rekord DNS", "copySubdomain": "Kopiuj subdomenę", "copyUsernameUrl": "Kopiuj URL", "copyShodanPort": "Kopiuj port", "copyPort": "Kopiuj port", "copyOnionUrl": "Kopiuj adres .onion", "copySummary": "Kopiuj podsumowanie", "company": "Firma", "location": "Lokalizacja", "blog": "Blog", "twitter": "Twitter", "publicRepos": "Publiczne repozytoria", "totalStars": "Wszystkie gwiazdki", "joined": "Dołączył(a)", "displayName": "Wyświetlana nazwa", "totalCompromised": "Łącznie skompromitowanych", "employees": "Pracownicy", "users": "Użytkownicy", "thirdParties": "Osoby trzecie", "passwordsAnalysed": "Przeanalizowane hasła", "tooWeak": "Zbyt słabe", "weak": "Słabe", "strong": "Silne", "recordsFound": "Znalezione rekordy", "corporateServices": "Usługi korporacyjne", "userServices": "Usługi użytkownika", "period": "Okres", "totalEvents": "Wszystkie zdarzenia", "infostealerEvents": "Zdarzenia infostealer", "dataBreachEvents": "Zdarzenia wycieku danych", "employeeEvents": "Zdarzenia pracowników", "clientEvents": "Zdarzenia klientów", "firstSeen": "Widziany po raz pierwszy", "lastSeen": "Widziany po raz ostatni"}
   },
   "watchlist": {
     "title": "Listy obserwowanych",

@@ -326,7 +326,8 @@
     "emailsCopied": "E-postalar kopyalandı!",
     "filterPlatforms": "Platformları filtrele...",
     "searchGoogle": "Google'da ara",
-    "sendMessage": "Mesaj gönder"
+    "sendMessage": "Mesaj gönder",
+    "fields": {"copyIp": "IP kopyala", "copyTarget": "Hedefi kopyala", "copyEmail": "E-postayı kopyala", "copyDomain": "Alan adını kopyala", "copyDnsRecord": "DNS kaydını kopyala", "copySubdomain": "Alt alan adını kopyala", "copyUsernameUrl": "URL kopyala", "copyShodanPort": "Port kopyala", "copyPort": "Port kopyala", "copyOnionUrl": ".onion adresini kopyala", "copySummary": "Özeti kopyala", "company": "Şirket", "location": "Konum", "blog": "Blog", "twitter": "Twitter", "publicRepos": "Herkese Açık Depolar", "totalStars": "Toplam Yıldız", "joined": "Katıldı", "displayName": "Görünen Ad", "totalCompromised": "Toplam İhlal", "employees": "Çalışanlar", "users": "Kullanıcılar", "thirdParties": "Üçüncü Taraflar", "passwordsAnalysed": "Analiz Edilen Şifreler", "tooWeak": "Çok Zayıf", "weak": "Zayıf", "strong": "Güçlü", "recordsFound": "Bulunan Kayıtlar", "corporateServices": "Kurumsal Hizmetler", "userServices": "Kullanıcı Hizmetleri", "period": "Dönem", "totalEvents": "Toplam Olay", "infostealerEvents": "Infostealer Olayları", "dataBreachEvents": "Veri İhlali Olayları", "employeeEvents": "Çalışan Olayları", "clientEvents": "Müşteri Olayları", "firstSeen": "İlk Görülme", "lastSeen": "Son Görülme"}
   },
   "watchlist": {
     "title": "İzleme Listeleri",

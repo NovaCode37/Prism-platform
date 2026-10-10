@@ -326,7 +326,8 @@
     "emailsCopied": "Адреса почты скопированы!",
     "filterPlatforms": "Фильтр по платформам…",
     "searchGoogle": "Искать в Google",
-    "sendMessage": "Отправить сообщение"
+    "sendMessage": "Отправить сообщение",
+    "fields": {"copyIp": "Копировать IP", "copyTarget": "Копировать цель", "copyEmail": "Копировать email", "copyDomain": "Копировать домен", "copyDnsRecord": "Копировать DNS запись", "copySubdomain": "Копировать поддомен", "copyUsernameUrl": "Копировать URL", "copyShodanPort": "Копировать порт", "copyPort": "Копировать порт", "copyOnionUrl": "Копировать .onion URL", "copySummary": "Копировать сводку", "company": "Компания", "location": "Локация", "blog": "Блог", "twitter": "Twitter", "publicRepos": "Публичные репозитории", "totalStars": "Всего звезд", "joined": "Присоединился", "displayName": "Отображаемое имя", "totalCompromised": "Всего скомпрометировано", "employees": "Сотрудники", "users": "Пользователи", "thirdParties": "Третьи стороны", "passwordsAnalysed": "Проанализировано паролей", "tooWeak": "Слишком слабый", "weak": "Слабый", "strong": "Сильный", "recordsFound": "Найдено записей", "corporateServices": "Корпоративные сервисы", "userServices": "Пользовательские сервисы", "period": "Период", "totalEvents": "Всего событий", "infostealerEvents": "События Infostealer", "dataBreachEvents": "События утечки", "employeeEvents": "События сотрудников", "clientEvents": "События клиентов", "firstSeen": "Впервые замечен", "lastSeen": "Последний раз замечен"}
   },
   "watchlist": {
     "title": "Списки наблюдения",
