@@ -12,88 +12,81 @@ Run security scans against targets (domains, IPs, emails, phones, or usernames).
 
 ```bash
 python cli.py scan <target> [options]
-```
+Options
+--json: Output results as raw JSON.
 
-### Options
+--html: Generate an HTML scan report.
 
-* `--json`: Output results as raw JSON.
-* `--html`: Generate an HTML scan report.
-* `--pdf`: Generate a PDF scan report.
-* `--graphml`: Export target entity graph in GraphML format.
-* `--gexf`: Export target entity graph in GEXF format.
-* `-m, --modules`: Specify comma-separated modules to execute. Modules are validated against the target type.
-* `--verbose`: Output detailed execution logs.
-* `--quiet`: Suppress output except critical errors.
+--pdf: Generate a PDF scan report.
 
-### Example
+--graphml: Export target entity graph in GraphML format.
 
-```bash
-python cli.py scan example.com --json
-```
+--gexf: Export target entity graph in GEXF format.
 
-### Exit Codes
+-t, --type <target_type>: Specify target type (auto-detected if omitted).
 
-* `0`: Scan completed successfully with no issues.
-* `1`: General runtime error or invalid parameters.
-* `2`: Vulnerabilities detected above threshold.
+-m, --modules: Specify comma-separated modules to execute. Modules are validated against the target type.
 
-### Skipped Modules Behavior
+-v, --verbose: Output detailed execution logs.
 
-When a module requires an API key that is missing, it is skipped but still appears in the `--json` output with `status: skipped`:
+-q, --quiet: Suppress output except critical errors.
 
-```json
+-o, --output <base_name>: Write output to file(s). With more than one format flag, each file gets its own proper extension from the base name (e.g., -o out --json --html writes out.json and out.html).
+
+Example
+Bash
+python cli.py scan example.com --json --html -o report
+Exit Codes
+0: Scan completed successfully.
+
+1: General runtime/scan error or interrupted by Ctrl+C.
+
+2: Unknown module name passed to -m (argparse also uses 2 for bad arguments).
+
+Skipped Modules Behavior
+When a module is skipped (e.g., missing API key), results are keyed by module name containing status, status_reason, and other fields:
+
+JSON
 {
-  "module": "shodan",
-  "status": "skipped",
-  "reason": "Missing API key"
+  "shodan": {
+    "status": "skipped",
+    "status_reason": "Missing API key",
+    "error": null
+  }
 }
-```
-
----
-
-## `modules`
-
+modules
 List and query available OSINT modules.
 
-### Usage
-
-```bash
+Usage
+Bash
 python cli.py modules [options]
-```
+Options
+-t, --type <target_type>: Print modules compatible with a target type (e.g., domain, ip, email, phone, username).
 
-### Options
+--json: Output available modules as raw JSON.
 
-* `--type <target_type>`: Print modules compatible with a target type (e.g., `domain`, `ip`, `email`, `phone`, `username`).
-
-### Example
-
-```bash
-python cli.py modules --type domain
-```
-
----
-
-## `watchlist`
-
+Example
+Bash
+python cli.py modules --type domain --json
+watchlist
 Manage background targets for scheduled periodic re-scanning.
 
-### Usage
-
-```bash
+Usage
+Bash
 python cli.py watchlist <subcommand> [options]
-```
+Subcommands
+list: Display current watched targets (--json supported).
 
-### Subcommands
+add <target>: Add a target to the scheduled watchlist. Supports -t/--type, -m, --interval (hours, default 24), and --webhook.
 
-* `list`: Display current watched targets.
-* `add <target>`: Add a target to the scheduled watchlist.
-* `rm <target>`: Remove a target from the watchlist.
-* `pause <target>`: Temporarily pause scheduled scans.
-* `resume <target>`: Resume scheduled scans.
+rm <entry_id>: Remove a target from the watchlist by its entry ID.
 
-### Example
+pause <entry_id>: Temporarily pause scheduled scans by entry ID.
 
-```bash
-python cli.py watchlist add example.com
-python cli.py watchlist list
-```
+resume <entry_id>: Resume scheduled scans by entry ID.
+
+Example
+Bash
+python cli.py watchlist add example.com --interval 12 --webhook [https://example.com/hook](https://example.com/hook)
+python cli.py watchlist list --json
+
