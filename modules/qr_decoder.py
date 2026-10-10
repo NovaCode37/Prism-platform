@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any, Optional, Tuple
 from modules import get_proxies
+from modules.module_status import annotate, OK, ERROR
 
 
 class QRDecoder:
@@ -37,7 +38,7 @@ class QRDecoder:
                 return None, "Unexpected API response"
             symbols = data[0].get("symbol", [])
             if not symbols:
-                return None, "No QR code detected in the image"
+                return None, None
             err = symbols[0].get("error")
             if err:
                 return None, err
@@ -80,13 +81,11 @@ class QRDecoder:
             decoded, err = self._decode_api(image_bytes, filename)
             result["source"] = "api"
             if err:
-                result["error"] = err
-                return result
+                return annotate(result, ERROR, err)
 
         if not decoded:
-            result["error"] = "No QR code detected in the image"
-            return result
+            return annotate(result, OK, "No QR code detected in the image")
 
         result["decoded"] = decoded
         result["type"], result["is_url"] = self._classify(decoded)
-        return result
+        return annotate(result, OK)

@@ -386,7 +386,7 @@ export interface DarkWebResult {
   error?: string;
 }
 
-export interface QrResult {
+export interface QrResult extends ModuleStatusFields {
   decoded?: string;
   type?: string;
   is_url?: boolean;
