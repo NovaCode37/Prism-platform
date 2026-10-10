@@ -312,7 +312,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} 个快照 · 最早：{first} · 最近：{last}", "recent": "最近快照", "sensitive": "归档中的敏感链接" },
     "emailrep": { "title": "邮箱信誉", "reputation": "信誉", "suspicious": "可疑", "validMx": "有效 MX", "deliverable": "可投递", "spf": "SPF", "dmarc": "DMARC", "domainRep": "域名信誉", "mxRecords": "MX 记录", "disposableWarn": "⚠ 检测到一次性邮箱", "spoofableWarn": "⚠ 域名可被伪造（缺少 SPF/DMARC）", "freeProvider": "免费邮箱服务商" },
     "smtp": { "title": "SMTP 验证", "exists": "存在", "connect": "SMTP 连接", "catchAllWarn": "⚠ 全收服务器（接受任意地址）", "details": "详情" },
-    "breaches": { "title": "泄露检查", "found": "发现泄露", "breachedServices": "被泄露的服务", "total": "泄露总数" },
+    "breaches": { "title": "泄露检查", "found": "发现泄露", "breachedServices": "被泄露的服务", "total": "泄露总数", "none": "未发现泄露" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "电话情报", "valid": "有效", "country": "国家", "countryCode": "国家代码", "region": "地区", "carrier": "运营商", "lineType": "线路类型", "timezones": "时区", "ownerName": "机主姓名", "address": "地址" },
     "telegram": { "title": "Telegram 资料", "found": "已找到", "username": "用户名", "name": "名称", "bio": "简介", "type": "类型", "followers": "关注者" },
