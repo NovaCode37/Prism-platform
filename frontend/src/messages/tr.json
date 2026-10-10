@@ -100,68 +100,22 @@
       "online": "ÇEVRİMİÇİ"
     },
     "caps": {
-      "domain": {
-        "title": "Alan Adı / IP",
-        "item1": "WHOIS · DNS · GeoIP",
-        "item2": "Alt alan adları · Shodan",
-        "item3": "VirusTotal · Wayback"
-      },
-      "email": {
-        "title": "E-posta",
-        "item1": "DNS itibarı · SMTP",
-        "item2": "İhlal kontrolü · Tek kullanımlık",
-        "item3": "SPF · DKIM · DMARC"
-      },
-      "phone": {
-        "title": "Telefon",
-        "item1": "Doğrulama · Operatör",
-        "item2": "Ülke · Ters sorgulama"
-      },
-      "username": {
-        "title": "Kullanıcı Adı",
-        "item1": "Blackbird · Maigret",
-        "item2": "50+ / 3000+ platform",
-        "item3": "OPSEC Puanı"
-      }
+      "domain":   { "title": "Alan Adı / IP", "item1": "WHOIS · DNS · GeoIP", "item2": "Alt alan adları · Shodan", "item3": "VirusTotal · Wayback" },
+      "email":    { "title": "E-posta",       "item1": "DNS itibarı · SMTP", "item2": "İhlal kontrolü · Tek kullanımlık", "item3": "SPF · DKIM · DMARC" },
+      "phone":    { "title": "Telefon",       "item1": "Doğrulama · Operatör", "item2": "Ülke · Ters sorgulama" },
+      "username": { "title": "Kullanıcı Adı", "item1": "Blackbird · Maigret", "item2": "50+ / 3000+ platform", "item3": "OPSEC Puanı" }
     },
     "standaloneTools": "Bağımsız Araçlar",
     "tools": {
-      "metadata": {
-        "label": "Dosya Meta Verisi",
-        "desc": "EXIF, GPS, PDF, DOCX"
-      },
-      "headers": {
-        "label": "E-posta Başlıkları",
-        "desc": "SPF, DKIM, yönlendirme atlamaları"
-      },
-      "crypto": {
-        "label": "Kripto Adresi",
-        "desc": "Bitcoin ve Ethereum"
-      },
-      "qr": {
-        "label": "QR Çöz",
-        "desc": "Çöz ve analiz et"
-      },
-      "mac": {
-        "label": "MAC Sorgulama",
-        "desc": "Üretici sorgulama"
-      },
-      "subnet": {
-        "label": "IP / Alt Ağ",
-        "desc": "Ağ aralıkları ve CIDR"
-      },
-      "hash": {
-        "label": "Hash Tanımlayıcı",
-        "desc": "Hash türlerini tanımla"
-      },
-      "encoder": {
-        "label": "Base64 / URL",
-        "desc": "Kodla ve çöz"
-      },
-      "jwt": {
-        "label": "JWT Çözücü",
-        "desc": "JWT belirteçlerini çöz"
-      }
+      "metadata": { "label": "Dosya Meta Verisi",  "desc": "EXIF, GPS, PDF, DOCX" },
+      "headers":  { "label": "E-posta Başlıkları",   "desc": "SPF, DKIM, yönlendirme atlamaları" },
+      "crypto":   { "label": "Kripto Adresi", "desc": "Bitcoin ve Ethereum" },
+      "qr":       { "label": "QR Çöz",       "desc": "Çöz ve analiz et" },
+      "mac":      { "label": "MAC Sorgulama",      "desc": "Üretici sorgulama" },
+      "subnet":   { "label": "IP / Alt Ağ",     "desc": "Ağ aralıkları ve CIDR" },
+      "hash":     { "label": "Hash Tanımlayıcı", "desc": "Hash türlerini tanımla" },
+      "encoder":  { "label": "Base64 / URL", "desc": "Kodla ve çöz" },
+      "jwt": { "label": "JWT Çözücü", "desc": "JWT belirteçlerini çöz" }
     },
     "demo": {
       "line1": "Bu, sınırlı API kotalarına sahip halka açık bir demodur. Bazı modüller (Shodan, VirusTotal) hız sınırına takılabilir.",
@@ -300,68 +254,6 @@
     "log": "İlerleme Günlüğü"
   },
   "results": {
-    "fields": {
-      "asn": "ASN",
-      "address": "Adres",
-      "bio": "Biyografi",
-      "blog": "Blog",
-      "carrier": "Operatör",
-      "clientEvents": "Müşteri etkinlikleri",
-      "company": "Şirket",
-      "copyDnsRecord": "DNS kaydını kopyala",
-      "copyIp": "IP'yi kopyala",
-      "copyShodanPort": "Shodan bağlantı noktasını kopyala",
-      "copyDomain": "Alanı kopyala",
-      "copyEmail": "E-postayı kopyala",
-      "copyOnionUrl": ".onion adresini kopyala",
-      "copyPort": "Bağlantı noktasını kopyala",
-      "copySubdomain": "Alt alanı kopyala",
-      "copySummary": "Özeti kopyala",
-      "copyTarget": "Hedefi kopyala",
-      "copyUsernameUrl": "Kullanıcı adı URL'sini kopyala",
-      "corporateServices": "Kurumsal hizmetler",
-      "country": "Ülke",
-      "countryCode": "Ülke kodu",
-      "created": "Oluşturuldu",
-      "dataBreachEvents": "Veri ihlali olayları",
-      "displayName": "Ekran adı",
-      "domainReputation": "Alan Adı İtibarı",
-      "employeeEvents": "Çalışan etkinlikleri",
-      "employees": "Çalışanlar",
-      "expires": "Süresi doluyor",
-      "firstSeen": "İlk görülme",
-      "followers": "Takipçiler",
-      "isp": "İSS",
-      "infostealerEvents": "Bilgi hırsızı etkinlikleri",
-      "joined": "Katıldı",
-      "lastSeen": "Son görülme",
-      "lineType": "Hat Tipi",
-      "location": "Konum",
-      "name": "İsim",
-      "organization": "Organizasyon",
-      "ownerName": "Sahip Adı",
-      "passwordsAnalysed": "Şifreler analiz edildi",
-      "period": "Dönem",
-      "publicRepos": "Herkese Açık Repolar",
-      "recordsFound": "Bulunan kayıtlar",
-      "region": "Bölge",
-      "registrar": "Kayıt memuru",
-      "strong": "Güçlü %",
-      "thirdParties": "Üçüncü taraflar",
-      "tooWeak": "Çok zayıf %",
-      "totalBreaches": "Toplam İhlaller",
-      "totalReports": "Toplam Raporlar",
-      "totalStars": "Toplam Yıldız",
-      "totalCompromised": "Güvenliği ihlal edilen toplam",
-      "totalEvents": "Toplam etkinlik",
-      "twitter": "heyecan",
-      "type": "Tip",
-      "usageType": "Kullanım Türü",
-      "userServices": "Kullanıcı hizmetleri",
-      "username": "Kullanıcı adı",
-      "users": "Kullanıcılar",
-      "weak": "Zayıf %"
-    },
     "htmlReport": "HTML Rapor",
     "pdfReport": "PDF Rapor",
     "jsonReport": "JSON İndir",
@@ -401,197 +293,41 @@
     "opsec": {
       "scoreLabel": "OPSEC Puanı",
       "riskSuffix": "RİSK",
-      "data_exposure": {
-        "label": "Veri Maruziyeti",
-        "tooltip": "Hassas veri sızıntıları: ihlal edilmiş kimlik bilgileri, açığa çıkan e-postalar, halka açık kişisel veriler."
-      },
-      "identity_opsec": {
-        "label": "Kimlik OPSEC",
-        "tooltip": "Platformlar arası tanımlayıcı yeniden kullanımı: birçok sitede aynı kullanıcı adı/e-posta."
-      },
-      "infrastructure": {
-        "label": "Altyapı",
-        "tooltip": "Açığa çıkan hizmetler, açık portlar, zayıf DNS/WHOIS hijyeni, tehdit istihbaratı eşleşmeleri."
-      },
-      "web_security": {
-        "label": "Web Güvenliği",
-        "tooltip": "TLS, güvenlik başlıkları, sertifika şeffaflığı, arşivlenmiş hassas yollar."
-      }
+      "data_exposure": { "label": "Veri Maruziyeti", "tooltip": "Hassas veri sızıntıları: ihlal edilmiş kimlik bilgileri, açığa çıkan e-postalar, halka açık kişisel veriler." },
+      "identity_opsec": { "label": "Kimlik OPSEC", "tooltip": "Platformlar arası tanımlayıcı yeniden kullanımı: birçok sitede aynı kullanıcı adı/e-posta." },
+      "infrastructure": { "label": "Altyapı", "tooltip": "Açığa çıkan hizmetler, açık portlar, zayıf DNS/WHOIS hijyeni, tehdit istihbaratı eşleşmeleri." },
+      "web_security": { "label": "Web Güvenliği", "tooltip": "TLS, güvenlik başlıkları, sertifika şeffaflığı, arşivlenmiş hassas yollar." }
     },
-    "common": {
-      "yes": "Evet",
-      "no": "Hayır",
-      "unknown": "Bilinmiyor",
-      "points": "puan",
-      "moduleRetry": "Tekrar denemek için yenile düğmesini kullanın.",
-      "skippedKeyHint": "bu modülü etkinleştirmek için {key} değerini .env dosyasına ekleyin.",
-      "skippedHint": "bu modülü etkinleştirmek için anahtarı .env dosyasına ekleyin.",
-      "noSecurityFindings": "Güvenlik bulgusu yok",
-      "noDnsRecords": "DNS kaydı bulunamadı",
-      "noThreats": "Tehdit algılanmadı"
-    },
-    "findings": {
-      "title": "Güvenlik Bulguları",
-      "none": "Güvenlik bulgusu yok"
-    },
-    "whois": {
-      "title": "WHOIS Kaydı",
-      "registrar": "Kayıt Kuruluşu",
-      "organization": "Kuruluş",
-      "country": "Ülke",
-      "created": "Oluşturulma",
-      "expires": "Sona erme",
-      "emails": "E-postalar",
-      "nameServers": "Ad Sunucuları"
-    },
-    "dns": {
-      "title": "DNS Kayıtları"
-    },
-    "subdomains": {
-      "titleFmt": "Sertifika Şeffaflığı — {n} alt alan adı",
-      "certsAnalysed": "{n} sertifika analiz edildi"
-    },
-    "accounts": {
-      "title": "Kullanıcı Adı Araması",
-      "platform": "Platform",
-      "url": "URL",
-      "time": "Süre"
-    },
-    "virustotal": {
-      "title": "VirusTotal",
-      "malicious": "Zararlı",
-      "suspicious": "Şüpheli",
-      "harmless": "Zararsız",
-      "undetected": "Tespit edilmedi",
-      "country": "Ülke",
-      "asn": "ASN"
-    },
-    "abuseipdb": {
-      "title": "AbuseIPDB",
-      "abuseScore": "İstismar Puanı",
-      "totalReports": "Toplam Rapor",
-      "isp": "İSS",
-      "usageType": "Kullanım Türü",
-      "torExit": "⚠ TOR Çıkış Düğümü"
-    },
-    "shodan": {
-      "title": "Shodan",
-      "openPorts": "Açık Portlar",
-      "cves": "Bulunan CVE'ler"
-    },
-    "censys": {
-      "titleCert": "Censys — Sertifika Araması",
-      "titleHost": "Censys — Ana Bilgisayar Bilgisi",
-      "ip": "IP",
-      "asn": "ASN",
-      "location": "Konum",
-      "openPorts": "Açık Portlar",
-      "subdomainsFmt": "Alt Alan Adları ({n})",
-      "services": "Hizmetler",
-      "port": "Port",
-      "service": "Hizmet",
-      "software": "Yazılım"
-    },
-    "darkweb": {
-      "titleFmt": "Karanlık Web Aynaları — {n} bulundu",
-      "sources": "Kaynaklar"
-    },
-    "wayback": {
-      "title": "Wayback Machine",
-      "summaryFmt": "{n} anlık görüntü · İlk: {first} · Son: {last}",
-      "recent": "Son Anlık Görüntüler",
-      "sensitive": "Arşivdeki Hassas URL'ler"
-    },
-    "emailrep": {
-      "title": "E-posta İtibarı",
-      "reputation": "İtibar",
-      "suspicious": "Şüpheli",
-      "validMx": "Geçerli MX",
-      "deliverable": "Teslim edilebilir",
-      "spf": "SPF",
-      "dmarc": "DMARC",
-      "domainRep": "Alan Adı İtibarı",
-      "mxRecords": "MX Kayıtları",
-      "disposableWarn": "⚠ Tek kullanımlık e-posta algılandı",
-      "spoofableWarn": "⚠ Alan adı sahtelenebilir (SPF/DMARC eksik)",
-      "freeProvider": "Ücretsiz e-posta sağlayıcısı"
-    },
-    "smtp": {
-      "title": "SMTP Doğrulama",
-      "exists": "Mevcut",
-      "connect": "SMTP Bağlantısı",
-      "catchAllWarn": "⚠ Catch-all sunucu (her adresi kabul eder)",
-      "details": "Ayrıntılar"
-    },
-    "breaches": {
-      "title": "İhlal Kontrolü",
-      "found": "İhlaller Bulundu",
-      "breachedServices": "İhlal Edilen Hizmetler",
-      "total": "Toplam İhlal"
-    },
-    "dorks": {
-      "title": "Google Dorks"
-    },
-    "phone": {
-      "title": "Telefon İstihbaratı",
-      "valid": "Geçerli",
-      "country": "Ülke",
-      "countryCode": "Ülke Kodu",
-      "region": "Bölge",
-      "carrier": "Operatör",
-      "lineType": "Hat Türü",
-      "timezones": "Saat Dilimleri",
-      "ownerName": "Sahip Adı",
-      "address": "Adres"
-    },
-    "telegram": {
-      "title": "Telegram Profili",
-      "found": "Bulundu",
-      "username": "Kullanıcı Adı",
-      "name": "Ad",
-      "bio": "Biyografi",
-      "type": "Tür",
-      "followers": "Takipçiler"
-    },
-    "map": {
-      "title": "IP Konum Haritası",
-      "ip": "IP",
-      "location": "Konum",
-      "organization": "Kuruluş",
-      "coordinates": "Koordinatlar",
-      "loading": "Harita yükleniyor…",
-      "noData": "Konum verisi mevcut değil",
-      "moreFmt": "{n} konum bulundu",
-      "precision": "Hassasiyet",
-      "approximate": "Yaklaşık (bölgesel, tam değil)"
-    },
-    "graph": {
-      "title": "Varlık Grafiği",
-      "loading": "Graf yükleniyor…",
-      "empty": "Bu tarama için graf verisi yok"
-    },
-    "json": {
-      "title": "Ham JSON Sonuçları",
-      "show": "Ham veriyi göster",
-      "hide": "Ham veriyi gizle",
-      "copyRawJson": "Copy raw JSON"
-    },
-    "ai": {
-      "title": "AI OSINT Analizi · Nvidia Nemotron",
-      "chatTitle": "AI'ya Sor",
-      "generate": "AI Özeti Oluştur",
-      "generating": "Analiz oluşturuluyor…",
-      "model": "Model",
-      "regenerate": "Yeniden oluştur",
-      "placeholder": "Bu tarama hakkında her şeyi sorun…"
-    },
+    "common": { "yes": "Evet", "no": "Hayır", "unknown": "Bilinmiyor", "points": "puan", "moduleRetry": "Tekrar denemek için yenile düğmesini kullanın.", "skippedKeyHint": "bu modülü etkinleştirmek için {key} değerini .env dosyasına ekleyin.", "skippedHint": "bu modülü etkinleştirmek için anahtarı .env dosyasına ekleyin.", "noSecurityFindings": "Güvenlik bulgusu yok", "noDnsRecords": "DNS kaydı bulunamadı", "noThreats": "Tehdit algılanmadı" },
+    "findings": { "title": "Güvenlik Bulguları", "none": "Güvenlik bulgusu yok" },
+    "whois": { "title": "WHOIS Kaydı", "registrar": "Kayıt Kuruluşu", "organization": "Kuruluş", "country": "Ülke", "created": "Oluşturulma", "expires": "Sona erme", "emails": "E-postalar", "nameServers": "Ad Sunucuları" },
+    "dns": { "title": "DNS Kayıtları" },
+    "subdomains": { "titleFmt": "Sertifika Şeffaflığı — {n} alt alan adı", "certsAnalysed": "{n} sertifika analiz edildi" },
+    "accounts": { "title": "Kullanıcı Adı Araması", "platform": "Platform", "url": "URL", "time": "Süre" },
+    "virustotal": { "title": "VirusTotal", "malicious": "Zararlı", "suspicious": "Şüpheli", "harmless": "Zararsız", "undetected": "Tespit edilmedi", "country": "Ülke", "asn": "ASN" },
+    "abuseipdb": { "title": "AbuseIPDB", "abuseScore": "İstismar Puanı", "totalReports": "Toplam Rapor", "isp": "İSS", "usageType": "Kullanım Türü", "torExit": "⚠ TOR Çıkış Düğümü" },
+    "shodan": { "title": "Shodan", "openPorts": "Açık Portlar", "cves": "Bulunan CVE'ler" },
+    "censys": { "titleCert": "Censys — Sertifika Araması", "titleHost": "Censys — Ana Bilgisayar Bilgisi", "ip": "IP", "asn": "ASN", "location": "Konum", "openPorts": "Açık Portlar", "subdomainsFmt": "Alt Alan Adları ({n})", "services": "Hizmetler", "port": "Port", "service": "Hizmet", "software": "Yazılım" },
+    "darkweb": { "titleFmt": "Karanlık Web Aynaları — {n} bulundu", "sources": "Kaynaklar" },
+    "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} anlık görüntü · İlk: {first} · Son: {last}", "recent": "Son Anlık Görüntüler", "sensitive": "Arşivdeki Hassas URL'ler" },
+    "emailrep": { "title": "E-posta İtibarı", "reputation": "İtibar", "suspicious": "Şüpheli", "validMx": "Geçerli MX", "deliverable": "Teslim edilebilir", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Alan Adı İtibarı", "mxRecords": "MX Kayıtları", "disposableWarn": "⚠ Tek kullanımlık e-posta algılandı", "spoofableWarn": "⚠ Alan adı sahtelenebilir (SPF/DMARC eksik)", "freeProvider": "Ücretsiz e-posta sağlayıcısı" },
+    "smtp": { "title": "SMTP Doğrulama", "exists": "Mevcut", "connect": "SMTP Bağlantısı", "catchAllWarn": "⚠ Catch-all sunucu (her adresi kabul eder)", "details": "Ayrıntılar" },
+    "breaches": { "title": "İhlal Kontrolü", "found": "İhlaller Bulundu", "breachedServices": "İhlal Edilen Hizmetler", "total": "Toplam İhlal" },
+    "dorks": { "title": "Google Dorks" },
+    "phone": { "title": "Telefon İstihbaratı", "valid": "Geçerli", "country": "Ülke", "countryCode": "Ülke Kodu", "region": "Bölge", "carrier": "Operatör", "lineType": "Hat Türü", "timezones": "Saat Dilimleri", "ownerName": "Sahip Adı", "address": "Adres" },
+    "telegram": { "title": "Telegram Profili", "found": "Bulundu", "username": "Kullanıcı Adı", "name": "Ad", "bio": "Biyografi", "type": "Tür", "followers": "Takipçiler" },
+    "map": { "title": "IP Konum Haritası", "ip": "IP", "location": "Konum", "organization": "Kuruluş", "coordinates": "Koordinatlar", "loading": "Harita yükleniyor…", "noData": "Konum verisi mevcut değil", "moreFmt": "{n} konum bulundu", "precision": "Hassasiyet", "approximate": "Yaklaşık (bölgesel, tam değil)" },
+    "graph": { "title": "Varlık Grafiği", "loading": "Graf yükleniyor…", "empty": "Bu tarama için graf verisi yok" },
+    "json": { "title": "Ham JSON Sonuçları", "show": "Ham veriyi göster", "hide": "Ham veriyi gizle", "copyRawJson": "Copy raw JSON" },
+    "ai": { "title": "AI OSINT Analizi · Nvidia Nemotron", "chatTitle": "AI'ya Sor", "generate": "AI Özeti Oluştur", "generating": "Analiz oluşturuluyor…", "model": "Model", "regenerate": "Yeniden oluştur", "placeholder": "Bu tarama hakkında her şeyi sorun…" },
     "duration": "{duration} içinde tamamlandı",
     "copyAllFindings": "Tüm bulguları kopyala",
     "copyAllEmails": "Tüm e-postaları kopyala",
     "emailsCopied": "E-postalar kopyalandı!",
     "filterPlatforms": "Platformları filtrele...",
     "searchGoogle": "Google'da ara",
-    "sendMessage": "Mesaj gönder"
+    "sendMessage": "Mesaj gönder",
+    "fields": { "copyIp": "Copy IP", "copyTarget": "Copy target", "copyEmail": "Copy email", "copyDomain": "Copy domain", "copyDnsRecord": "Copy DNS record", "copySubdomain": "Copy subdomain", "copyUsernameUrl": "Copy URL", "copyShodanPort": "Copy port", "copyPort": "Copy port", "copyOnionUrl": "Copy .onion address", "copySummary": "Copy summary", "company": "Company", "location": "Location", "blog": "Blog", "twitter": "Twitter", "publicRepos": "Public Repos", "totalStars": "Total Stars", "joined": "Joined", "displayName": "Display Name", "totalCompromised": "Total Compromised", "employees": "Employees", "users": "Users", "thirdParties": "Third Parties", "passwordsAnalysed": "Passwords Analysed", "tooWeak": "Too Weak", "weak": "Weak", "strong": "Strong", "recordsFound": "Records Found", "corporateServices": "Corporate Services", "userServices": "User Services", "period": "Period", "totalEvents": "Total Events", "infostealerEvents": "Infostealer Events", "dataBreachEvents": "Data Breach Events", "employeeEvents": "Employee Events", "clientEvents": "Client Events", "firstSeen": "First Seen", "lastSeen": "Last Seen" }
   },
   "watchlist": {
     "title": "İzleme Listeleri",
