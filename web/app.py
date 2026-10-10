@@ -148,7 +148,7 @@ _CACHE_TTL = int(os.getenv("CACHE_TTL_HOURS") or "24") * 3600
 
 def _cache_key(module: str, target: str) -> str:
     import hashlib
-    h = hashlib.md5(f"{module}:{target.lower().strip()}".encode()).hexdigest()
+    h = hashlib.sha256(f"{module}:{target.lower().strip()}".encode()).hexdigest()[:32]
     return os.path.join(_CACHE_DIR, f"{module}_{h}.json")
 
 def _get_cached(module: str, target: str) -> Optional[Dict]:
@@ -174,7 +174,7 @@ def _set_cache(module: str, target: str, data: Any) -> None:
 
 def _geocode_place(query: str) -> Optional[Dict]:
     import hashlib
-    cache_path = os.path.join(_CACHE_DIR, "geocode_" + hashlib.md5(query.lower().encode()).hexdigest() + ".json")
+    cache_path = os.path.join(_CACHE_DIR, "geocode_" + hashlib.sha256(query.lower().encode()).hexdigest()[:32] + ".json")
     try:
         if os.path.exists(cache_path) and time.time() - os.path.getmtime(cache_path) < 30 * 86400:
             with open(cache_path, "r", encoding="utf-8") as f:
