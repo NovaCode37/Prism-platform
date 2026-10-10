@@ -68,7 +68,7 @@ function loadLeaflet(): Promise<any> {
 }
 
 function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
-  const { t: i18n } = useTranslations();
+  const { t } = useTranslations();
   const [data, setData] = useState<MapData | null>(null);
   const [error, setError] = useState('');
   const mapHostRef = useRef<HTMLDivElement>(null);
@@ -154,7 +154,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
   }, []);
 
   if (error) return <div className="text-red text-sm">{error}</div>;
-  if (!data) return <div className="text-text-3 text-sm animate-pulse">{i18n('results.map.loading')}</div>;
+  if (!data) return <div className="text-text-3 text-sm animate-pulse">{t('results.map.loading')}</div>;
   if (!data.markers?.length) {
     if (data.info && (data.info.country || data.info.carrier || data.info.region)) {
       return (
@@ -168,7 +168,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
         </div>
       );
     }
-    return <div className="text-text-3 text-sm">{i18n('results.map.noData')}</div>;
+    return <div className="text-text-3 text-sm">{t('results.map.noData')}</div>;
   }
 
   const m = data.markers[0];
@@ -182,7 +182,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
             <span className="dt-label">IP</span>
             <div className="flex items-center gap-1.5">
               <span className="dt-value font-mono">{m.ip}</span>
-              <CopyIconButton onClick={() => onCopy(m.ip ?? '')} label={i18n('results.fields.copyIp')} />
+              <CopyIconButton onClick={() => onCopy(m.ip ?? '')} label={t('results.fields.copyIp')} />
             </div>
           </div>
         )}
@@ -231,7 +231,7 @@ function GraphLegend() {
 }
 
 function GraphView({ scanId }: { scanId: string }) {
-  const { t: i18n } = useTranslations();
+  const { t } = useTranslations();
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const [error, setError] = useState('');
@@ -275,11 +275,11 @@ function GraphView({ scanId }: { scanId: string }) {
 
   return (
     <div>
-      {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">{i18n('results.graph.loading')}</div>}
+      {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">{t('results.graph.loading')}</div>}
       {status === 'empty' && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <GitBranch size={28} className="text-text-3 opacity-40 mb-2" />
-          <div className="text-text-3 text-sm">{i18n('results.graph.empty')}</div>
+          <div className="text-text-3 text-sm">{t('results.graph.empty')}</div>
         </div>
       )}
       {status === 'error' && <div className="text-red text-sm py-4">{error}</div>}
@@ -358,20 +358,20 @@ function ModuleStatusBadge({ status, label }: { status: ModuleStatus; label?: st
 }
 
 function ModuleNotice({ status, reason }: { status: Exclude<ModuleStatus, 'ok'>; reason?: string }) {
-  const { t: i18n } = useTranslations();
+  const { t } = useTranslations();
   const b = STATUS_BADGE[status];
   // Skip reasons name the variable they need ("No API key configured (CENSYS_PAT)"); the hint names it too.
   // A reason that names no variable is about something else (a missing package, say) and already says
   // what to do, so the generic hint is only for a skip that came without a reason.
   const envKey = reason?.match(/\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b/)?.[0];
   const hint = envKey
-    ? i18n('results.common.skippedKeyHint').replace('{key}', envKey)
-    : reason ? null : i18n('results.common.skippedHint');
+    ? t('results.common.skippedKeyHint').replace('{key}', envKey)
+    : reason ? null : t('results.common.skippedHint');
   return (
     <div className="text-[12px]" style={{ color: status === 'skipped' ? undefined : b.color }}>
       <span className="text-text-2">{reason || b.hint}</span>
       {status === 'skipped' && hint && <span className="text-text-3"> - {hint}</span>}
-      {status === 'error' && <div className="text-text-3 mt-1">{i18n('results.common.moduleRetry')}</div>}
+      {status === 'error' && <div className="text-text-3 mt-1">{t('results.common.moduleRetry')}</div>}
     </div>
   );
 }
