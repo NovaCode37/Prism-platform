@@ -5,6 +5,8 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # Called by release-image.yml so a tag only publishes once these jobs pass.
+  workflow_call:
 
 permissions:
   contents: read

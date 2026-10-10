@@ -54,8 +54,7 @@ class GitHubRecon:
                 proxies=proxies,  
             )
             if r.status_code == 404:
-                result["error"] = "GitHub user not found"
-                return result
+                return annotate(result, OK, "GitHub user not found")
             if r.status_code in (403, 429):
                 return annotate(result, RATE_LIMITED,
                                 "GitHub API rate limit reached - set GITHUB_TOKEN to raise it")

@@ -1468,9 +1468,9 @@ export function ScanResults({ scan, onHome }: Props) {
                     <span className={r.emailrep.dmarc ? 'text-green' : 'text-red'}>{r.emailrep.dmarc ? 'Yes' : 'No'}</span>
                   </div>
                   <DtRow label={i18n('results.emailrep.domainRep')} value={r.emailrep.domain_reputation?.toUpperCase()} />
-                  {r.emailrep.disposable && <div className="text-red text-[12px] font-semibold mt-1">⚠ Disposable email detected</div>}
-                  {r.emailrep.spoofable && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Domain is spoofable (missing SPF/DMARC)</div>}
-                  {r.emailrep.free_provider && <div className="text-text-3 text-[12px] mt-1">Free email provider</div>}
+                  {r.emailrep.disposable && <div className="text-red text-[12px] font-semibold mt-1">{i18n('results.emailrep.disposableWarn')}</div>}
+                  {r.emailrep.spoofable && <div className="text-yellow text-[12px] font-semibold mt-1">{i18n('results.emailrep.spoofableWarn')}</div>}
+                  {r.emailrep.free_provider && <div className="text-text-3 text-[12px] mt-1">{i18n('results.emailrep.freeProvider')}</div>}
                   {(r.emailrep.mx_records?.length ?? 0) > 0 && (
                     <div className="dt-row"><span className="dt-label">MX Records</span>
                       <div>{r.emailrep.mx_records?.map((mx: string) => <span key={mx} className="tag">{mx}</span>)}</div>
@@ -1495,7 +1495,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   <div className="dt-row"><span className="dt-label">SMTP Connect</span>
                     <span className={r.smtp.smtp_connect ? 'text-green' : 'text-red'}>{r.smtp.smtp_connect ? 'Yes' : 'No'}</span>
                   </div>
-                  {r.smtp.catch_all && <div className="text-yellow text-[12px] font-semibold mt-1">⚠ Catch-all server (accepts any address)</div>}
+                  {r.smtp.catch_all && <div className="text-yellow text-[12px] font-semibold mt-1">{i18n('results.smtp.catchAllWarn')}</div>}
                   {(r.smtp.details?.length ?? 0) > 0 && (
                     <div className="mt-2">
                       <div className="text-[10px] text-text-3 uppercase tracking-wider mb-1">Details</div>
@@ -1510,7 +1510,7 @@ export function ScanResults({ scan, onHome }: Props) {
             <KeyModuleCard title={i18n('results.breaches.title')} mod={r.breaches} onRefresh={() => refreshModule('leaks', ['breaches'])} refreshing={isRefreshing('leaks')}>
               <div className="space-y-1.5">
                 {(r.breaches?.breaches?.length ?? 0) === 0 && r.breaches?.found === false && (
-                  <div className="text-green text-sm py-1">✓ No breaches found</div>
+                  <div className="text-green text-sm py-1">✓ {i18n('results.breaches.none')}</div>
                 )}
                 {r.breaches?.found !== undefined && (
                   <div className="dt-row"><span className="dt-label">Breaches Found</span>

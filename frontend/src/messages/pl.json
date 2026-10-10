@@ -460,7 +460,8 @@
       "title": "Wycieki Danych",
       "found": "Znalezione Wycieki",
       "breachedServices": "Skompromitowane serwisy",
-      "total": "Suma Wycieków"
+      "total": "Suma Wycieków",
+      "none": "Nie znaleziono wycieków"
     },
     "dorks": {
       "title": "Google Dorks"

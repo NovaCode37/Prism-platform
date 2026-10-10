@@ -9,7 +9,15 @@ env:
   IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
+  # The same lint, tests, frontend build and Docker smoke test that CI runs on
+  # main. A tag on a commit that fails any of them publishes nothing.
+  test:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read

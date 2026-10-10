@@ -229,7 +229,7 @@ class AbuseIPDB:
             elif r.status_code == 429:
                 return annotate(result, RATE_LIMITED, "AbuseIPDB API rate limit reached")
             else:
-                result["error"] = f"AbuseIPDB returned {r.status_code}"
+                return annotate(result, ERROR, f"AbuseIPDB returned {r.status_code}")
         except Exception as e:
             return annotate(result, ERROR, str(e))
 

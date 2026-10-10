@@ -312,7 +312,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "Снимков: {n} · Первый: {first} · Последний: {last}", "recent": "Недавние снимки", "sensitive": "Чувствительные URL в архиве" },
     "emailrep": { "title": "Репутация email", "reputation": "Репутация", "suspicious": "Подозрительный", "validMx": "Корректная MX-запись", "deliverable": "Доставка возможна", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Репутация домена", "mxRecords": "MX-записи", "disposableWarn": "⚠ Обнаружен одноразовый email", "spoofableWarn": "⚠ Домен можно подделать (нет SPF/DMARC)", "freeProvider": "Бесплатный почтовый сервис" },
     "smtp": { "title": "Проверка SMTP", "exists": "Существует", "connect": "SMTP-соединение", "catchAllWarn": "⚠ Сервер catch-all (принимает любой адрес)", "details": "Подробности" },
-    "breaches": { "title": "Проверка утечек", "found": "Найдено утечек", "breachedServices": "Скомпрометированные сервисы", "total": "Всего утечек" },
+    "breaches": { "title": "Проверка утечек", "found": "Найдено утечек", "breachedServices": "Скомпрометированные сервисы", "total": "Всего утечек", "none": "Утечек не найдено" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "Разведка по телефону", "valid": "Корректный", "country": "Страна", "countryCode": "Код страны", "region": "Регион", "carrier": "Оператор", "lineType": "Тип линии", "timezones": "Часовые пояса", "ownerName": "Владелец", "address": "Адрес" },
     "telegram": { "title": "Профиль Telegram", "found": "Найден", "username": "Имя пользователя", "name": "Имя", "bio": "О себе", "type": "Тип", "followers": "Подписчики" },

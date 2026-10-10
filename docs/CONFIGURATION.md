@@ -159,6 +159,7 @@ prism.example.com {
 | `GROQ_API_KEY`                    | AI fallback (Llama-3 instant)        | Free tier        |
 | `TELEGRAM_BOT_TOKEN`              | Telegram user lookup                 | Free             |
 | `LEAK_LOOKUP_API_KEY`             | Breach database                      | Limited free     |
+| `GITHUB_TOKEN`                    | GitHub recon, 5,000 req/h instead of 60 | Free          |
 
 ## Variables
 
@@ -177,6 +178,9 @@ prism.example.com {
 | `ABUSEIPDB_API_KEY`  |Checks if an IP address has been reported for malicious activity | No | AbuseIPDB Dashboard  |
 | `SHODAN_API_KEY`     |Searches for internet-connected devices and open ports | No | Shodan Developer Dashboard     |
 | `TELEGRAM_BOT_TOKEN` | Sends automated scan alerts and reports directly to a Telegram channel | No | Telegram BotFather |
+| `GITHUB_TOKEN`       | Optional token for the GitHub API. Without it the unauthenticated limit is 60 requests an hour. A fine-grained token with no permissions works for public profile reads. | No | GitHub Developer Settings |
+| `MAIGRET_BIN`        | Path to a `maigret` binary when it is not on `PATH` | No | System path |
+| `MAIGRET_MAX_RUNTIME`| Seconds before a maigret search is stopped (default 600) | No | Set an integer value |
 | `CENSYS_PAT`         | Personal access token for the Censys Platform API. `CENSYS_API_KEY` is accepted as an alias | No | Censys Platform: My Account > Personal Access Tokens > Create New Token |
 | `CENSYS_ORG_ID`      | Organization ID sent with each Censys request. Needed only when the token belongs to a Starter or Enterprise organization; leave empty for a free personal account | No | Shown under "Current Organization" on the Personal Access Tokens page |
 | `ALLOWED_ORIGINS`    | Configures CORS settings to restrict which frontend domains can talk to your backend | No | Set to a comma-separated list of domains |

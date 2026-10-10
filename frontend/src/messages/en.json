@@ -312,7 +312,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} snapshots · First: {first} · Last: {last}", "recent": "Recent Snapshots", "sensitive": "Sensitive URLs in Archive" },
     "emailrep": { "title": "Email Reputation", "reputation": "Reputation", "suspicious": "Suspicious", "validMx": "Valid MX", "deliverable": "Deliverable", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Domain Reputation", "mxRecords": "MX Records", "disposableWarn": "⚠ Disposable email detected", "spoofableWarn": "⚠ Domain is spoofable (missing SPF/DMARC)", "freeProvider": "Free email provider" },
     "smtp": { "title": "SMTP Verification", "exists": "Exists", "connect": "SMTP Connect", "catchAllWarn": "⚠ Catch-all server (accepts any address)", "details": "Details" },
-    "breaches": { "title": "Breach Check", "found": "Breaches Found", "breachedServices": "Breached Services", "total": "Total Breaches" },
+    "breaches": { "title": "Breach Check", "found": "Breaches Found", "breachedServices": "Breached Services", "total": "Total Breaches", "none": "No breaches found" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "Phone Intelligence", "valid": "Valid", "country": "Country", "countryCode": "Country Code", "region": "Region", "carrier": "Carrier", "lineType": "Line Type", "timezones": "Timezones", "ownerName": "Owner Name", "address": "Address" },
     "telegram": { "title": "Telegram Profile", "found": "Found", "username": "Username", "name": "Name", "bio": "Bio", "type": "Type", "followers": "Followers" },

@@ -190,7 +190,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} captures · Première : {first} · Dernière : {last}", "recent": "Captures récentes", "sensitive": "URLs sensibles dans l'archive" },
     "emailrep": { "title": "Réputation d'e-mail", "reputation": "Réputation", "suspicious": "Suspect", "validMx": "MX valide", "deliverable": "Livrable", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Réputation du domaine", "mxRecords": "Enregistrements MX", "disposableWarn": "⚠ E-mail jetable détecté", "spoofableWarn": "⚠ Le domaine est usurpable (SPF/DMARC manquants)", "freeProvider": "Fournisseur d'e-mail gratuit" },
     "smtp": { "title": "Vérification SMTP", "exists": "Existe", "connect": "Connexion SMTP", "catchAllWarn": "⚠ Serveur catch-all (accepte toute adresse)", "details": "Détails" },
-    "breaches": { "title": "Vérification des fuites", "found": "Fuites trouvées", "breachedServices": "Services compromis", "total": "Total des fuites" },
+    "breaches": { "title": "Vérification des fuites", "found": "Fuites trouvées", "breachedServices": "Services compromis", "total": "Total des fuites", "none": "Aucune fuite trouvée" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "Renseignement téléphonique", "valid": "Valide", "country": "Pays", "countryCode": "Indicatif pays", "region": "Région", "carrier": "Opérateur", "lineType": "Type de ligne", "timezones": "Fuseaux horaires", "ownerName": "Nom du propriétaire", "address": "Adresse" },
     "telegram": { "title": "Profil Telegram", "found": "Trouvé", "username": "Nom d'utilisateur", "name": "Nom", "bio": "Bio", "type": "Type", "followers": "Abonnés" },

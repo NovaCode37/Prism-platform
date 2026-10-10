@@ -745,6 +745,40 @@ class TestAbuseIPDB:
         assert result["country"] == "CN"
         assert result["error"] is None
 
+    def test_check_ip_rate_limited(self, monkeypatch):
+        import requests
+        from modules.threat_intel import AbuseIPDB
+        from modules.module_status import classify, RATE_LIMITED
+
+        class MockResp:
+            status_code = 429
+            def json(self):
+                return {}
+
+        monkeypatch.setattr(requests, "get", lambda *a, **k: MockResp())
+        monkeypatch.setattr("modules.threat_intel.ABUSEIPDB_API_KEY", "fakekey")
+        result = AbuseIPDB().check_ip("1.2.3.4")
+        assert classify(result) == RATE_LIMITED
+        assert result["error"] is None
+        assert "rate limit" in result["status_reason"]
+
+    def test_check_ip_server_error(self, monkeypatch):
+        import requests
+        from modules.threat_intel import AbuseIPDB
+        from modules.module_status import classify, ERROR
+
+        class MockResp:
+            status_code = 500
+            def json(self):
+                return {}
+
+        monkeypatch.setattr(requests, "get", lambda *a, **k: MockResp())
+        monkeypatch.setattr("modules.threat_intel.ABUSEIPDB_API_KEY", "fakekey")
+        result = AbuseIPDB().check_ip("1.2.3.4")
+        assert classify(result) == ERROR
+        assert result["error"] == "AbuseIPDB returned 500"
+        assert result["status_reason"] == "AbuseIPDB returned 500"
+
 class TestBlackbird:
     def test_sites_dict_not_empty(self):
         from modules.blackbird import Blackbird

@@ -312,7 +312,7 @@
     "wayback": { "title": "Wayback Machine", "summaryFmt": "{n} anlık görüntü · İlk: {first} · Son: {last}", "recent": "Son Anlık Görüntüler", "sensitive": "Arşivdeki Hassas URL'ler" },
     "emailrep": { "title": "E-posta İtibarı", "reputation": "İtibar", "suspicious": "Şüpheli", "validMx": "Geçerli MX", "deliverable": "Teslim edilebilir", "spf": "SPF", "dmarc": "DMARC", "domainRep": "Alan Adı İtibarı", "mxRecords": "MX Kayıtları", "disposableWarn": "⚠ Tek kullanımlık e-posta algılandı", "spoofableWarn": "⚠ Alan adı sahtelenebilir (SPF/DMARC eksik)", "freeProvider": "Ücretsiz e-posta sağlayıcısı" },
     "smtp": { "title": "SMTP Doğrulama", "exists": "Mevcut", "connect": "SMTP Bağlantısı", "catchAllWarn": "⚠ Catch-all sunucu (her adresi kabul eder)", "details": "Ayrıntılar" },
-    "breaches": { "title": "İhlal Kontrolü", "found": "İhlaller Bulundu", "breachedServices": "İhlal Edilen Hizmetler", "total": "Toplam İhlal" },
+    "breaches": { "title": "İhlal Kontrolü", "found": "İhlaller Bulundu", "breachedServices": "İhlal Edilen Hizmetler", "total": "Toplam İhlal", "none": "İhlal bulunamadı" },
     "dorks": { "title": "Google Dorks" },
     "phone": { "title": "Telefon İstihbaratı", "valid": "Geçerli", "country": "Ülke", "countryCode": "Ülke Kodu", "region": "Bölge", "carrier": "Operatör", "lineType": "Hat Türü", "timezones": "Saat Dilimleri", "ownerName": "Sahip Adı", "address": "Adres" },
     "telegram": { "title": "Telegram Profili", "found": "Bulundu", "username": "Kullanıcı Adı", "name": "Ad", "bio": "Biyografi", "type": "Tür", "followers": "Takipçiler" },
