@@ -1370,7 +1370,7 @@ export function ScanResults({ scan, onHome }: Props) {
         {tab === 'darkweb' && r.onion && (
           <Card title={`Dark Web Mirrors - ${r.onion.total_found} found`} onRefresh={() => refreshModule('onion')} refreshing={isRefreshing('onion')}>
             <div className="text-[11px] text-text-3 mb-3">
-              Sources: Ahmia ({r.onion.sources?.ahmia ?? 0}) · DarkSearch ({r.onion.sources?.darksearch ?? 0})
+              Sources: Ahmia ({r.onion.sources?.ahmia ?? 0})
             </div>
             <div className="space-y-2">
               {r.onion.results?.map((item, i) => (

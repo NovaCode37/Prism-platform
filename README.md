@@ -117,7 +117,7 @@ What PRISM does that those generally do not: results stream into a browser while
 | Censys | Host services, ASN, certificate → subdomain discovery | Censys |
 | VirusTotal | Domain/IP reputation, malware detections | VirusTotal |
 | AbuseIPDB | IP abuse confidence score | AbuseIPDB |
-| Dark Web Checker | .onion mirrors via Ahmia + DarkSearch | none |
+| Dark Web Checker | .onion mirrors via Ahmia | none |
 | Infostealer Exposure | Machines infected by stealers carrying the target's credentials (opt-in) | Hudson Rock |
 | Domain Exposure | Yearly exposure trend, malware families, affected services (opt-in) | Lunar |
 | Website Analyzer | Tech stack, emails, social links, metadata | none |
@@ -367,7 +367,7 @@ prism/
 │   ├── shodan_lookup.py          # Shodan host intelligence
 │   ├── censys_lookup.py          # Censys host + certificate search
 │   ├── wayback.py                # Wayback Machine snapshots + sensitive URLs
-│   ├── onion_checker.py          # .onion mirror checker (Ahmia + DarkSearch)
+│   ├── onion_checker.py          # .onion mirror checker (Ahmia)
 │   ├── darkweb_search.py         # Dark-web mentions search
 │   ├── blackbird.py              # Username search (async, 50+ platforms)
 │   ├── maigret_wrapper.py        # Deep username search (3000+ sites)
