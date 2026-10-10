@@ -68,7 +68,7 @@ function loadLeaflet(): Promise<any> {
 }
 
 function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) => void }) {
-  const { t } = useTranslations();
+  const { t: i18n } = useTranslations();
   const [data, setData] = useState<MapData | null>(null);
   const [error, setError] = useState('');
   const mapHostRef = useRef<HTMLDivElement>(null);
@@ -231,7 +231,7 @@ function GraphLegend() {
 }
 
 function GraphView({ scanId }: { scanId: string }) {
-  const { t } = useTranslations();
+  const { t: i18n } = useTranslations();
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const [error, setError] = useState('');
@@ -358,7 +358,7 @@ function ModuleStatusBadge({ status, label }: { status: ModuleStatus; label?: st
 }
 
 function ModuleNotice({ status, reason }: { status: Exclude<ModuleStatus, 'ok'>; reason?: string }) {
-  const { t } = useTranslations();
+  const { t: i18n } = useTranslations();
   const b = STATUS_BADGE[status];
   // Skip reasons name the variable they need ("No API key configured (CENSYS_PAT)"); the hint names it too.
   // A reason that names no variable is about something else (a missing package, say) and already says
@@ -504,7 +504,7 @@ class TabErrorBoundary extends React.Component<
   }
 }
 export function ScanResults({ scan, onHome }: Props) {
-  const { t, locale } = useTranslations();
+  const { t: i18n, locale } = useTranslations();
   const [tab, setTab] = useState('findings');
   const [aiSummary, setAiSummary] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
