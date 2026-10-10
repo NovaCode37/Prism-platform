@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from config import Colors, NUMVERIFY_API_KEY, USER_AGENT
 from modules import get_proxies
+from modules.module_status import annotate, OK, ERROR
 
 
 class HLRLookup:
@@ -85,11 +86,11 @@ class HLRLookup:
                     result.update(api_result)
 
         except phonenumbers.NumberParseException as e:
-            result["error"] = f"Parse error: {str(e)}"
+            return annotate(result, ERROR, f"Parse error: {str(e)}")
         except Exception as e:
-            result["error"] = str(e)
+            return annotate(result, ERROR, str(e))
 
-        return result
+        return annotate(result, OK)
 
     @staticmethod
     def _http_fallback_allowed() -> bool:
@@ -186,7 +187,6 @@ class HLRLookup:
             print(f"{Colors.YELLOW}Timezones:{Colors.RESET} {', '.join(result['timezones'])}")
 
     def reverse_lookup(self, phone: str) -> Dict[str, Any]:
-        from modules.module_status import annotate, ERROR
         result = {
             "phone": phone,
             "names": [],
