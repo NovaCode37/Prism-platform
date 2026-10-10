@@ -12,41 +12,44 @@ Run security scans against targets (domains, IPs, emails, phones, or usernames).
 
 ```bash
 python cli.py scan <target> [options]
-Options
---json: Output results as raw JSON.
+```
+### Options
 
---html: Generate an HTML scan report.
+- `--json`: Output results as raw JSON.
 
---pdf: Generate a PDF scan report.
+- `--html`: Generate an HTML scan report.
 
---graphml: Export target entity graph in GraphML format.
+- `--pdf`: Generate a PDF scan report.
 
---gexf: Export target entity graph in GEXF format.
+- `--graphml`: Export target entity graph in GraphML format.
 
--t, --type <target_type>: Specify target type (auto-detected if omitted).
+- `--gexf`: Export target entity graph in GEXF format.
 
--m, --modules: Specify comma-separated modules to execute. Modules are validated against the target type.
+- `-t, --type <target_type>`: Specify target type (auto-detected if omitted).
 
--v, --verbose: Output detailed execution logs.
+- `-m, --modules`: Specify comma-separated modules to execute. Modules are validated against the target type.
 
--q, --quiet: Suppress output except critical errors.
+- `-v, --verbose`: Output detailed execution logs.
 
--o, --output <base_name>: Write output to file(s). With more than one format flag, each file gets its own proper extension from the base name (e.g., -o out --json --html writes out.json and out.html).
+- `-q, --quiet`: Suppress output except critical errors.
 
-Example
-Bash
+- `-o, --output <base_name>`: Write output to file(s). With more than one format flag, each file gets its own proper extension from the base name (e.g., `-o out --json --html` writes `out.json` and `out.html`).
+
+### Example
+```bash
 python cli.py scan example.com --json --html -o report
-Exit Codes
-0: Scan completed successfully.
+```
+### Exit Codes
+- `0`: Scan completed successfully.
 
-1: General runtime/scan error or interrupted by Ctrl+C.
+- `1`: General runtime/scan error or interrupted by `Ctrl+C`.
 
-2: Unknown module name passed to -m (argparse also uses 2 for bad arguments).
+- `2`: Unknown module name passed to `-m` (argparse also uses `2` for bad arguments).
 
-Skipped Modules Behavior
-When a module is skipped (e.g., missing API key), results are keyed by module name containing status, status_reason, and other fields:
+### Skipped Modules Behavior
+When a module is skipped (e.g., missing API key), results are keyed by module name containing `status`, `status_reason`, and other fields:
 
-JSON
+```json
 {
   "shodan": {
     "status": "skipped",
@@ -54,39 +57,46 @@ JSON
     "error": null
   }
 }
-modules
+```
+---
+## `modules`
 List and query available OSINT modules.
 
-Usage
-Bash
+### Usage
+```bash
 python cli.py modules [options]
-Options
--t, --type <target_type>: Print modules compatible with a target type (e.g., domain, ip, email, phone, username).
+```
+### Options
+- `-t, --type <target_type>`: Print modules compatible with a target type (e.g., `domain`, `ip`, `email`, `phone`, `username`).
 
---json: Output available modules as raw JSON.
+- `--json`: Output available modules as raw JSON.
 
-Example
-Bash
+### Example
+```bash
 python cli.py modules --type domain --json
-watchlist
+```
+---
+## `watchlist`
 Manage background targets for scheduled periodic re-scanning.
 
-Usage
-Bash
+### Usage
+
+```bash
 python cli.py watchlist <subcommand> [options]
-Subcommands
-list: Display current watched targets (--json supported).
+```
+### Subcommands
+- `list`: Display current watched targets (`--json` supported).
 
-add <target>: Add a target to the scheduled watchlist. Supports -t/--type, -m, --interval (hours, default 24), and --webhook.
+- `add <target>`: Add a target to the scheduled watchlist. Supports `-t/--type`, `-m`, `--interval` (hours, default 24), and `--webhook`.
 
-rm <entry_id>: Remove a target from the watchlist by its entry ID.
+- `rm <entry_id>`: Remove a target from the watchlist by its entry ID.
 
-pause <entry_id>: Temporarily pause scheduled scans by entry ID.
+- `pause <entry_id>`: Temporarily pause scheduled scans by entry ID.
 
-resume <entry_id>: Resume scheduled scans by entry ID.
+- `resume <entry_id>`: Resume scheduled scans by entry ID.
 
-Example
-Bash
-python cli.py watchlist add example.com --interval 12 --webhook [https://example.com/hook](https://example.com/hook)
+### Example
+```bash
+python cli.py watchlist add example.com --interval 12 --webhook https://example.com/hook
 python cli.py watchlist list --json
-
+```
