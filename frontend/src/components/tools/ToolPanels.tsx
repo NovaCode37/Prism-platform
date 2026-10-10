@@ -173,6 +173,8 @@ function QrPanel() {
         <Card>
           {result.error ? (
             <ErrorCard label={t('toolPanels.error')} message={result.error} />
+          ) : !result.decoded ? (
+            <p className="text-[12px] text-text-3">{result.status_reason}</p>
           ) : (
             <div>
               <Row label={t('toolPanels.qr.type')} value={result.type} />
